@@ -17,6 +17,7 @@ const MIGRAZIONI: &[&str] = &[
     include_str!("../migrazioni/0003_numerazione.sql"),
     include_str!("../migrazioni/0004_prezzi_righe.sql"),
     include_str!("../migrazioni/0005_note.sql"),
+    include_str!("../migrazioni/0006_anagrafiche_complete.sql"),
 ];
 
 /// Attesa massima di un blocco tenuto da un'altra connessione prima di rispondere `SQLITE_BUSY`.

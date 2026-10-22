@@ -268,6 +268,15 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     alto contrasto, Λ senza traversa, S modulata come da pennino largo), con le strisce diagonali, le virgolette
     e la firma "c/o BOTTAMEDI" alla Off-White; in barra la versione compatta, nelle Informazioni quella intera
     con "MEZZOLOMBARDO — TN".
+  - **Anagrafiche complete, parte backend** (per le maschere Clienti e Articoli, vedi "Da fare" 5b): migrazione
+    0006 con la colonna JSON `extra` in `clienti_fornitori` e `articoli`; l'importazione legge da `CF` 70 colonne
+    in più e da `AR` 48 (`CF_EXTRA`, `AR_EXTRA` in `atlas-sync/src/anagrafiche.rs`: tipo figura, nazione IVA,
+    PEPPOL, zona, settore, porto/spedizione/vettore, sconti, giorni fissi, classi e gruppi, flag FE/split/reverse
+    charge, REA, ATECO, SDD, ABI/CAB; per gli articoli gruppi, classi, marca, modello, IVA acquisti, conti, scorte,
+    lotti, pesi e misure, costo e ricarico, origine). API: scheda cliente e articolo con `extra`, scheda articolo
+    con i prezzi validi oggi per listino (ultima revisione), `GET /api/clienti/prossimo-codice` (C###### + 1).
+    **Il database va riallineato** con `importa-anagrafiche` sul database di Arca (fino ad allora `extra` = `{}`).
+
   - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
     (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
     (nessun ordine in ATLAS), Elimina (Task 6), DMS e stampa (Task 7).
@@ -401,8 +410,42 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Guardrail antierrore da tastiera: avviso per `Tara >= Lordo` o `Colli con decimali` (gestibili al 100% da tastiera: `Esc` correggi, `Invio` conferma).
    - Tasti funzione: `F3` (lookup prezzi), `F10` (salva documento), `Esc` (esci/annulla riga), `F12` (nuova riga).
 
+5b. **Maschere Clienti e Articoli (in corso)** — il titolare: "snella ma con tutto completa" (le schede di Arca
+   sono macchinose, ma nessun campo deve mancare). Fatto: backend (sopra) e `app/src/anagrafiche/GrigliaElenco.tsx`
+   (griglia generica degli elenchi: intestazioni personalizzabili, riga dei filtri, frecce/PgSu/PgGiù, `Invio`
+   apre, contatore). Tipi e chiamate già in `app/src/api` (`elencoClienti`, `prossimoCodiceCliente`,
+   `elencoArticoli`, `articolo`, `tabelle`). Da fare:
+   - `Clienti.tsx`: elenco con le colonne di Arca (Ragione Sociale, Codice, Indirizzo, CAP, Località, Provincia,
+     Nazione, Telefono, Fax, Cod.Dest./Email B2B, Partita Iva, Cod.Fiscale, Famiglia/Gruppo/Sottogruppo, Email) e
+     scheda a sezioni in una pagina sola: Anagrafica (codice, ragione sociale, tipo figura, P.IVA + nazione IVA con
+     "Cerca online", CF, PEPPOL, indirizzo); Contatti (da `CFContatto`, colonne da avere dal titolare);
+     Fatturazione elettronica (codice destinatario, IPA, ente pubblico, split, IVA sospesa, tipo fattura, aliquota,
+     reverse charge); Condizioni (pagamento, listini 1-2, agenti 1-2, sconto, provvigione, giorni fissi, spese
+     incasso/bolli); Banca (IBAN, BIC, banca sconto, ABI/CAB, SDD); DDT (vettore, porto, spedizione, destinazioni);
+     Altro (conto mastro, valuta, stato, fido, zona, settore, lingua, classi e gruppi, REA, ATECO, flag, cliente di
+     fatturazione); Note; inserito/modificato. Le decodifiche da `api.tabelle()`.
+   - "Nuovo cliente" parte dalla partita IVA (VIES precompila, `prossimo-codice`, predefiniti di Arca: EUR, conto
+     04010101001, EsclusoBlackList, FE_AddASW, italiano, persona giuridica). **Salva spento** finché non c'è la
+     scrittura in Arca (`CF`, `CFContatto`), da provare sul clone: servono dal titolare i risultati di
+     `SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN
+     ('CF','CFContatto') ORDER BY TABLE_NAME, ORDINAL_POSITION` e `SELECT TOP 3 * FROM CF WHERE Cd_CF IN
+     ('C000001','C000008','C000041')` (e lo stesso per `CFContatto`).
+   - `Articoli.tsx`: elenco (Codice, Descrizione, Famiglia/Gruppo/Sottogruppo, Marca, Categoria/Classe/Sottoclasse,
+     Sconto, Provvigione, Scorta minima, Lotto minimo, Lotto riordino, IVA vendite, IVA acquisti, Stato, UM) e
+     scheda: Generale (UM e fattori, stato, marca/modello, fittizio, lotto predefinito, classi, origine); IVA e
+     conti (l'IVA vendite è obbligatoria: `Preferenza.xARIvaObb`, `fedi_articolo_extracted.prg:162-176`); Prezzi
+     (listini validi, costo, ricarico, costo standard); Magazzino (scorte, lotti, ABC, valorizzazione, pesi e
+     misure); Note.
+   - Aree nell'App (come "documenti") e voci del menu Home (Anagrafiche › Clienti, Articoli › Gestione Articoli)
+     al posto di "[in Arca]"; prove Playwright; README.
+
 6. **Gestione Cancellazioni Documenti e Riuso Numerazione**:
    - Hard Delete dal database operativo (zero colonne `is_deleted` nel DB ordinario).
+   - Come Arca: conferma dell'utente avanzato prima di eliminare un BO già evaso in fattura, rifiuto dei documenti
+     non modificabili (`fedi_doc_extracted.prg:10226-10245`); replica della cancellazione (oggi `replica.rs:189`
+     rifiuta tutto ciò che non è una creazione).
+   - **Modifica di un DDT salvato, con replica**: nel 2026 923 BO su 5.452 modificati dopo la creazione e 42
+     chiusi a mano. Manca l'API; `Operazione::Modifica` c'è in `atlas-db/src/outbox.rs:16`.
    - Recupero immediato del numero documento cancellato come buco disponibile nel progressivo.
    - Snapshot di emergenza locale isolato fuori dal DB (cifrato, accessibile solo da menu riservato con PIN).
 
@@ -411,6 +454,39 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Generazione automatica fattura differita con raggruppamento e righe di riferimento DDT.
    - Generazione file standard ministeriale XML FatturaPA 1.2.2 per invio a Sistema di Interscambio (SdI).
    - Modulo stampa DDT e fattura in formato PDF.
+   - Dai sorgenti (analisi del 22/10/2026), oltre a quanto sopra:
+     - **Fattura immediata FA**: 569 su 1.120 fatture nel 2026, vale anche come DDT e scarica il magazzino. Per
+       replicarla servono `SC`, `CGMovT`, `CGMovT_NumProt` e il modulo `xFatturaImmediata`. L'importazione legge
+       solo i BO: F3 "ultimi prezzi" e "Da chiamare oggi" non vedono le vendite fatte con FA.
+     - Stampa DDT (`xDDT`): dicitura D.P.R. 472/96, provenienza `AR.Cd_ARClasse1`, categoria dalla nota articolo
+       'CAT' (`oDoR.NoteAR('CAT')`: controllare che le note articolo si importino), note di riga, articolo e
+       documento.
+     - Fattura differita (`xFattura_before.prg`): una riga per DDT con l'imponibile per aliquota 4/5/10/22, non le
+       righe. Fatture: clausola Art. 62, "Durata merce: entro 60 giorni…", dicitura CONAI, `NoteAliquota`, fino a
+       6 scadenze, IBAN della banca sconto se RiBa, altrimenti della banca d'appoggio.
+     - Differita: spese d'incasso RiBa come righe spesa (`DORigSpesa`), BO evasi in Arca (`QtaEvadibile` e
+       `RigheMerceEvadibili` a 0), sezionale `001` in `numerazione::occupati`.
+     - SdI: canale di invio (decisione del titolare), firma, esiti RC/MC/NS e blocco delle modifiche secondo lo
+       stato (`fedi_doc_extracted.prg:10365-10389`, `:11865-11901`), PA con `CodiceIPA`/`EntePubblico`
+       (`:6437`, `:7119`) e scissione dei pagamenti (33 documenti), PDF/XML/esiti nel DMS e conservazione.
+     - Note di accredito (7 nel 2026, direttiva §4.4) con il riferimento alla fattura (`fedi_doc_extracted.prg:8773`).
+     - Da misurare: bollo virtuale sopra `Imp_DOEsente_Limite` (`:7933-7957`), controllo fido (`:5823-5997`).
+
+7b. **Lacune non ancora pianificate** (analisi dei sorgenti, in ordine di peso):
+   - **Scadenzario, incassi, RiBa**: 1.129 scadenze nel 2026, 291 documenti RiBa con spese d'incasso fra 2025 e
+     2026 ("Necessario" in `ANALISI_ARCA.md` §1). Scrittura di `SC`, registra pagato, portafoglio e distinta per
+     la banca.
+   - **Fatture passive**: 1.640 nel 2026 (`FTE_InBox`), scaricate da Arca dall'Hub Wolters Kluwer
+     (`FepaHubClient_clear.cs:1073`, `:1199`, `:1970-1977`). Senza Arca restano senza dati il CRM acquisti e
+     "Ultimo acquisto" in F3.
+   - **Contabilità ed export per il commercialista**: 1.122 registrazioni causale 01 e 7 causale 02 nel 2026
+     generate da Arca; manca il formato.
+   - **Listini in scrittura** (258 modifiche nel 2026) e F2 della direttiva §3.2 per sbloccare i prezzi.
+   - **Importa pesate** (`pers_bottamedi/fedi_doc_extracted.prg:769-869`, uso da confermare): file
+     `PERS\DoImportAscii\Data.txt` o il percorso di `NFile.ini` con `<COMPUTERNAME>`, formato
+     `Codice;Lordo;Tara;Colli;Lotto`, copia in `NFILE_BAK`, poi il file si cancella.
+   - Esclusi per uso nullo: export Conad/Gastropool/Hogast, listini per destinazione, cambio massivo listini,
+     `importdtv`, lotti predefiniti, codici alternativi, ordini; scontrini (38) a bassa priorità.
 
 
 8. **Connettività Distribuita SOTA (mTLS 1.3) & Resilienza Offline**:

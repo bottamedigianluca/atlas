@@ -131,6 +131,10 @@ impl Servizio {
         self.lettori.leggi(move |conn| consultazione::cerca_clienti(conn, &ricerca)).await
     }
 
+    pub async fn prossimo_codice_cliente(&self) -> Result<String, ErroreApi> {
+        self.lettori.leggi(consultazione::prossimo_codice_cliente).await
+    }
+
     pub async fn cliente(&self, codice: String) -> Result<consultazione::ClienteScheda, ErroreApi> {
         self.lettori.leggi(move |conn| consultazione::cliente(conn, &codice)).await
     }

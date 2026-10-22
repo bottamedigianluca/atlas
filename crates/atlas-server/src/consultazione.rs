@@ -66,11 +66,37 @@ pub struct ClienteBreve {
     pub localita: Option<String>,
     pub partita_iva: Option<String>,
     pub obsoleto: bool,
+    pub indirizzo: Option<String>,
+    pub cap: Option<String>,
+    pub provincia: Option<String>,
+    pub nazione: Option<String>,
+    pub codice_fiscale: Option<String>,
+    /// Codice destinatario SdI o PEC (`CF.CodiceFPR`).
+    pub codice_destinatario: Option<String>,
+    /// Gli altri campi di Arca (`CF.Cd_CFGruppo1`…), per le colonne dell'elenco.
+    pub extra: serde_json::Value,
+}
+
+/// I campi `extra` delle anagrafiche (oggetto JSON scritto dall'importazione).
+fn json(testo: &str) -> serde_json::Value {
+    serde_json::from_str(testo).unwrap_or(serde_json::Value::Null)
+}
+
+/// Il prossimo codice cliente, come lo propone Arca: "C" e sei cifre, il più alto più uno.
+pub fn prossimo_codice_cliente(conn: &Connection) -> Result<String, ErroreApi> {
+    let massimo: Option<i64> = conn
+        .prepare_cached(
+            "SELECT max(CAST(substr(codice, 2) AS INTEGER)) FROM clienti_fornitori \
+             WHERE codice GLOB 'C[0-9][0-9][0-9][0-9][0-9][0-9]'",
+        )?
+        .query_row([], |r| r.get(0))?;
+    Ok(format!("C{:06}", massimo.unwrap_or(0) + 1))
 }
 
 pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<ClienteBreve>, ErroreApi> {
     let mut stmt = conn.prepare_cached(
-        "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto FROM clienti_fornitori \
+        "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto, indirizzo, cap, provincia, nazione, \
+         codice_fiscale, codice_destinatario, extra FROM clienti_fornitori \
          WHERE cliente = 1 AND (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR ragione_sociale LIKE ?2 ESCAPE '\\') \
          ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
@@ -84,6 +110,13 @@ pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Cliente
             localita: r.get(2)?,
             partita_iva: r.get::<_, Option<String>>(3)?.map(|p| p.trim().to_owned()),
             obsoleto: r.get(4)?,
+            indirizzo: r.get(5)?,
+            cap: r.get(6)?,
+            provincia: r.get(7)?,
+            nazione: r.get(8)?,
+            codice_fiscale: r.get(9)?,
+            codice_destinatario: r.get(10)?,
+            extra: json(&r.get::<_, String>(11)?),
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -123,6 +156,19 @@ pub struct ClienteScheda {
     pub scissione_pagamenti: bool,
     pub obsoleto: bool,
     pub destinazioni: Vec<DestinazioneVista>,
+    pub nazione: Option<String>,
+    /// Codice ufficio della PA (`CF.CodiceIPA`).
+    pub codice_ipa: Option<String>,
+    pub conto_banca: Option<String>,
+    pub conto_merce: Option<String>,
+    pub ente_pubblico: bool,
+    /// Esenzione o aliquota del cliente (`CF.Cd_Aliquota`).
+    pub aliquota: Option<String>,
+    pub cliente_fatturazione: Option<String>,
+    pub fido: Option<String>,
+    pub note: Option<String>,
+    /// Gli altri campi di `CF` con i nomi delle colonne di Arca.
+    pub extra: serde_json::Value,
 }
 
 pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreApi> {
@@ -157,10 +203,37 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
                 iban: r.get(17)?,
                 bic: r.get(18)?,
                 destinazioni: Vec::new(),
+                nazione: None,
+                codice_ipa: None,
+                conto_banca: None,
+                conto_merce: None,
+                ente_pubblico: false,
+                aliquota: None,
+                cliente_fatturazione: None,
+                fido: None,
+                note: None,
+                extra: serde_json::Value::Null,
             })
         })
         .optional()?
         .ok_or_else(|| ErroreApi::NonTrovato(format!("cliente {}", codice.trim())))?;
+    conn.prepare_cached(
+        "SELECT nazione, codice_ipa, conto_banca, conto_merce, ente_pubblico, aliquota, cliente_fatturazione, fido, note, extra \
+         FROM clienti_fornitori WHERE codice = ?1",
+    )?
+    .query_row([&scheda.codice], |r| {
+        scheda.nazione = r.get(0)?;
+        scheda.codice_ipa = r.get(1)?;
+        scheda.conto_banca = r.get(2)?;
+        scheda.conto_merce = r.get(3)?;
+        scheda.ente_pubblico = r.get(4)?;
+        scheda.aliquota = r.get(5)?;
+        scheda.cliente_fatturazione = r.get(6)?;
+        scheda.fido = r.get(7)?;
+        scheda.note = r.get(8)?;
+        scheda.extra = json(&r.get::<_, String>(9)?);
+        Ok(())
+    })?;
     let mut stmt = conn.prepare_cached(
         "SELECT codice, descrizione, indirizzo, localita, provincia, predefinita, obsoleto FROM destinazioni \
          WHERE cliente = ?1 ORDER BY predefinita DESC, codice",
@@ -187,11 +260,13 @@ pub struct ArticoloBreve {
     pub unita_misura: String,
     pub aliquota: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di Arca (`AR.Cd_ARClasse1`…), per le colonne dell'elenco.
+    pub extra: serde_json::Value,
 }
 
 pub fn cerca_articoli(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<ArticoloBreve>, ErroreApi> {
     let mut stmt = conn.prepare_cached(
-        "SELECT codice, descrizione, unita_misura, aliquota_vendita, obsoleto FROM articoli \
+        "SELECT codice, descrizione, unita_misura, aliquota_vendita, obsoleto, extra FROM articoli \
          WHERE (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR descrizione LIKE ?2 ESCAPE '\\') \
          ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
@@ -205,6 +280,7 @@ pub fn cerca_articoli(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Artico
             unita_misura: r.get(2)?,
             aliquota: r.get(3)?,
             obsoleto: r.get(4)?,
+            extra: json(&r.get::<_, String>(5)?),
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -227,12 +303,27 @@ pub struct ArticoloScheda {
     pub conto_ricavo: Option<String>,
     pub obsoleto: bool,
     pub unita: Vec<UnitaVista>,
+    /// Gli altri campi di `AR` con i nomi delle colonne di Arca.
+    pub extra: serde_json::Value,
+    /// Il prezzo valido oggi in ogni listino che ha l'articolo.
+    pub prezzi: Vec<PrezzoArticolo>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct PrezzoArticolo {
+    pub listino: String,
+    pub descrizione: String,
+    pub revisione: Option<String>,
+    pub valido_dal: Option<NaiveDate>,
+    pub prezzo: String,
+    pub sconto: Option<String>,
+    pub ivato: bool,
 }
 
 pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, ErroreApi> {
     let mut scheda = conn
         .prepare_cached(
-            "SELECT codice, descrizione, descrizione_breve, unita_misura, aliquota_vendita, conto_ricavo, obsoleto \
+            "SELECT codice, descrizione, descrizione_breve, unita_misura, aliquota_vendita, conto_ricavo, obsoleto, extra \
              FROM articoli WHERE codice = ?1",
         )?
         .query_row([codice.trim()], |r| {
@@ -245,6 +336,8 @@ pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, Error
                 conto_ricavo: r.get(5)?,
                 obsoleto: r.get(6)?,
                 unita: Vec::new(),
+                extra: json(&r.get::<_, String>(7)?),
+                prezzi: Vec::new(),
             })
         })
         .optional()?
@@ -260,6 +353,30 @@ pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, Error
         })
     })?;
     scheda.unita = unita.collect::<Result<_, _>>()?;
+    // Per ogni listino, il prezzo nella revisione valida oggi più recente che contiene l'articolo.
+    let mut stmt = conn.prepare_cached(
+        "SELECT l.codice, l.descrizione, r.descrizione, r.valido_dal, p.prezzo, p.sconto, l.ivato \
+         FROM listini l \
+         JOIN listini_prezzi p ON p.id = (SELECT p2.id FROM listini_prezzi p2 \
+              JOIN listini_revisioni r2 ON r2.id = p2.revisione \
+              WHERE r2.listino = l.codice AND p2.articolo = ?1 AND (r2.valido_dal IS NULL OR r2.valido_dal <= ?2) \
+              ORDER BY r2.valido_dal DESC, r2.id DESC LIMIT 1) \
+         JOIN listini_revisioni r ON r.id = p.revisione \
+         ORDER BY l.codice",
+    )?;
+    let oggi = chrono::Local::now().date_naive();
+    let prezzi = stmt.query_map(rusqlite::params![&scheda.codice, oggi], |r| {
+        Ok(PrezzoArticolo {
+            listino: r.get(0)?,
+            descrizione: r.get::<_, String>(1)?.trim_end().to_owned(),
+            revisione: r.get::<_, Option<String>>(2)?.map(|d| d.trim_end().to_owned()),
+            valido_dal: r.get(3)?,
+            prezzo: r.get(4)?,
+            sconto: r.get::<_, Option<String>>(5)?.filter(|s| !s.trim().is_empty()),
+            ivato: r.get(6)?,
+        })
+    })?;
+    scheda.prezzi = prezzi.collect::<Result<_, _>>()?;
     Ok(scheda)
 }
 

@@ -2,7 +2,7 @@
 //!
 //! REST (JSON, prefisso `/api`):
 //! - `GET  /salute`, `GET /stato`, `POST /sincronizza`
-//! - `GET  /tabelle`, `GET /clienti?cerca=`, `GET /clienti/{codice}`, `GET /articoli?cerca=`,
+//! - `GET  /tabelle`, `GET /clienti?cerca=`, `GET /clienti/{codice}`, `GET /clienti/prossimo-codice`, `GET /articoli?cerca=`,
 //!   `GET /articoli/{codice}`
 //! - `GET  /prezzi?articolo=&cliente=&data=&unita_misura=&quantita=&escludi_ddt=` (tasto `F3`)
 //! - `GET  /ddt?dal=&al=&cliente=&numero=&limite=`, `GET /ddt/{id}`
@@ -60,6 +60,7 @@ pub fn router(servizio: Servizio) -> Router {
         .route("/sincronizza", post(sincronizza))
         .route("/tabelle", get(tabelle))
         .route("/clienti", get(cerca_clienti))
+        .route("/clienti/prossimo-codice", get(prossimo_codice_cliente))
         .route("/clienti/{codice}", get(cliente))
         .route("/articoli", get(cerca_articoli))
         .route("/articoli/{codice}", get(articolo))
@@ -156,6 +157,10 @@ async fn tabelle(State(s): State<Servizio>) -> Esito<crate::consultazione::Tabel
 
 async fn cerca_clienti(State(s): State<Servizio>, q: Result<Query<Ricerca>, QueryRejection>) -> Esito<Vec<crate::consultazione::ClienteBreve>> {
     Ok(Json(s.cerca_clienti(query(q)?).await?))
+}
+
+async fn prossimo_codice_cliente(State(s): State<Servizio>) -> Esito<String> {
+    Ok(Json(s.prossimo_codice_cliente().await?))
 }
 
 async fn cliente(State(s): State<Servizio>, Path(codice): Path<String>) -> Esito<crate::consultazione::ClienteScheda> {

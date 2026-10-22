@@ -2,6 +2,7 @@
 
 import type {
   ArticoloBreve,
+  ArticoloScheda,
   Bozza,
   Calcolo,
   CampiNota,
@@ -20,6 +21,7 @@ import type {
   Riepilogo,
   Rinumerato,
   Stato,
+  Tabelle,
 } from "./tipi";
 
 const CHIAVE_SERVER = "atlas.server";
@@ -107,6 +109,11 @@ export const api = {
   ddt: (id: number) => chiama<DdtScheda>("GET", `/ddt/${id}`),
   clienti: (cerca: string, segnale?: AbortSignal) =>
     chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 50 })}`, undefined, segnale),
+  elencoClienti: (cerca?: string) => chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 1000, obsoleti: true })}`),
+  prossimoCodiceCliente: () => chiama<string>("GET", "/clienti/prossimo-codice"),
+  elencoArticoli: (cerca?: string) => chiama<ArticoloBreve[]>("GET", `/articoli${query({ cerca, limite: 1000, obsoleti: true })}`),
+  articolo: (codice: string) => chiama<ArticoloScheda>("GET", `/articoli/${encodeURIComponent(codice)}`),
+  tabelle: () => chiama<Tabelle>("GET", "/tabelle"),
   cliente: (codice: string) => chiama<ClienteScheda>("GET", `/clienti/${encodeURIComponent(codice)}`),
   articoli: (cerca: string, segnale?: AbortSignal) =>
     chiama<ArticoloBreve[]>("GET", `/articoli${query({ cerca, limite: 50 })}`, undefined, segnale),

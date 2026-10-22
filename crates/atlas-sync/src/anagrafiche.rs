@@ -87,6 +87,178 @@ impl Riga<'_> {
     }
 }
 
+/// Tipo SQL Server di una colonna letta così com'è nei campi `extra` delle anagrafiche.
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum Tipo {
+    /// `char`/`varchar`: senza spazi finali, vuoto = assente.
+    Testo,
+    Bit,
+    /// `tinyint`
+    Byte,
+    /// `smallint`
+    Corto,
+    /// `numeric`: testo decimale esatto.
+    Decimale,
+    /// `smalldatetime`: "AAAA-MM-GG hh:mm:ss".
+    Data,
+}
+
+/// I campi di `CF` che la scheda cliente mostra oltre a quelli che ATLAS usa nei calcoli
+/// (nomi e tipi dallo schema di Arca in `docs/sorgenti_arca_decompilati/04_SCHEMI_DATABASE_E_DATI`).
+pub(crate) const CF_EXTRA: &[(&str, Tipo)] = &[
+    ("TipoDitta", Tipo::Testo),
+    ("Cd_NazioneIva", Tipo::Testo),
+    ("Peppol_Endpoint", Tipo::Testo),
+    ("TipoCF", Tipo::Testo),
+    ("Cd_CGConto_Mastro", Tipo::Testo),
+    ("Cd_LS_2", Tipo::Testo),
+    ("Cd_VL", Tipo::Testo),
+    ("Cd_CFStato", Tipo::Testo),
+    ("Cd_CFZona", Tipo::Testo),
+    ("Cd_CFSettore", Tipo::Testo),
+    ("Cd_DOPorto", Tipo::Testo),
+    ("Cd_DOSped", Tipo::Testo),
+    ("Cd_DOVettore", Tipo::Testo),
+    ("Cd_SL", Tipo::Testo),
+    ("Cd_Agente_2", Tipo::Testo),
+    ("Id_Lingua", Tipo::Corto),
+    ("Sconto", Tipo::Testo),
+    ("Provvigione", Tipo::Testo),
+    ("SpeseIncasso", Tipo::Bit),
+    ("SpeseBolli", Tipo::Bit),
+    ("ScGiornoFisso1", Tipo::Byte),
+    ("ScGiornoFisso2", Tipo::Byte),
+    ("ScGiornoFisso3", Tipo::Byte),
+    ("Cd_CFClasse1", Tipo::Testo),
+    ("Cd_CFClasse2", Tipo::Testo),
+    ("Cd_CFClasse3", Tipo::Testo),
+    ("Cd_CFGruppo1", Tipo::Testo),
+    ("Cd_CFGruppo2", Tipo::Testo),
+    ("Cd_CFGruppo3", Tipo::Testo),
+    ("IvaSospesa", Tipo::Bit),
+    ("ProceduraConcorsuale", Tipo::Bit),
+    ("ConsumatoreFinale", Tipo::Bit),
+    ("Condominio", Tipo::Bit),
+    ("EsclusoSpesometro", Tipo::Bit),
+    ("EsclusoBlackList", Tipo::Bit),
+    ("EsclusoOver3000", Tipo::Bit),
+    ("DF_Escluso", Tipo::Bit),
+    ("Tipofattura", Tipo::Byte),
+    ("NRea", Tipo::Testo),
+    ("Cd_F24Comune", Tipo::Testo),
+    ("Cd_AE_NaturaGiuridica", Tipo::Testo),
+    ("Cd_AE_Atecofin", Tipo::Testo),
+    ("SDD_IdMandato", Tipo::Testo),
+    ("SDD_DtMandato", Tipo::Data),
+    ("FE_AddASW", Tipo::Bit),
+    ("FE_Ignore_CodiceFPR", Tipo::Bit),
+    ("FTE_AutoTipo", Tipo::Byte),
+    ("IvaSplitLog", Tipo::Bit),
+    ("CD_ReverseCharge", Tipo::Testo),
+    ("Cd_Abicab", Tipo::Testo),
+    ("ContoCorrente", Tipo::Testo),
+    ("Ue", Tipo::Bit),
+    ("Intra", Tipo::Bit),
+    ("Ritenuta", Tipo::Bit),
+    ("Elenchi", Tipo::Bit),
+    ("PdAbilita", Tipo::Bit),
+    ("PdPriorita", Tipo::Byte),
+    ("PdInt4ClienteFatturazione", Tipo::Bit),
+    ("PdBrk4DocumentoPrelevato", Tipo::Bit),
+    ("PdBrk4ClienteFornitore", Tipo::Bit),
+    ("PdBrk4Pagamento", Tipo::Bit),
+    ("PdBrk4Agente_1", Tipo::Bit),
+    ("PdBrk4Agente_2", Tipo::Bit),
+    ("PdBrk4Zona", Tipo::Bit),
+    ("PdBrk4SedeAmministrativa", Tipo::Bit),
+    ("PdBrk4DestinazioneDiversa", Tipo::Bit),
+    ("UserIns", Tipo::Testo),
+    ("TimeIns", Tipo::Data),
+    ("UserUpd", Tipo::Testo),
+    ("TimeUpd", Tipo::Data),
+];
+
+/// I campi di `AR` che la scheda articolo mostra oltre a quelli che ATLAS usa nei calcoli.
+pub(crate) const AR_EXTRA: &[(&str, Tipo)] = &[
+    ("Note_AR", Tipo::Testo),
+    ("VBDescrizione", Tipo::Testo),
+    ("Cd_ARGruppo1", Tipo::Testo),
+    ("Cd_ARGruppo2", Tipo::Testo),
+    ("Cd_ARGruppo3", Tipo::Testo),
+    ("Cd_ARClasse1", Tipo::Testo),
+    ("Cd_ARClasse2", Tipo::Testo),
+    ("Cd_ARClasse3", Tipo::Testo),
+    ("Cd_VbReparto", Tipo::Testo),
+    ("Cd_Aliquota_A", Tipo::Testo),
+    ("Cd_CGConto_VE", Tipo::Testo),
+    ("Cd_CGConto_AI", Tipo::Testo),
+    ("Cd_CGConto_AE", Tipo::Testo),
+    ("Cd_ARStato", Tipo::Testo),
+    ("Cd_ARMarca", Tipo::Testo),
+    ("Modello", Tipo::Testo),
+    ("Cd_ARNomenclatura", Tipo::Testo),
+    ("IntraTipo", Tipo::Testo),
+    ("Sconto", Tipo::Testo),
+    ("Provvigione", Tipo::Testo),
+    ("Ricarica", Tipo::Testo),
+    ("ScortaMinima", Tipo::Decimale),
+    ("LottoMinimo", Tipo::Decimale),
+    ("LottoRiordino", Tipo::Decimale),
+    ("PesoLordo", Tipo::Decimale),
+    ("PesoNetto", Tipo::Decimale),
+    ("Altezza", Tipo::Decimale),
+    ("Lunghezza", Tipo::Decimale),
+    ("Larghezza", Tipo::Decimale),
+    ("CostoStandard", Tipo::Decimale),
+    ("ClasseAbc", Tipo::Testo),
+    ("TipoValorizzazione", Tipo::Byte),
+    ("Fittizio", Tipo::Bit),
+    ("NoInventario", Tipo::Bit),
+    ("NoGiornale", Tipo::Bit),
+    ("MG_LottoObbligatorio", Tipo::Bit),
+    ("MG_MatricolaObbligatoria", Tipo::Bit),
+    ("MG_GiacenzaNonNegativa", Tipo::Bit),
+    ("Cd_Nazione_Origine", Tipo::Testo),
+    ("Cd_Provincia_Origine", Tipo::Testo),
+    ("xCosto", Tipo::Decimale),
+    ("xRicarico", Tipo::Decimale),
+    ("xCd_ARLottoP", Tipo::Testo),
+    ("WebDescrizione", Tipo::Testo),
+    ("UserIns", Tipo::Testo),
+    ("TimeIns", Tipo::Data),
+    ("UserUpd", Tipo::Testo),
+    ("TimeUpd", Tipo::Data),
+];
+
+impl Riga<'_> {
+    /// Le colonne `colonne` in un oggetto JSON (chiavi ordinate: lo stesso dato dà lo stesso testo,
+    /// e l'aggiornamento idempotente non riscrive le righe invariate).
+    fn extra(&self, colonne: &[(&'static str, Tipo)]) -> Result<String, ErroreSync> {
+        let mut oggetto = serde_json::Map::new();
+        for &(colonna, tipo) in colonne {
+            let valore = match tipo {
+                Tipo::Testo => self.codice_opz(colonna)?.map(serde_json::Value::from),
+                Tipo::Bit => self.row.try_get::<bool, _>(colonna)?.map(serde_json::Value::from),
+                Tipo::Byte => self.row.try_get::<u8, _>(colonna)?.map(serde_json::Value::from),
+                Tipo::Corto => self.row.try_get::<i16, _>(colonna)?.map(serde_json::Value::from),
+                Tipo::Decimale => self.decimale_opz(colonna)?.map(|d| serde_json::Value::from(d.to_string())),
+                Tipo::Data => self
+                    .row
+                    .try_get::<NaiveDateTime, _>(colonna)?
+                    .map(|d| serde_json::Value::from(d.format("%Y-%m-%d %H:%M:%S").to_string())),
+            };
+            oggetto.insert(colonna.to_owned(), valore.unwrap_or(serde_json::Value::Null));
+        }
+        serde_json::to_string(&oggetto).map_err(|e| self.errore("extra", e.to_string()))
+    }
+}
+
+/// `select` delle colonne date più quelle `extra`.
+fn con_extra(colonne: &str, extra: &[(&str, Tipo)], tabella: &str) -> String {
+    let altre: Vec<&str> = extra.iter().map(|(c, _)| *c).collect();
+    format!("select {colonne}, {} from {tabella}", altre.join(", "))
+}
+
 async fn leggi<T>(
     conn: &mut Connessione,
     tabella: &'static str,
@@ -161,7 +333,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
     let articoli = leggi(
         conn,
         "AR",
-        "select Cd_AR, Descrizione, DescrizioneBreve, Cd_ARMisura, Cd_Aliquota_V, Cd_CGConto_VI, Obsoleto from AR",
+        &con_extra("Cd_AR, Descrizione, DescrizioneBreve, Cd_ARMisura, Cd_Aliquota_V, Cd_CGConto_VI, Obsoleto", AR_EXTRA, "AR"),
         |r| {
             Ok(Articolo {
                 codice: r.codice("Cd_AR")?,
@@ -171,6 +343,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
                 aliquota_vendita: r.codice_opz("Cd_Aliquota_V")?,
                 conto_ricavo: r.codice_opz("Cd_CGConto_VI")?,
                 obsoleto: r.bit("Obsoleto")?,
+                extra: r.extra(AR_EXTRA)?,
             })
         },
     )
@@ -211,9 +384,13 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
     let clienti_fornitori = leggi(
         conn,
         "CF",
-        "select Cd_CF, Descrizione, Indirizzo, Cap, Localita, Cd_Provincia, Cd_Nazione, PartitaIva, CodiceFiscale, \
-         CodiceFPR, CodiceIPA, Cliente, Fornitore, Cd_PG, Cd_LS_1, Iban, BicCode, Cd_CGConto_Banca, Cd_CGConto_Merce, \
-         Cd_Agente_1, IvaSplit, EntePubblico, Cd_Aliquota, Cd_CF_Fatt, Fido, Note_CF, Obsoleto from CF",
+        &con_extra(
+            "Cd_CF, Descrizione, Indirizzo, Cap, Localita, Cd_Provincia, Cd_Nazione, PartitaIva, CodiceFiscale, \
+             CodiceFPR, CodiceIPA, Cliente, Fornitore, Cd_PG, Cd_LS_1, Iban, BicCode, Cd_CGConto_Banca, Cd_CGConto_Merce, \
+             Cd_Agente_1, IvaSplit, EntePubblico, Cd_Aliquota, Cd_CF_Fatt, Fido, Note_CF, Obsoleto",
+            CF_EXTRA,
+            "CF",
+        ),
         |r| {
             Ok(ClienteFornitore {
                 codice: r.codice("Cd_CF")?,
@@ -243,6 +420,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
                 fido: r.decimale_opz("Fido")?,
                 note: r.testo_opz("Note_CF")?,
                 obsoleto: r.bit("Obsoleto")?,
+                extra: r.extra(CF_EXTRA)?,
             })
         },
     )

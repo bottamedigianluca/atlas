@@ -388,6 +388,13 @@ async fn prezzi_anagrafiche_e_strumenti() {
     assert_eq!(clienti[0]["codice"], "C000380");
     let (_, articolo) = chiama(&b.router, "GET", "/api/articoli/pist", None).await;
     assert_eq!(articolo["aliquota"], "10");
+    // Anagrafiche complete: i campi di Arca senza colonna propria in `extra`, i prezzi validi oggi.
+    let (_, cliente) = chiama(&b.router, "GET", "/api/clienti/C000380", None).await;
+    assert_eq!(cliente["extra"]["Cd_CFZona"], "MEZ");
+    let (_, banane) = chiama(&b.router, "GET", "/api/articoli/BAN", None).await;
+    assert_eq!(banane["prezzi"][0]["listino"], "0000001", "{banane}");
+    let (stato, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!((stato, codice), (StatusCode::OK, json!("C000381")));
     let (_, tabelle) = chiama(&b.router, "GET", "/api/tabelle", None).await;
     assert_eq!(tabelle["magazzini"][0]["codice"], "00001");
 

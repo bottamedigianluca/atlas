@@ -60,7 +60,7 @@ API del backend (dettagli in `crates/atlas-server/src/rotte.rs`): `POST /api/ddt
 reale), `POST /api/ddt` (salvataggio con numerazione unica), `GET /api/prezzi` (tasto F3), `GET /api/ddt`,
 `GET /api/ddt/{id}`, `GET /api/stato` (replica, importazione, conflitti), `POST /api/ddt/{id}/rinumera`,
 `GET /api/numerazione/{anno}/liberi`, `GET /api/home/clienti` (clienti del giorno), `GET /api/home/riepilogo`,
-`GET /api/partita-iva/{numero}` (dati dell'azienda da VIES), `GET/POST/PUT/DELETE /api/note`
+`GET /api/partita-iva/{numero}` (dati dell'azienda da VIES), `GET /api/clienti/prossimo-codice`, `GET/POST/PUT/DELETE /api/note`
 (post-it della Home), anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).
 
 ```powershell

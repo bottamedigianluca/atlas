@@ -62,6 +62,8 @@ pub struct Articolo {
     pub aliquota_vendita: Option<String>,
     pub conto_ricavo: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di `AR` per la scheda, con i nomi delle colonne di Arca (oggetto JSON).
+    pub extra: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -111,6 +113,8 @@ pub struct ClienteFornitore {
     pub fido: Option<Decimal>,
     pub note: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di `CF` per la scheda, con i nomi delle colonne di Arca (oggetto JSON).
+    pub extra: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -272,6 +276,7 @@ impl Tabella for Articolo {
         "aliquota_vendita",
         "conto_ricavo",
         "obsoleto",
+        "extra",
     ];
     fn valori(&self) -> Vec<Value> {
         vec![
@@ -282,6 +287,7 @@ impl Tabella for Articolo {
             testo_opz(self.aliquota_vendita.as_deref()),
             testo_opz(self.conto_ricavo.as_deref()),
             bit(self.obsoleto),
+            testo(&self.extra),
         ]
     }
 }
@@ -346,6 +352,7 @@ impl Tabella for ClienteFornitore {
         "fido",
         "note",
         "obsoleto",
+        "extra",
     ];
     fn valori(&self) -> Vec<Value> {
         vec![
@@ -376,6 +383,7 @@ impl Tabella for ClienteFornitore {
             self.fido.map_or(Value::Null, decimale),
             testo_opz(self.note.as_deref()),
             bit(self.obsoleto),
+            testo(&self.extra),
         ]
     }
 }

@@ -50,6 +50,7 @@ pub fn cliente(codice: &str) -> ClienteFornitore {
         fido: None,
         note: None,
         obsoleto: false,
+        extra: r#"{"Cd_CFZona":"MEZ","Cd_VL":"EUR","EsclusoBlackList":true}"#.into(),
     }
 }
 
@@ -94,6 +95,7 @@ pub fn anagrafiche() -> Anagrafiche {
                 aliquota_vendita: None,
                 conto_ricavo: None,
                 obsoleto: false,
+                extra: "{}".into(),
             },
             Articolo {
                 codice: "PIST".into(),
@@ -103,6 +105,7 @@ pub fn anagrafiche() -> Anagrafiche {
                 aliquota_vendita: Some("10".into()),
                 conto_ricavo: None,
                 obsoleto: false,
+                extra: "{}".into(),
             },
         ],
         unita_articoli: vec![UnitaArticolo {

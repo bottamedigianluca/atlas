@@ -123,12 +123,22 @@ export interface NumeriLiberi {
   senza_arca: string | null;
 }
 
+/** Gli altri campi di Arca di un'anagrafica, con i nomi delle colonne di Arca (`Cd_CFZona`…). */
+export type Extra = Record<string, string | number | boolean | null>;
+
 export interface ClienteBreve {
   codice: string;
   ragione_sociale: string;
   localita: string | null;
   partita_iva: string | null;
   obsoleto: boolean;
+  indirizzo: string | null;
+  cap: string | null;
+  provincia: string | null;
+  nazione: string | null;
+  codice_fiscale: string | null;
+  codice_destinatario: string | null;
+  extra: Extra | null;
 }
 
 export interface DestinazioneVista {
@@ -162,6 +172,16 @@ export interface ClienteScheda {
   scissione_pagamenti: boolean;
   obsoleto: boolean;
   destinazioni: DestinazioneVista[];
+  nazione: string | null;
+  codice_ipa: string | null;
+  conto_banca: string | null;
+  conto_merce: string | null;
+  ente_pubblico: boolean;
+  aliquota: string | null;
+  cliente_fatturazione: string | null;
+  fido: string | null;
+  note: string | null;
+  extra: Extra | null;
 }
 
 export interface ArticoloBreve {
@@ -170,6 +190,50 @@ export interface ArticoloBreve {
   unita_misura: string;
   aliquota: string | null;
   obsoleto: boolean;
+  extra: Extra | null;
+}
+
+export interface UnitaVista {
+  unita_misura: string;
+  fattore: Decimale;
+  predefinita: boolean;
+}
+
+export interface PrezzoArticolo {
+  listino: string;
+  descrizione: string;
+  revisione: string | null;
+  valido_dal: Data | null;
+  prezzo: Decimale;
+  sconto: string | null;
+  ivato: boolean;
+}
+
+export interface ArticoloScheda {
+  codice: string;
+  descrizione: string;
+  descrizione_breve: string | null;
+  unita_misura: string;
+  aliquota: string | null;
+  conto_ricavo: string | null;
+  obsoleto: boolean;
+  unita: UnitaVista[];
+  extra: Extra | null;
+  prezzi: PrezzoArticolo[];
+}
+
+export interface Codifica {
+  codice: string;
+  descrizione: string;
+}
+
+export interface Tabelle {
+  aliquote: Codifica[];
+  pagamenti: Codifica[];
+  unita_misura: Codifica[];
+  magazzini: Codifica[];
+  agenti: Codifica[];
+  listini: Codifica[];
 }
 
 export type StatoArca = "in_arca" | "in_coda" | "errore" | "solo_atlas";
