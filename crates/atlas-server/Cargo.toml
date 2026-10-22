@@ -1,0 +1,34 @@
+[package]
+name = "atlas-server"
+description = "Backend ATLAS: API REST e WebSocket su database ATLAS, numerazione unica e sincronizzazione con Arca"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+atlas-core.workspace = true
+atlas-db.workspace = true
+atlas-sync = { path = "../atlas-sync" }
+rust_decimal.workspace = true
+chrono = { workspace = true, features = ["clock"] }
+serde.workspace = true
+thiserror.workspace = true
+serde_json = "1"
+rusqlite = { version = "0.37", features = ["bundled", "chrono"] }
+axum = { version = "0.8", features = ["ws"] }
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "net", "time", "sync", "signal"] }
+tower = { version = "0.5", features = ["util"] }
+schemars = { version = "1", features = ["chrono04", "rust_decimal1"] }
+
+[dev-dependencies]
+atlas-arca.workspace = true
+atlas-db = { workspace = true, features = ["prova"] }
+rust_decimal_macros.workspace = true
+http-body-util = "0.1"
+tokio-tungstenite = "0.29"
+futures-util = "0.3"
+
+[lints]
+workspace = true

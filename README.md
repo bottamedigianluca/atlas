@@ -8,6 +8,7 @@ crates/atlas-verify   collaudo del motore contro lo storico Arca, in sola lettur
 crates/atlas-arca     replica dei DDT nelle tabelle di Arca (DOTes, DORig, MGMov, DOTotali, DOIva)
 crates/atlas-db       database primario ATLAS (SQLite WAL) con outbox di replica
 crates/atlas-sync     import anagrafiche e documenti da Arca, worker di replica dell'outbox, numerazione unica
+crates/atlas-server   backend Axum: API REST e WebSocket, worker unico scrittore (numerazione, replica, importazione)
 docs/ANALISI_ARCA.md  comportamento reale di Arca, misurato sui dati
 TASKS.md              stato del lavoro, decisioni aperte, vincoli
 ```
@@ -44,3 +45,15 @@ cargo run --release -p atlas-sync --bin prova-replica -- nuovo dati\prova.sqlite
 cargo run --release -p atlas-sync --bin prova-replica -- rinumera dati\prova.sqlite ID    # risolve un numero preso in Arca nel frattempo
 cargo run --release -p atlas-sync --bin replica -- dati\prova.sqlite --una-volta          # worker: svuota la coda ed esce
 ```
+
+```powershell
+# backend: legge e scrive solo il database ATLAS; con ATLAS_ARCA_ADO numera con Arca, replica (solo *_DEV) e importa
+$env:ATLAS_ARCA_ADO = "server=tcp:localhost,1433;database=ADB_BOTTAMEDI_DEV;IntegratedSecurity=SSPI;TrustServerCertificate=true"
+cargo run --release -p atlas-server -- dati\prova.sqlite                     # http://127.0.0.1:7878/api, WebSocket /api/ws
+cargo run --release -p atlas-server --bin misura-latenze -- dati\atlas.sqlite  # latenze delle API su una copia del file
+```
+
+API del backend (dettagli in `crates/atlas-server/src/rotte.rs`): `POST /api/ddt/calcola` (pesata e totali in tempo
+reale), `POST /api/ddt` (salvataggio con numerazione unica), `GET /api/prezzi` (tasto F3), `GET /api/ddt`,
+`GET /api/ddt/{id}`, `GET /api/stato` (replica, importazione, conflitti), `POST /api/ddt/{id}/rinumera`,
+`GET /api/numerazione/{anno}/liberi`, anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).

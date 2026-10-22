@@ -6,7 +6,7 @@
 
 use atlas_core::ddt::Ddt;
 use chrono::NaiveDateTime;
-use rusqlite::{Connection, Row, params};
+use rusqlite::{Connection, OptionalExtension, Row, params};
 
 use crate::ErroreDb;
 
@@ -146,6 +146,16 @@ pub fn segna_fallito(conn: &Connection, id: i64, errore: &str, prossimo_tentativ
     Ok(())
 }
 
+/// Quando il primo evento in coda si può replicare: subito se non ha mai fallito, altrimenti
+/// all'istante della riprova. `None` con la coda vuota. Il worker del backend dorme fino a lì.
+pub fn prossimo_tentativo(conn: &Connection, adesso: NaiveDateTime) -> Result<Option<NaiveDateTime>, ErroreDb> {
+    let primo: Option<Option<NaiveDateTime>> = conn
+        .prepare_cached("SELECT prossimo_tentativo_il FROM outbox_eventi WHERE replicato_il IS NULL ORDER BY id LIMIT 1")?
+        .query_row([], |r| r.get(0))
+        .optional()?;
+    Ok(primo.map(|p| p.unwrap_or(adesso)))
+}
+
 /// Eventi in attesa di replica: lo stato che il backend mostra all'operatore.
 pub fn in_attesa(conn: &Connection) -> Result<i64, ErroreDb> {
     Ok(conn.query_row("SELECT count(*) FROM outbox_eventi WHERE replicato_il IS NULL", [], |r| r.get(0))?)
@@ -188,6 +198,19 @@ mod tests {
         let eventi = da_replicare(&conn, alle(10), 10).unwrap();
         assert_eq!(eventi.len(), 2);
         assert_eq!((eventi[0].tentativi, eventi[0].ultimo_errore.as_deref()), (1, Some("SQL Server non raggiungibile")));
+    }
+
+    #[test]
+    fn prossimo_tentativo_del_primo_in_coda() {
+        let conn = coda(2);
+        assert_eq!(prossimo_tentativo(&conn, alle(9)).unwrap(), Some(alle(9)));
+        let primo = da_replicare(&conn, alle(9), 1).unwrap()[0].id;
+        segna_fallito(&conn, primo, "rete", alle(10)).unwrap();
+        assert_eq!(prossimo_tentativo(&conn, alle(9)).unwrap(), Some(alle(10)));
+        segna_replicato(&conn, primo, 1, alle(10)).unwrap();
+        let secondo = da_replicare(&conn, alle(10), 1).unwrap()[0].id;
+        segna_replicato(&conn, secondo, 2, alle(10)).unwrap();
+        assert_eq!(prossimo_tentativo(&conn, alle(10)).unwrap(), None);
     }
 
     #[test]

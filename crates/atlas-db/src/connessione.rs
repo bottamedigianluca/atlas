@@ -7,7 +7,7 @@
 use std::path::Path;
 use std::time::Duration;
 
-use rusqlite::{Connection, TransactionBehavior};
+use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 
 use crate::ErroreDb;
 
@@ -15,6 +15,7 @@ const MIGRAZIONI: &[&str] = &[
     include_str!("../migrazioni/0001_iniziale.sql"),
     include_str!("../migrazioni/0002_importazione_arca.sql"),
     include_str!("../migrazioni/0003_numerazione.sql"),
+    include_str!("../migrazioni/0004_prezzi_righe.sql"),
 ];
 
 /// Attesa massima di un blocco tenuto da un'altra connessione prima di rispondere `SQLITE_BUSY`.
@@ -28,6 +29,27 @@ pub fn apri(percorso: impl AsRef<Path>) -> Result<Connection, ErroreDb> {
     let mut conn = Connection::open(percorso)?;
     conn.pragma_update(None, "journal_mode", "WAL")?;
     imposta(&mut conn)?;
+    Ok(conn)
+}
+
+/// Apre in sola lettura un database già all'ultima versione dello schema: le connessioni di
+/// lettura del backend, accanto all'unica di scrittura (WAL lascia leggere mentre si scrive).
+/// Non migra: un database di un'altra versione è rifiutato.
+pub fn apri_lettura(percorso: impl AsRef<Path>) -> Result<Connection, ErroreDb> {
+    let conn = Connection::open_with_flags(
+        percorso,
+        OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX | OpenFlags::SQLITE_OPEN_URI,
+    )?;
+    conn.busy_timeout(ATTESA_BLOCCO)?;
+    conn.pragma_update(None, "query_only", true)?;
+    conn.pragma_update(None, "trusted_schema", false)?;
+    let trovata: i64 = conn.pragma_query_value(None, "user_version", |r| r.get(0))?;
+    if trovata != versione_schema() {
+        return Err(ErroreDb::VersioneSconosciuta {
+            trovata,
+            nota: versione_schema(),
+        });
+    }
     Ok(conn)
 }
 
@@ -93,6 +115,51 @@ mod tests {
         drop(conn);
         assert!(matches!(apri(&file), Err(ErroreDb::VersioneSconosciuta { .. })));
         let _ = std::fs::remove_dir_all(&cartella);
+    }
+
+    #[test]
+    fn lettura_solo_su_database_alla_versione_e_senza_scrivere() {
+        let cartella = std::env::temp_dir().join(format!("atlas-db-lettura-{}", std::process::id()));
+        std::fs::create_dir_all(&cartella).unwrap();
+        let file = cartella.join("atlas.sqlite");
+        let _ = std::fs::remove_file(&file);
+        let scrittura = apri(&file).unwrap();
+        let lettura = apri_lettura(&file).unwrap();
+        assert!(lettura.execute("DELETE FROM ddt", []).is_err());
+        scrittura.pragma_update(None, "user_version", versione_schema() - 1).unwrap();
+        assert!(matches!(apri_lettura(&file), Err(ErroreDb::VersioneSconosciuta { .. })));
+        drop((scrittura, lettura));
+        let _ = std::fs::remove_dir_all(&cartella);
+    }
+
+    #[test]
+    fn migrazione_4_copia_data_e_cliente_nelle_righe() {
+        let mut conn = Connection::open_in_memory().unwrap();
+        for sql in &MIGRAZIONI[..3] {
+            conn.execute_batch(sql).unwrap();
+        }
+        conn.pragma_update(None, "user_version", 3).unwrap();
+        conn.execute_batch(
+            "INSERT INTO unita_misura VALUES ('KG', 'KG');
+             INSERT INTO aliquote VALUES ('04', 'IVA 4%', '4', NULL);
+             INSERT INTO articoli VALUES ('BAN', 'BANANE', NULL, 'KG', NULL, NULL, 0);
+             INSERT INTO clienti_fornitori (codice, ragione_sociale, cliente, fornitore, scissione_pagamenti, \
+                 ente_pubblico, obsoleto) VALUES ('C000380', 'Cliente', 1, 0, 0, 0, 0);
+             INSERT INTO ddt (id, esercizio, numero, data, cliente, scissione_pagamenti, operatore, registrato_il, \
+                 totale_imponibile, totale_imposta, totale_documento) \
+                 VALUES (1, 2026, 5457, '2026-10-22', 'C000380', 0, '190', '2026-10-22 08:00:00', '0', '0', '0');
+             INSERT INTO ddt_righe (ddt, riga, articolo, descrizione, unita_misura, fattore_um1, conto_ricavo, aliquota, \
+                 colli, lordo, tara_per_collo, quantita, prezzo_unitario, sconto_riga, sconto_addizionale, totale) \
+                 VALUES (1, 1, 'BAN', 'BANANE', 'KG', '1', '07010101001', '04', '1', '2', '0', '2', '1', '', '', '2');",
+        )
+        .unwrap();
+        imposta(&mut conn).unwrap();
+        let riga = || -> (String, String) {
+            conn.query_row("SELECT data, cliente FROM ddt_righe", [], |r| Ok((r.get(0)?, r.get(1)?))).unwrap()
+        };
+        assert_eq!(riga(), ("2026-10-22".to_owned(), "C000380".to_owned()));
+        conn.execute("UPDATE ddt SET data = '2026-10-21' WHERE id = 1", []).unwrap();
+        assert_eq!(riga().0, "2026-10-21", "il trigger segue la testata");
     }
 
     #[test]

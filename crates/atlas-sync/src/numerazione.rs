@@ -37,9 +37,10 @@ pub struct Creato {
     pub senza_arca: Option<String>,
 }
 
-/// I numeri di Arca, se arrivano entro `attesa`. Una richiesta fallita o abbandonata chiude la
-/// connessione, che resterebbe in uno stato incerto.
-async fn numeri_di_arca(origine: &mut impl Origine, esercizio: i32, attesa: Duration) -> Result<Numeri, String> {
+/// I numeri di Arca, se arrivano entro `attesa`; altrimenti il motivo, da mostrare
+/// all'operatore. Una richiesta fallita o abbandonata chiude la connessione, che resterebbe in
+/// uno stato incerto.
+pub async fn numeri_di_arca(origine: &mut impl Origine, esercizio: i32, attesa: Duration) -> Result<Numeri, String> {
     let esito = match tokio::time::timeout(attesa, origine.numeri(SEZIONALE, esercizio)).await {
         Ok(Ok(numeri)) => return Ok(numeri),
         Ok(Err(e)) => e.to_string(),
