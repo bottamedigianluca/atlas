@@ -17,37 +17,30 @@ export function valore(testo: string): number {
   return d ? Number(d) : 0;
 }
 
-const formati = new Map<string, Intl.NumberFormat>();
-
-function formato(min: number, max: number): Intl.NumberFormat {
-  const chiave = `${min}-${max}`;
-  let f = formati.get(chiave);
-  if (!f) {
-    f = new Intl.NumberFormat("it-IT", { minimumFractionDigits: min, maximumFractionDigits: max, useGrouping: true });
-    formati.set(chiave, f);
-  }
-  return f;
-}
-
-/** Un decimale del backend in formato italiano, senza perdere cifre: "1234.5" → "1.234,50". */
-export function mostra(testo: string | null | undefined, decimaliMinimi = 2, decimaliMassimi = 3): string {
+/**
+ * Un decimale del backend come lo mostra Arca: punto decimale, decimali fissi, nessun separatore
+ * delle migliaia ("5.16", "1.550", "1.00000"). Le cifre oltre i decimali fissi non si perdono.
+ */
+export function mostra(testo: string | null | undefined, decimali = 2, _massimi?: number): string {
   if (testo === null || testo === undefined || testo === "") return "";
   const n = Number(testo);
   if (!Number.isFinite(n)) return testo;
   const [, frazione = ""] = testo.split(".");
-  const massimi = Math.max(decimaliMassimi, Math.min(frazione.replace(/0+$/, "").length, 6));
-  return formato(decimaliMinimi, massimi).format(n);
+  const cifre = Math.max(decimali, Math.min(frazione.replace(/0+$/, "").length, 6));
+  return n.toFixed(cifre);
 }
 
-export const importo = (testo: string | null | undefined) => mostra(testo, 2, 2);
-export const quantita = (testo: string | null | undefined) => mostra(testo, 2, 3);
-export const prezzo = (testo: string | null | undefined) => mostra(testo, 2, 3);
+export const importo = (testo: string | null | undefined) => mostra(testo, 2);
+export const quantita = (testo: string | null | undefined) => mostra(testo, 2);
+// Prezzo unitario a 3 decimali, come in Arca (`DOTes.DecimaliPrzUn = 3`).
+export const prezzo = (testo: string | null | undefined) => mostra(testo, 3);
+export const fattore = (testo: string | null | undefined) => mostra(testo, 5);
 
-/** Data AAAA-MM-GG → GG/MM/AAAA. */
+/** Data AAAA-MM-GG → GG-MM-AAAA, come in Arca. */
 export function data(iso: string | null | undefined): string {
   if (!iso) return "";
   const [a, m, g] = iso.slice(0, 10).split("-");
-  return a && m && g ? `${g}/${m}/${a}` : iso;
+  return a && m && g ? `${g}-${m}-${a}` : iso;
 }
 
 /** Oggi in ora locale, AAAA-MM-GG. */

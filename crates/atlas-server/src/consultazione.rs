@@ -110,10 +110,16 @@ pub struct ClienteScheda {
     pub provincia: Option<String>,
     pub partita_iva: Option<String>,
     pub codice_fiscale: Option<String>,
+    /// Codice destinatario SdI (`CF.CodiceFPR`).
+    pub codice_destinatario: Option<String>,
     pub pagamento: Option<String>,
     pub descrizione_pagamento: Option<String>,
     pub listino: Option<String>,
+    pub descrizione_listino: Option<String>,
     pub agente: Option<String>,
+    pub descrizione_agente: Option<String>,
+    pub iban: Option<String>,
+    pub bic: Option<String>,
     pub scissione_pagamenti: bool,
     pub obsoleto: bool,
     pub destinazioni: Vec<DestinazioneVista>,
@@ -123,8 +129,10 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
     let mut scheda = conn
         .prepare_cached(
             "SELECT c.codice, c.ragione_sociale, c.indirizzo, c.cap, c.localita, c.provincia, c.partita_iva, \
-             c.codice_fiscale, c.pagamento, p.descrizione, c.listino, c.agente, c.scissione_pagamenti, c.obsoleto \
+             c.codice_fiscale, c.pagamento, p.descrizione, c.listino, c.agente, c.scissione_pagamenti, c.obsoleto, \
+             c.codice_destinatario, l.descrizione, a.descrizione, c.iban, c.bic \
              FROM clienti_fornitori c LEFT JOIN pagamenti p ON p.codice = c.pagamento \
+             LEFT JOIN listini l ON l.codice = c.listino LEFT JOIN agenti a ON a.codice = c.agente \
              WHERE c.codice = ?1 AND c.cliente = 1",
         )?
         .query_row([codice.trim()], |r| {
@@ -143,6 +151,11 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
                 agente: r.get(11)?,
                 scissione_pagamenti: r.get(12)?,
                 obsoleto: r.get(13)?,
+                codice_destinatario: r.get(14)?,
+                descrizione_listino: r.get::<_, Option<String>>(15)?.map(|d| d.trim_end().to_owned()),
+                descrizione_agente: r.get::<_, Option<String>>(16)?.map(|d| d.trim_end().to_owned()),
+                iban: r.get(17)?,
+                bic: r.get(18)?,
                 destinazioni: Vec::new(),
             })
         })
@@ -346,9 +359,20 @@ pub struct DdtBreve {
     pub cliente: String,
     pub ragione_sociale: String,
     pub destinazione: Option<String>,
+    /// Descrizione e località della destinazione (colonne Bottamedi dell'elenco di Arca).
+    pub descrizione_destinazione: Option<String>,
     pub localita_destinazione: Option<String>,
+    pub pagamento: Option<String>,
+    pub listino_cliente: Option<String>,
+    pub agente: Option<String>,
+    pub descrizione_agente: Option<String>,
+    pub righe: i64,
     pub totale_imponibile: Decimal,
     pub totale_documento: Decimal,
+    /// Netto a pagare: senza l'imposta in scissione dei pagamenti.
+    pub netto_a_pagare: Decimal,
+    /// `DOTes.Id_DoTes` in Arca.
+    pub arca_id_testata: Option<i32>,
     pub arca: StatoArca,
 }
 
@@ -362,9 +386,12 @@ fn decimale(r: &rusqlite::Row<'_>, i: usize) -> rusqlite::Result<Decimal> {
 pub fn elenco_ddt(conn: &Connection, filtro: &FiltroDdt) -> Result<Vec<DdtBreve>, ErroreApi> {
     let mut stmt = conn.prepare_cached(&format!(
         "SELECT d.id, d.esercizio, d.numero, d.data, d.cliente, c.ragione_sociale, d.destinazione, t.localita, \
-         d.totale_imponibile, d.totale_documento, {STATO_ARCA} \
+         d.totale_imponibile, d.totale_documento, {STATO_ARCA}, t.descrizione, d.pagamento, d.listino_cliente, \
+         d.agente, a.descrizione, (SELECT count(*) FROM ddt_righe r WHERE r.ddt = d.id), \
+         CASE WHEN d.scissione_pagamenti THEN d.totale_imponibile ELSE d.totale_documento END, d.arca_id_testata \
          FROM ddt d JOIN clienti_fornitori c ON c.codice = d.cliente \
          LEFT JOIN destinazioni t ON t.cliente = d.cliente AND t.codice = d.destinazione \
+         LEFT JOIN agenti a ON a.codice = d.agente \
          WHERE (?1 IS NULL OR d.data >= ?1) AND (?2 IS NULL OR d.data <= ?2) AND (?3 IS NULL OR d.cliente = ?3) \
          AND (?4 IS NULL OR d.numero = ?4) \
          ORDER BY d.data DESC, d.numero DESC LIMIT ?5"
@@ -380,10 +407,18 @@ pub fn elenco_ddt(conn: &Connection, filtro: &FiltroDdt) -> Result<Vec<DdtBreve>
             cliente: r.get(4)?,
             ragione_sociale: r.get::<_, String>(5)?.trim_end().to_owned(),
             destinazione: r.get(6)?,
-            localita_destinazione: r.get(7)?,
+            localita_destinazione: r.get::<_, Option<String>>(7)?.map(|d| d.trim_end().to_owned()),
             totale_imponibile: decimale(r, 8)?,
             totale_documento: decimale(r, 9)?,
             arca: stato_arca(&r.get::<_, String>(10)?),
+            descrizione_destinazione: r.get::<_, Option<String>>(11)?.map(|d| d.trim_end().to_owned()),
+            pagamento: r.get(12)?,
+            listino_cliente: r.get(13)?,
+            agente: r.get(14)?,
+            descrizione_agente: r.get::<_, Option<String>>(15)?.map(|d| d.trim_end().to_owned()),
+            righe: r.get(16)?,
+            netto_a_pagare: decimale(r, 17)?,
+            arca_id_testata: r.get(18)?,
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -618,6 +653,8 @@ mod tests {
         let stati: Vec<(u32, StatoArca)> = elenco.iter().map(|d| (d.numero, d.arca)).collect();
         assert_eq!(stati, [(5458, StatoArca::Errore), (5457, StatoArca::InArca)]);
         assert_eq!(elenco[0].totale_documento, dec!(21.98));
+        assert_eq!((elenco[0].righe, elenco[0].netto_a_pagare, elenco[1].arca_id_testata), (2, dec!(21.98), Some(120_545)));
+        assert_eq!(elenco[0].descrizione_destinazione.as_deref(), Some("Mensa"));
         let filtro = FiltroDdt {
             numero: Some(5457),
             ..FiltroDdt::default()

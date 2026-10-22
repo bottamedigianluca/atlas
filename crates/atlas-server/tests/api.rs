@@ -45,6 +45,8 @@ struct StatoFinto {
     appesa: bool,
     scollegamenti: usize,
     replicati: Vec<u32>,
+    /// Numeri scritti in Arca dopo che ATLAS li ha letti liberi: la lettura dei numeri non li vede.
+    dopo_la_lettura: Vec<u32>,
 }
 
 /// Arca finta condivisa fra le tre connessioni del worker e il test.
@@ -116,7 +118,7 @@ impl Origine for Finta {
         Ok(self.con(|s| {
             s.documenti
                 .iter()
-                .filter(|((e, _), _)| *e == esercizio)
+                .filter(|((e, n), _)| *e == esercizio && !s.dopo_la_lettura.contains(n))
                 .map(|((_, n), d)| (*n, d.data))
                 .collect()
         }))
@@ -324,12 +326,14 @@ async fn numerazione_unica_replica_e_conflitto_risolto_rinumerando() {
     // Arca prende il 5459 subito dopo che ATLAS lo ha letto libero: la replica si ferma.
     let (_, liberi) = chiama(&b.router, "GET", "/api/numerazione/2026/liberi", None).await;
     assert_eq!(liberi["prossimo"], 5459);
+    // Arca scrive il 5459 fra la lettura dei numeri e la replica del DDT ATLAS.
+    arca.scrivi(5459, "C000002");
+    arca.con(|s| s.dopo_la_lettura.push(5459));
     let mut a_mano = bozza();
     a_mano["numero"] = json!(5459);
     let (stato, conteso) = chiama(&b.router, "POST", "/api/ddt", Some(a_mano.clone())).await;
     assert_eq!(stato, StatusCode::CREATED);
-    arca.scrivi(5459, "C000002");
-    chiama(&b.router, "POST", "/api/sincronizza", None).await;
+    arca.con(|s| s.dopo_la_lettura.clear());
     let stato = aspetta(&b.router, |s| !s["conflitti"].as_array().unwrap().is_empty()).await;
     let conflitto = &stato["conflitti"][0];
     assert_eq!((conflitto["origine"].as_str(), conflitto["numero"].as_u64()), (Some("replica"), Some(5459)), "{stato}");

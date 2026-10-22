@@ -9,7 +9,7 @@ crates/atlas-arca     replica dei DDT nelle tabelle di Arca (DOTes, DORig, MGMov
 crates/atlas-db       database primario ATLAS (SQLite WAL) con outbox di replica
 crates/atlas-sync     import anagrafiche e documenti da Arca, worker di replica dell'outbox, numerazione unica
 crates/atlas-server   backend Axum: API REST e WebSocket, worker unico scrittore (numerazione, replica, importazione)
-app/                  frontend desktop: React + TypeScript + Tailwind (maschera DDT, documenti, sincronizzazione)
+app/                  frontend desktop: React + TypeScript + Tailwind (finestra "Gestione Documenti" come in Arca)
 app/src-tauri         shell Tauri v2 (finestra nativa, installer NSIS/MSI); fuori dal workspace Cargo
 docs/ANALISI_ARCA.md  comportamento reale di Arca, misurato sui dati
 TASKS.md              stato del lavoro, decisioni aperte, vincoli
@@ -71,6 +71,9 @@ npm test                 # regole di tastiera e layout della griglia (vitest)
 npm run e2e              # prove end-to-end su una copia di dati\atlas.sqlite (Playwright; npx playwright install chromium la prima volta)
 ```
 
-Tasti della maschera DDT: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto
-o nuova riga sull'articolo, `F3` ricerca cliente/articolo, prezzi (sul prezzo), numeri liberi (sul numero), `F10` salva,
-`F12` salva e stampa, `Esc` annulla, `Ctrl+Canc` elimina riga, `Ctrl+1/2/3` viste, `F1` informazioni.
+La finestra ricalca "Gestione Documenti" di Arca (pagine Elenco, Generale, DMS; schede Testa, Righe, Piede, Totali,
+Info, Evasioni, Stampe; F3 "PREZZO/COSTO ARTICOLO"), con numeri a punto decimale e date GG-MM-AAAA come in Arca.
+Tasti: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto o nuova riga
+sull'articolo, `F3` ricerca cliente/articolo/destinazione, prezzi (sul prezzo), numeri liberi (sul numero), `Ctrl+N`
+nuovo, `F10` salva, `F12` salva e stampa, `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,
+`Ctrl+1/2/3` pagine Elenco/Generale/DMS, clic destro sulle intestazioni per le colonne, `F1` informazioni.

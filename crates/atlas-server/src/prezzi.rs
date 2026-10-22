@@ -117,18 +117,23 @@ pub struct DatiDocumento {
 pub struct VoceListino {
     pub listino: String,
     pub descrizione: String,
+    /// Descrizione della revisione valida alla data: la voce si legge "Listino 1 - Listino 1".
+    pub descrizione_revisione: Option<String>,
     /// Listino dei prezzi proposti in riga: quello del cliente o, se non ne ha, il predefinito.
     pub proposto: bool,
     pub ivato: bool,
-    pub revisione: i64,
+    /// Revisione con il prezzo dell'articolo, se c'è.
+    pub revisione: Option<i64>,
     pub valido_dal: Option<NaiveDate>,
-    pub id_listino_articolo: i64,
-    /// Prezzo come registrato nel listino (unità principale).
+    pub id_listino_articolo: Option<i64>,
+    /// "Prezzo Val. Listino": come registrato nel listino (unità principale); 0 senza prezzo.
     pub prezzo_listino: Decimal,
-    pub prezzo_ivato: Option<Decimal>,
+    /// "Prezzo Val Doc. Ivato": nella valuta e nell'unità del documento, ivato solo per i
+    /// documenti a importi ivati (i BO non lo sono: è il prezzo di riga).
+    pub prezzo_documento: Decimal,
     pub sconto: Option<String>,
-    /// Prezzo da riportare nella riga: senza IVA, nell'unità della riga.
-    pub prezzo_riga: Decimal,
+    /// Prezzo da riportare nella riga; `None` se il listino non ha l'articolo.
+    pub prezzo_riga: Option<Decimal>,
 }
 
 /// Le voci della sezione "Ultimi prezzi da documenti".
@@ -164,6 +169,7 @@ pub struct VoceUltimo {
     pub fattore: Decimal,
     pub quantita: Decimal,
     pub aliquota: String,
+    pub percentuale_iva: Option<Decimal>,
     /// Prezzo unitario della riga del documento.
     pub prezzo: Decimal,
     pub prezzo_ivato: Option<Decimal>,
@@ -180,10 +186,6 @@ pub struct Prezzi {
     pub ultimi: Vec<VoceUltimo>,
     /// Sempre assente finché ATLAS non ha documenti di acquisto.
     pub ultimo_acquisto: Option<VoceUltimo>,
-}
-
-fn ivato(prezzo: Decimal, percentuale: Option<Decimal>) -> Option<Decimal> {
-    percentuale.map(|p| arrotonda(prezzo * (Decimal::ONE + p / Decimal::ONE_HUNDRED), DECIMALI_PREZZO))
 }
 
 /// Le tre sezioni della maschera prezzi per un articolo.
@@ -242,7 +244,9 @@ pub fn prezzi(
         if !voce.fattore.is_zero() {
             voce.prezzo_riga = arrotonda(voce.prezzo / voce.fattore * fattore, DECIMALI_PREZZO.max(voce.prezzo.scale()));
         }
-        voce.prezzo_ivato = ivato(voce.prezzo, percentuale_di(&tabella, &voce.aliquota));
+        // BO a importi non ivati: il prezzo nel documento è quello della riga.
+        voce.prezzo_ivato = Some(voce.prezzo_riga);
+        voce.percentuale_iva = percentuale_di(&tabella, &voce.aliquota);
     };
     if let Some((codice_cliente, ragione_sociale, _)) = &cliente {
         if let Some(mut voce) = ultimo(conn, Ricerca::Cliente(codice_cliente), &articolo, escludi)? {
@@ -297,6 +301,11 @@ fn percentuale_di(tabella: &atlas_core::aliquota::TabellaAliquote, aliquota: &st
     tabella.percentuale(&CodiceAliquota::nuovo(aliquota)).ok()
 }
 
+/// Listini che la maschera di Arca mostra sempre, anche senza prezzo per l'articolo (0.000):
+/// Listino 1 e Listino 2 (schermata `docs/screenshot_arca`, articolo ARA2). Gli altri listini di
+/// prezzi compaiono solo se hanno l'articolo.
+pub const LISTINI_SEMPRE: [&str; 2] = ["0000001", "0000002"];
+
 fn listini(
     conn: &Connection,
     articolo: &str,
@@ -305,37 +314,52 @@ fn listini(
     percentuale: Option<Decimal>,
     fattore: Decimal,
 ) -> Result<Vec<VoceListino>, ErroreApi> {
+    // Per ogni listino di prezzi la revisione valida alla data e, se c'è, il prezzo dell'articolo
+    // nella revisione valida più recente che lo contiene.
     let mut stmt = conn.prepare_cached(
-        "SELECT l.codice, l.descrizione, l.ivato, r.id, r.valido_dal, p.id, p.prezzo, p.sconto FROM listini_prezzi p \
-         JOIN listini_revisioni r ON r.id = p.revisione JOIN listini l ON l.codice = r.listino \
-         WHERE p.articolo = ?1 AND l.tipo = 1 AND (r.valido_dal IS NULL OR r.valido_dal <= ?2) \
-         ORDER BY l.codice, r.valido_dal DESC, r.id DESC",
+        "SELECT l.codice, l.descrizione, l.ivato, \
+         (SELECT r.descrizione FROM listini_revisioni r WHERE r.listino = l.codice \
+          AND (r.valido_dal IS NULL OR r.valido_dal <= ?2) ORDER BY r.valido_dal DESC, r.id DESC LIMIT 1), \
+         p.revisione, r.valido_dal, p.id, p.prezzo, p.sconto \
+         FROM listini l \
+         LEFT JOIN listini_prezzi p ON p.id = (SELECT p2.id FROM listini_prezzi p2 \
+              JOIN listini_revisioni r2 ON r2.id = p2.revisione \
+              WHERE r2.listino = l.codice AND p2.articolo = ?1 AND (r2.valido_dal IS NULL OR r2.valido_dal <= ?2) \
+              ORDER BY r2.valido_dal DESC, r2.id DESC LIMIT 1) \
+         LEFT JOIN listini_revisioni r ON r.id = p.revisione \
+         WHERE l.tipo = 1 AND (p.id IS NOT NULL OR l.codice IN (?3, ?4)) \
+         ORDER BY l.codice",
     )?;
-    let mut righe = stmt.query(params![articolo, data])?;
+    let [primo, secondo] = LISTINI_SEMPRE;
+    let mut righe = stmt.query(params![articolo, data, primo, secondo])?;
     let mut voci: Vec<VoceListino> = Vec::new();
     while let Some(r) = righe.next()? {
         let codice: String = r.get(0)?;
-        if voci.last().is_some_and(|v| v.listino == codice) {
-            continue; // revisione meno recente dello stesso listino
-        }
-        let listino = PrezzoListino {
-            id: r.get(5)?,
-            prezzo: decimale(&r.get::<_, String>(6)?)?,
-            sconto: r.get::<_, Option<String>>(7)?.filter(|s| !s.trim().is_empty()),
-            ivato: r.get(2)?,
-        };
+        let ivato: bool = r.get(2)?;
+        let prezzo = r.get::<_, Option<String>>(7)?.map(|p| decimale(&p)).transpose()?;
+        let listino = prezzo.map(|prezzo| -> rusqlite::Result<PrezzoListino> {
+            Ok(PrezzoListino {
+                id: r.get(6)?,
+                prezzo,
+                sconto: r.get::<_, Option<String>>(8)?.filter(|s| !s.trim().is_empty()),
+                ivato,
+            })
+        });
+        let listino = listino.transpose()?;
+        let prezzo_riga = listino.as_ref().map(|l| l.prezzo_riga(percentuale.unwrap_or_default(), fattore));
         voci.push(VoceListino {
             proposto: proposto.eq_ignore_ascii_case(&codice),
             listino: codice,
             descrizione: r.get::<_, String>(1)?.trim_end().to_owned(),
-            ivato: listino.ivato,
-            revisione: r.get(3)?,
-            valido_dal: r.get(4)?,
-            id_listino_articolo: listino.id,
-            prezzo_listino: listino.prezzo,
-            prezzo_ivato: if listino.ivato { Some(listino.prezzo) } else { ivato(listino.prezzo, percentuale) },
-            sconto: listino.sconto.clone(),
-            prezzo_riga: listino.prezzo_riga(percentuale.unwrap_or_default(), fattore),
+            descrizione_revisione: r.get::<_, Option<String>>(3)?.map(|d| d.trim_end().to_owned()),
+            ivato,
+            revisione: r.get(4)?,
+            valido_dal: r.get(5)?,
+            id_listino_articolo: listino.as_ref().map(|l| l.id),
+            prezzo_listino: listino.as_ref().map_or(Decimal::ZERO, |l| l.prezzo),
+            prezzo_documento: prezzo_riga.unwrap_or(Decimal::ZERO),
+            sconto: listino.as_ref().and_then(|l| l.sconto.clone()),
+            prezzo_riga,
         });
     }
     Ok(voci)
@@ -404,6 +428,7 @@ fn ultimo(conn: &Connection, ricerca: Ricerca<'_>, articolo: &str, escludi: i64)
                 fattore: decimale(&r.get::<_, String>(7)?)?,
                 quantita: decimale(&r.get::<_, String>(8)?)?,
                 aliquota: r.get(9)?,
+                percentuale_iva: None,
                 prezzo,
                 prezzo_ivato: None,
                 sconto: r.get(11)?,
@@ -442,6 +467,10 @@ mod tests {
         }
         d.righe[0].prezzo_unitario = prezzo;
         d
+    }
+
+    fn prezzi_di(conn: &Connection, r: &RichiestaPrezzi) -> Prezzi {
+        prezzi(conn, r, giorno(22), "0000001").unwrap()
     }
 
     fn richiesta(cliente: Option<&str>) -> RichiestaPrezzi {
@@ -484,15 +513,26 @@ mod tests {
         aggiorna(&mut conn, &dati).unwrap();
 
         let prezzi = prezzi(&conn, &richiesta(Some("C000380")), giorno(22), "0000002").unwrap();
-        let voci: Vec<(&str, i64, Decimal, Decimal, bool)> = prezzi
+        type Voce<'a> = (&'a str, Option<i64>, Decimal, Option<Decimal>, bool);
+        let voci: Vec<Voce> = prezzi
             .listini
             .iter()
             .map(|v| (v.listino.as_str(), v.id_listino_articolo, v.prezzo_listino, v.prezzo_riga, v.proposto))
             .collect();
         // Listino 1: la revisione del 20/10, non quella del 25/10 non ancora valida; listino 2
         // ivato: 2,08 / 1,04 = 2,00.
-        assert_eq!(voci, [("0000001", 334, dec!(1.90), dec!(1.90), true), ("0000002", 336, dec!(2.08), dec!(2.000), false)]);
-        assert_eq!(prezzi.listini[0].prezzo_ivato, Some(dec!(1.976)));
+        assert_eq!(
+            voci,
+            [("0000001", Some(334), dec!(1.90), Some(dec!(1.90)), true), ("0000002", Some(336), dec!(2.08), Some(dec!(2.000)), false)]
+        );
+        assert_eq!(prezzi.listini[0].prezzo_documento, dec!(1.90), "BO a importi non ivati");
+        assert_eq!(prezzi.listini[0].descrizione_revisione.as_deref(), Some("revisione 2"));
+        // Un articolo senza prezzi: i due listini di sempre, a zero e non riportabili.
+        let mut senza = richiesta(None);
+        senza.articolo = "PIST".into();
+        let vuoti: Vec<(String, Option<Decimal>)> =
+            prezzi_di(&conn, &senza).listini.into_iter().map(|v| (v.listino, v.prezzo_riga)).collect();
+        assert_eq!(vuoti, [("0000001".to_owned(), None), ("0000002".to_owned(), None)]);
         let dal_listino = prezzo_listino(&conn, "0000001", "BAN", giorno(26)).unwrap().unwrap();
         assert_eq!(dal_listino.prezzo, dec!(2.50));
     }
@@ -518,7 +558,7 @@ mod tests {
             ]
         );
         assert_eq!(prezzi.ultimi[1].descrizione, "Prz. ultimo doc. BOLLA VENDITA (BO 12 / Cliente C000002 del 22-10-2026)");
-        assert_eq!(prezzi.ultimi[0].prezzo_ivato, Some(dec!(1.768)));
+        assert_eq!((prezzi.ultimi[0].prezzo_ivato, prezzi.ultimi[0].percentuale_iva), (Some(dec!(1.70)), Some(dec!(4))));
         assert_eq!(prezzi.documento.listino_cliente.as_deref(), Some("0000001"));
         assert!(prezzi.ultimo_acquisto.is_none());
 

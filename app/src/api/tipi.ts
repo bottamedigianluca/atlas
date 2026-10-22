@@ -150,10 +150,15 @@ export interface ClienteScheda {
   provincia: string | null;
   partita_iva: string | null;
   codice_fiscale: string | null;
+  codice_destinatario: string | null;
   pagamento: string | null;
   descrizione_pagamento: string | null;
   listino: string | null;
+  descrizione_listino: string | null;
   agente: string | null;
+  descrizione_agente: string | null;
+  iban: string | null;
+  bic: string | null;
   scissione_pagamenti: boolean;
   obsoleto: boolean;
   destinazioni: DestinazioneVista[];
@@ -178,9 +183,17 @@ export interface DdtBreve {
   cliente: string;
   ragione_sociale: string;
   destinazione: string | null;
+  descrizione_destinazione: string | null;
   localita_destinazione: string | null;
+  pagamento: string | null;
+  listino_cliente: string | null;
+  agente: string | null;
+  descrizione_agente: string | null;
+  righe: number;
   totale_imponibile: Decimale;
   totale_documento: Decimale;
+  netto_a_pagare: Decimale;
+  arca_id_testata: number | null;
   arca: StatoArca;
 }
 
@@ -232,8 +245,13 @@ export interface DdtScheda {
     data: Data;
     cliente: string;
     destinazione: string | null;
+    sede: string | null;
     pagamento: string | null;
     listino_cliente: string | null;
+    iban: string | null;
+    bic: string | null;
+    conto_banca: string | null;
+    agente: string | null;
     inizio_trasporto: Istante | null;
     scissione_pagamenti: boolean;
     operatore: string;
@@ -250,15 +268,17 @@ export interface DdtScheda {
 export interface VoceListino {
   listino: string;
   descrizione: string;
+  descrizione_revisione: string | null;
   proposto: boolean;
   ivato: boolean;
-  revisione: number;
+  revisione: number | null;
   valido_dal: Data | null;
-  id_listino_articolo: number;
+  id_listino_articolo: number | null;
   prezzo_listino: Decimale;
-  prezzo_ivato: Decimale | null;
+  prezzo_documento: Decimale;
   sconto: string | null;
-  prezzo_riga: Decimale;
+  /** `null`: il listino non ha l'articolo. */
+  prezzo_riga: Decimale | null;
 }
 
 export interface RiferimentoDocumento {
@@ -279,6 +299,7 @@ export interface VoceUltimo {
   fattore: Decimale;
   quantita: Decimale;
   aliquota: string;
+  percentuale_iva: Decimale | null;
   prezzo: Decimale;
   prezzo_ivato: Decimale | null;
   sconto: string;

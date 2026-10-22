@@ -212,6 +212,21 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
 
 - [x] 22/10/2026 **Task 5, frontend desktop** (`app/`: React 19 + TypeScript + Tailwind 4, shell Tauri v2 in
   `app/src-tauri`):
+  - **Rifatta sulla finestra di Arca** (richiesta del titolare: "stile iOS ma praticamente come era su Arca, se no un
+    operatore non sa più come muoversi"; riferimenti `docs/screenshot_arca/01_…` e `04_…` e la struttura di
+    `fedi_doc`): finestra "Gestione Documenti" con barra strumenti (Nuovo `Ctrl+N`, Salva `F10`, Salva e stampa
+    `F12`, Annulla, Elimina per il Task 6) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Generale: testata in
+    una fila (Tipo BO, Cliente, Data GG-MM-AAAA, Numero, Valuta EUR, Cambio 1.000000, Destinazione se il cliente ne
+    ha) con il riquadro rosso di ragione sociale, indirizzo e codice destinatario; schede Testa, Righe, Piede, Totali,
+    Info, Evasioni, Stampe (`Ctrl+PgSu/PgGiù`) con i riquadri dei contenitori di Arca (pagamento, dati contabili,
+    varie, stato; dati DDT con trasporto V, spedizione M, porto F, aspetto beni AV e pesi a zero come nei BO di
+    Arca; totali, merce, IVA, provvigioni). Righe: titolo rosso "DETTAGLIO DOCUMENTO", griglia, sotto "Evade" a
+    sinistra e "Importa pesate"/"Riferimento" a destra. Numeri e date nel formato di Arca: punto decimale e decimali
+    fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
+    Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
+  - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
+    (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
+    (nessun ordine in ATLAS), Elimina (Task 6), DMS e stampa (Task 7).
   - Maschera DDT tutta da tastiera. Testata: Cliente (F3 ricerca) → `Invio` sulla prima riga; destinazione
     (predefinita del cliente, altre o nessuna), data, numero (vuoto = numerazione unica; F3 = buchi di Arca con le
     date ammesse e il prossimo numero). Griglia sulle 40 colonne di UserPref 1443 (ordine e larghezze esatte,
@@ -226,16 +241,23 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     netto, prezzo proposto (in grigio nella cella), totali e castelletto in tempo reale; prezzo battuto diverso dal
     listino in ambra chiaro; errori di riga sul codice articolo e nel piede. `F10` salva (numero, totale, avviso se
     numerato senza Arca) e prepara il DDT successivo con la stessa data.
-  - F3 sul prezzo: "PREZZO/COSTO ARTICOLO" con le tre sezioni della direttiva e le sue colonne fino a `Riporta`;
-    `↑/↓` e `Invio`/`Spazio` riportano il prezzo nella riga. Le voci "tipo Bolla" coincidono con "BOLLA VENDITA"
-    (in ATLAS l'unica bolla è il BO); provvigioni vuote (non gestite); ultimo acquisto assente.
+  - F3 sul prezzo: "PREZZO/COSTO ARTICOLO" come in Arca: barre grigie "Dati da documento" (articolo, doc. BO /
+    cliente del GG-MM-AAAA, prezzo della riga), "Prezzi da listino" (Listino 1 e Listino 2 sempre, a 0.000 se
+    l'articolo non c'è; "Prezzo Val Doc. Ivato" = prezzo del BO, che non è ivato) e "Ultimi prezzi da documenti"
+    (ultimo BOLLA VENDITA del cliente e assoluto con "(BO / C000387 del 22-10-2026)", le stesse voci "tipo Bolla",
+    Ultimo Acquisto; le voci senza documento in corsivo); stesse colonne fino a `Riporta`, spuntato sulle voci
+    riportabili. `↑/↓` e `Invio`/`Spazio` riportano il prezzo nella riga. Provvigioni vuote (non gestite); ultimo
+    acquisto vuoto finché ATLAS non ha documenti di acquisto.
   - Griglia personalizzabile e salvata nella postazione (`localStorage`): larghezza a trascinamento del bordo
-    (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, menu Colonne per
-    mostrare/nascondere (l'articolo resta), "Ripristina layout di fabbrica".
-  - Elenco documenti (`Ctrl+2`) con filtri dal/al, tipo (DDT; fatture e NC con il Task 7) e cliente, badge dello
-    stato in Arca, `Invio` apre la scheda; pannello Sincronizzazione (`Ctrl+3`) con coda, importazione e conflitti
-    con il pulsante "Rinumera"; semaforo nella barra (verde in Arca, blu in coda, rosso fermo o server
-    irraggiungibile) aggiornato dal WebSocket.
+    (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, clic destro sulle
+    intestazioni per mostrare/nascondere (l'articolo resta) e "Ripristina layout di fabbrica". Riga attiva blu
+    #007AFF con barra a sinistra, righe alterne #F9FAFB (piano architetturale).
+  - Pagina Elenco (`Ctrl+1`) con le 36 colonne della griglia di Arca nel suo ordine (più Destinazione e Luogo
+    destinazione della personalizzazione Bottamedi e il badge dello stato in Arca), larghezze di Arca scalate di 1,2
+    per il carattere più largo, stessa personalizzazione della griglia righe; filtri dal/al (GG-MM-AAAA), tipo (DDT;
+    fatture e NC con il Task 7) e cliente; frecce, PgSu/PgGiù, Home/Fine, `Invio` o doppio clic apre il DDT.
+    Sincronizzazione (coda, importazione, conflitti con "Rinumera") in una finestra che si apre dal semaforo nella
+    barra (verde in Arca, blu in coda, rosso fermo o server irraggiungibile), aggiornato dal WebSocket.
   - Design §3.6-3.7: chiaro e scuro (segue il sistema, cambiabile), finestre satinate, focus ring blu, cifre
     tabulari monospazio a destra; intestazione aziendale, firma e coordinate nella barra di stato, cartellino in
     Informazioni (`F1`), dove si imposta anche l'indirizzo del server.
@@ -245,10 +267,16 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   - Shell Tauri: CSP che permette solo il backend locale (`127.0.0.1`/`localhost`), capability `core:default`,
     nessun comando nativo. Il backend accetta le origini Tauri e Vite. Compilata in release su Linux (6 MB) e avviata:
     WebSocket e API raggiungibili.
-  - Prove: 14 vitest (tastiera, layout, numeri) e 7 scenari Playwright end-to-end sul database reale (copia) con il
-    backend vero: un DDT battuto solo da tastiera fino a F10 e riletto dalle API (GEN 11,8 kg × 1,50 + ZUC, totale
-    22,57), guardrail, F3 prezzi e riporta, ambra, Freccia Giù/Su, colonne (larghezza, nascondi, persistenza,
-    ripristino, riordino con la sequenza Invio invariata), F3 cliente/articolo/numeri liberi, elenco documenti.
+  - Backend per la maschera: scheda cliente con codice destinatario, descrizioni di listino e agente, IBAN e BIC;
+    elenco DDT con le colonne della griglia di Arca (destinazione, pagamento, listino, agente, righe, netto a pagare,
+    Id_DoTes); F3 con Listino 1 e 2 sempre presenti, descrizione della revisione, prezzo nella valuta del documento
+    e percentuale IVA degli ultimi prezzi. Corretta una prova instabile del conflitto di numero (la replica poteva
+    scrivere prima dell'iniezione del conflitto).
+  - Prove: 16 vitest (tastiera, layout, numeri, voci F3, date) e 7 scenari Playwright end-to-end sul database reale
+    (copia) con il backend vero: un DDT battuto solo da tastiera fino a F10 e riletto dalle API (GEN 11.8 kg × 1.50 +
+    ZUC, totale 22.57), guardrail, F3 prezzi con le voci di Arca e riporta, ambra, Freccia Giù/Su, scheda Totali,
+    riapertura dall'Elenco, colonne (larghezza, nascondi dal clic destro, persistenza, ripristino, riordino con la
+    sequenza Invio invariata), F3 cliente/articolo/numeri liberi; fotografie chiaro/scuro in `app/test-results/`.
   - **F12**: `TASKS.md` lo dava come "nuova riga", la direttiva (documento supremo) come "salva e stampa": seguita la
     direttiva. Finché non c'è il modulo stampe (Task 7) F12 salva e lo dice.
   - Fuori da questo task: F2 per sbloccare i prezzi in anagrafica (§3.2: le anagrafiche si modificano ancora in
