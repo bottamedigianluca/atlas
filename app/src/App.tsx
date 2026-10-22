@@ -33,8 +33,22 @@ const PAGINE: { pagina: Pagina; tasto: string }[] = [
   { pagina: "DMS", tasto: "3" },
 ];
 
-export const INTESTAZIONE =
-  "BOTTAMEDI PIERLUIGI — Via Degasperi, 38017 Mezzolombardo (TN) — P.IVA 02273530226 — C.F. BTTPLG77S15F187I";
+/**
+ * I dati dell'azienda come nell'intestazione dei DDT e delle fatture di Arca (modulo `xDDT`, in
+ * `docs/modelli_stampa_arca`): la sede è in Via S. Antonio 7, il magazzino in Via Degasperi 47.
+ */
+export const AZIENDA = {
+  nome: "BOTTAMEDI PIERLUIGI",
+  attivita: "Ingrosso e dettaglio prodotti ortofrutticoli",
+  sede: "Via S. Antonio, 7 — 38017 Mezzolombardo (TN)",
+  magazzino: "Via Degasperi, 47 — 38017 Mezzolombardo (TN)",
+  telefono: "0461 602534",
+  pec: "pierluigi.bottamedi@legalmail.it",
+  partitaIva: "02273530226",
+  codiceFiscale: "BTTPLG77S15F187I",
+  bdn: "B.D.N.O.O. nr. 0114924",
+} as const;
+export const INTESTAZIONE = `${AZIENDA.nome} — ${AZIENDA.attivita} — ${AZIENDA.sede} — P.IVA ${AZIENDA.partitaIva} — C.F. ${AZIENDA.codiceFiscale}`;
 export const FIRMA = '"ATLAS" // ARCHITECTURE & DOMAIN LOGIC BY BOTTAMEDI GIANLUCA — KERNEL v2.1';
 export const SPEC = '[ SPEC: BG-2026 / 46.2144° N, 11.0964° E — MEZZOLOMBARDO, TN — "DESIGNED FOR VELOCITY" ]';
 
@@ -189,7 +203,7 @@ function Guscio() {
     <div className="flex h-full flex-col">
       <header className="flex h-9 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white/70 px-3 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/60">
         <Marchio className="h-[13px] shrink-0" />
-        <div role="tablist" aria-label="Aree" className="flex gap-0.5 rounded-lg bg-zinc-200/60 p-0.5 dark:bg-zinc-800">
+        <div role="tablist" aria-label="Aree" className="flex shrink-0 gap-0.5 whitespace-nowrap rounded-lg bg-zinc-200/60 p-0.5 dark:bg-zinc-800">
           {(
             [
               ["home", "Home", "⌃0"],
@@ -213,8 +227,8 @@ function Guscio() {
           ))}
         </div>
         {inDocumenti && <span className="text-[12px] text-zinc-500">DDT — BOLLA VENDITA (BO)</span>}
-        <span className="hidden truncate text-[11px] text-zinc-400 2xl:inline">{INTESTAZIONE}</span>
-        <div className="ml-auto flex items-center gap-2">
+        <span className="hidden min-w-0 flex-1 truncate text-[11px] text-zinc-400 2xl:inline">{INTESTAZIONE}</span>
+        <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap">
           <button type="button" onClick={() => setSincronizzazione(true)} aria-label="Stato della sincronizzazione" title="Sincronizzazione con Arca">
             <BadgeSemaforo semaforo={semaforo} />
           </button>
@@ -442,7 +456,26 @@ function Informazioni({ onChiudi }: { onChiudi: () => void }) {
           <p>FOR "BOTTAMEDI PIERLUIGI" — MEZZOLOMBARDO (TN)</p>
           <p>P.IVA 02273530226 — ALL RIGHTS RESERVED © 2026</p>
         </div>
-        <p className="text-xs text-zinc-500">{INTESTAZIONE}</p>
+        <dl className="grid grid-cols-[7rem_1fr] gap-x-3 gap-y-0.5 text-xs text-zinc-600 dark:text-zinc-400">
+          <dt className="text-zinc-400">Azienda</dt>
+          <dd className="font-semibold text-zinc-800 dark:text-zinc-200">
+            {AZIENDA.nome} — {AZIENDA.attivita}
+          </dd>
+          <dt className="text-zinc-400">Sede</dt>
+          <dd>{AZIENDA.sede}</dd>
+          <dt className="text-zinc-400">Magazzino</dt>
+          <dd>
+            {AZIENDA.magazzino} — Tel. {AZIENDA.telefono}
+          </dd>
+          <dt className="text-zinc-400">PEC</dt>
+          <dd>{AZIENDA.pec}</dd>
+          <dt className="text-zinc-400">P.IVA / C.F.</dt>
+          <dd className="font-mono">
+            {AZIENDA.partitaIva} / {AZIENDA.codiceFiscale}
+          </dd>
+          <dt className="text-zinc-400">BDN</dt>
+          <dd>{AZIENDA.bdn}</dd>
+        </dl>
         <div className="text-xs text-zinc-500">
           Server ATLAS {stato ? `${stato.versione}, schema ${stato.schema}` : "non raggiungibile"}
         </div>

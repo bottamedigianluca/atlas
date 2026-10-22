@@ -1,6 +1,6 @@
-//! La Home della postazione: i clienti che di solito ordinano nel giorno della settimana, già
-//! serviti o da chiamare. Solo conteggi e orari, nessun importo (direttiva §4.3: al banco nessun
-//! dato di fatturato).
+//! La Home della postazione: quanti documenti e anagrafiche ci sono (i riquadri familiari di Arca)
+//! e i clienti che di solito ordinano nel giorno della settimana, già serviti o da chiamare. Solo
+//! conteggi e orari, nessun importo (direttiva §4.3: al banco nessun dato di fatturato).
 
 use std::collections::HashMap;
 
@@ -150,6 +150,56 @@ pub fn clienti_del_giorno(conn: &Connection, data: NaiveDate) -> Result<ClientiD
     })
 }
 
+/// Paesi dell'Unione europea oltre all'Italia (codici ISO di `CF.Cd_Nazione`).
+const UE: [&str; 26] = [
+    "AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GR", "HR", "HU", "IE", "LT", "LU", "LV", "MT", "NL",
+    "PL", "PT", "RO", "SE", "SI", "SK",
+];
+
+/// Anagrafiche per area, come gli anelli di Arca (Italia, UE, Extra UE). Senza nazione = Italia.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+pub struct PerArea {
+    pub totale: u32,
+    pub italia: u32,
+    pub ue: u32,
+    pub extra_ue: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Riepilogo {
+    /// DDT di vendita nel database (tutti gli anni), come la casella "Bolla" di Arca.
+    pub bolle: u32,
+    pub clienti: PerArea,
+    pub fornitori: PerArea,
+}
+
+pub fn riepilogo(conn: &Connection) -> Result<Riepilogo, ErroreApi> {
+    let bolle = conn.prepare_cached("SELECT count(*) FROM ddt")?.query_row([], |r| r.get(0))?;
+    let mut clienti = PerArea::default();
+    let mut fornitori = PerArea::default();
+    let mut q = conn.prepare_cached(
+        "SELECT upper(coalesce(nullif(trim(nazione), ''), 'IT')), cliente, fornitore, count(*) FROM clienti_fornitori \
+         WHERE obsoleto = 0 GROUP BY 1, 2, 3",
+    )?;
+    let mut righe = q.query([])?;
+    while let Some(r) = righe.next()? {
+        let nazione: String = r.get(0)?;
+        let (cliente, fornitore, quanti): (bool, bool, u32) = (r.get(1)?, r.get(2)?, r.get(3)?);
+        for (vale, area) in [(cliente, &mut clienti), (fornitore, &mut fornitori)] {
+            if !vale {
+                continue;
+            }
+            area.totale += quanti;
+            match nazione.as_str() {
+                "IT" => area.italia += quanti,
+                n if UE.contains(&n) => area.ue += quanti,
+                _ => area.extra_ue += quanti,
+            }
+        }
+    }
+    Ok(Riepilogo { bolle, clienti, fornitori })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -201,5 +251,10 @@ mod tests {
         salva_il(&mut conn, 100, giovedi(0), "C000380", giovedi(0).and_hms_opt(8, 30, 0).unwrap());
         let oggi = clienti_del_giorno(&conn, giovedi(0)).unwrap();
         assert_eq!(oggi.clienti[0].servito.as_ref().map(|s| s.numero), Some(100));
+
+        let r = riepilogo(&conn).unwrap();
+        assert_eq!(r.bolle, 10);
+        assert!(r.clienti.totale > 0);
+        assert_eq!(r.clienti.totale, r.clienti.italia + r.clienti.ue + r.clienti.extra_ue);
     }
 }

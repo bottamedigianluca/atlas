@@ -500,4 +500,7 @@ async fn home_post_it_e_clienti_del_giorno() {
     let (stato, giorno) = chiama(&b.router, "GET", "/api/home/clienti?data=2026-10-22", None).await;
     assert_eq!(stato, StatusCode::OK, "{giorno}");
     assert_eq!((giorno["giorno"].as_str(), giorno["settimane"].as_u64()), (Some("giovedì"), Some(12)));
+    let (stato, riepilogo) = chiama(&b.router, "GET", "/api/home/riepilogo", None).await;
+    assert_eq!(stato, StatusCode::OK, "{riepilogo}");
+    assert!(riepilogo["clienti"]["totale"].as_u64().unwrap() > 0);
 }

@@ -8,7 +8,8 @@
 //! - `GET  /ddt?dal=&al=&cliente=&numero=&limite=`, `GET /ddt/{id}`
 //! - `POST /ddt/calcola` (totalizzazione in tempo reale), `POST /ddt` (salvataggio, `F10`),
 //!   `POST /ddt/{id}/rinumera`, `GET /numerazione/{esercizio}/liberi` (`F3` sul numero)
-//! - `GET  /home/clienti?data=` (clienti che di solito ordinano in quel giorno della settimana)
+//! - `GET  /home/riepilogo` (quanti DDT e anagrafiche), `GET /home/clienti?data=` (clienti che di
+//!   solito ordinano in quel giorno della settimana)
 //! - `GET  /note`, `POST /note`, `PUT /note/{id}`, `DELETE /note/{id}` (post-it della Home)
 //! - `GET  /strumenti`, `POST /strumenti/{nome}`
 //!
@@ -67,6 +68,7 @@ pub fn router(servizio: Servizio) -> Router {
         .route("/ddt/{id}", get(ddt))
         .route("/ddt/{id}/rinumera", post(rinumera))
         .route("/numerazione/{esercizio}/liberi", get(liberi))
+        .route("/home/riepilogo", get(riepilogo))
         .route("/home/clienti", get(clienti_del_giorno))
         .route("/note", get(note).post(crea_nota))
         .route("/note/{id}", axum::routing::put(aggiorna_nota).delete(elimina_nota))
@@ -197,6 +199,10 @@ async fn rinumera(State(s): State<Servizio>, Path(id): Path<i64>) -> Esito<crate
 
 async fn liberi(State(s): State<Servizio>, Path(esercizio): Path<i32>) -> Esito<crate::worker::NumeriLiberi> {
     Ok(Json(s.liberi(esercizio).await?))
+}
+
+async fn riepilogo(State(s): State<Servizio>) -> Esito<crate::home::Riepilogo> {
+    Ok(Json(s.riepilogo().await?))
 }
 
 async fn clienti_del_giorno(

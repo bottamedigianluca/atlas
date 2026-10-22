@@ -416,6 +416,19 @@ export interface CampiNota {
   fatta?: boolean;
 }
 
+export interface PerArea {
+  totale: number;
+  italia: number;
+  ue: number;
+  extra_ue: number;
+}
+
+export interface Riepilogo {
+  bolle: number;
+  clienti: PerArea;
+  fornitori: PerArea;
+}
+
 export interface ClienteDelGiorno {
   cliente: string;
   ragione_sociale: string;

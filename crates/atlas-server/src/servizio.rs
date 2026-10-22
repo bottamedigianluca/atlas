@@ -97,6 +97,10 @@ impl Servizio {
         self.al_worker(|risposta| Comando::Nota { operazione, risposta }).await?
     }
 
+    pub async fn riepilogo(&self) -> Result<home::Riepilogo, ErroreApi> {
+        self.lettori.leggi(home::riepilogo).await
+    }
+
     pub async fn clienti_del_giorno(&self, richiesta: home::RichiestaGiorno) -> Result<home::ClientiDelGiorno, ErroreApi> {
         let data = richiesta.data.unwrap_or_else(|| Local::now().date_naive());
         self.lettori.leggi(move |conn| home::clienti_del_giorno(conn, data)).await

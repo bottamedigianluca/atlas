@@ -16,6 +16,7 @@ import type {
   Notifica,
   NumeriLiberi,
   Prezzi,
+  Riepilogo,
   Rinumerato,
   Stato,
 } from "./tipi";
@@ -115,6 +116,7 @@ export const api = {
     unita_misura?: string;
     quantita?: string;
   }) => chiama<Prezzi>("GET", `/prezzi${query(richiesta)}`),
+  riepilogo: () => chiama<Riepilogo>("GET", "/home/riepilogo"),
   clientiDelGiorno: (data?: string) => chiama<ClientiDelGiorno>("GET", `/home/clienti${query({ data })}`),
   note: () => chiama<Nota[]>("GET", "/note"),
   creaNota: (campi: CampiNota) => chiama<Nota>("POST", "/note", campi),

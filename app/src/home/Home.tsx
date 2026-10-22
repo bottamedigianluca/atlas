@@ -2,19 +2,23 @@
 // - in alto "La tua Home", a destra "Cerca comando" e "Aggiorna";
 // - a sinistra "Cosa vuoi fare?": un clic su una voce allarga il pannello sopra i riquadri con il
 //   sottomenu nella seconda colonna, `×` (o `Esc`) lo chiude; in fondo "Favoriti";
-// - al centro, al posto dei riquadri di Arca (conteggi, anelli, tutorial), widget piccoli che
-//   servono al banco: i clienti da chiamare oggi (un tocco li barra, i già serviti sono barrati
-//   da soli), il post-it a righe da barrare, i DDT di oggi, i numeri liberi.
+// - al centro i widget, tutti nello stile del marchio (etichette fra virgolette, strisce): per
+//   familiarità i numeri di Arca (documenti, clienti e fornitori), poi quelli che servono al
+//   banco: i clienti da chiamare oggi (un tocco li barra, i già serviti sono barrati da soli), il
+//   post-it a righe da barrare, i DDT di oggi, i numeri liberi.
+// In alto, largo, il marchio ATLAS c/o Bottamedi.
 //
 // Solo conteggi, nessun importo (direttiva §4.3: al banco nessun dato di fatturato).
 
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
-import type { ClientiDelGiorno, DdtBreve, NumeriLiberi } from "../api/tipi";
+import type { ClientiDelGiorno, DdtBreve, NumeriLiberi, PerArea, Riepilogo } from "../api/tipi";
+import { MarchioEsteso } from "../componenti/Marchio";
 import { data as fData, oggi } from "../griglia/numeri";
 import { useSincronizzazione } from "../sincronizzazione/contesto";
 import { COMANDI, type Comando, type Gruppo, MENU } from "./menu";
 import { PostIt } from "./PostIt";
+import { Etichetta, Strisce } from "./stile";
 
 export function Home({ attivo, onNuovo, onElenco, onApri }: {
   attivo: boolean;
@@ -24,6 +28,7 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
 }) {
   const giorno = oggi();
   const { ultimaNotifica } = useSincronizzazione();
+  const [riepilogo, setRiepilogo] = useState<Riepilogo | null>(null);
   const [clienti, setClienti] = useState<ClientiDelGiorno | null>(null);
   const [ddtOggi, setDdtOggi] = useState<DdtBreve[]>([]);
   const [liberi, setLiberi] = useState<NumeriLiberi | null>(null);
@@ -35,9 +40,15 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
   useEffect(() => {
     if (!attivo) return;
     let valida = true;
-    Promise.all([api.clientiDelGiorno(giorno), api.elencoDdt({ dal: giorno, al: giorno, limite: 1000 }), api.liberi(Number(giorno.slice(0, 4)))])
-      .then(([c, d, l]) => {
+    Promise.all([
+      api.riepilogo(),
+      api.clientiDelGiorno(giorno),
+      api.elencoDdt({ dal: giorno, al: giorno, limite: 1000 }),
+      api.liberi(Number(giorno.slice(0, 4))),
+    ])
+      .then(([r, c, d, l]) => {
         if (!valida) return;
+        setRiepilogo(r);
         setClienti(c);
         setDdtOggi(d);
         setLiberi(l);
@@ -53,16 +64,18 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
 
   return (
     <div className="flex h-full flex-col bg-zinc-100/80 dark:bg-zinc-950">
-      <header className="flex shrink-0 items-end gap-4 border-b border-zinc-200 bg-white px-4 pb-2 pt-2 dark:border-zinc-800 dark:bg-zinc-900">
-        <div>
-          <p className="text-[12px] text-primario-testo">Home</p>
-          <h1 className="text-[17px] font-semibold tracking-tight">La tua Home</h1>
+      <header className="flex shrink-0 items-center gap-6 border-b border-zinc-200 bg-white px-6 py-6 dark:border-zinc-800 dark:bg-zinc-900">
+        <MarchioEsteso className="h-[88px] text-zinc-900 dark:text-zinc-50" />
+        <div className="ml-auto flex flex-col items-end gap-3">
+          <h1 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-zinc-500">"La tua Home"</h1>
+          <div className="flex items-center gap-5">
+            {errore && <p className="text-[12px] text-rose-600">{errore}</p>}
+            <CercaComando onEsegui={esegui} />
+            <Collegamento onClick={aggiorna} icona={<path d="M13 8a5 5 0 1 1-1.5-3.5M13 2.5V5h-2.5" />}>
+              Aggiorna
+            </Collegamento>
+          </div>
         </div>
-        {errore && <p className="self-center text-[12px] text-rose-600">{errore}</p>}
-        <CercaComando onEsegui={esegui} />
-        <Collegamento onClick={aggiorna} icona={<path d="M13 8a5 5 0 1 1-1.5-3.5M13 2.5V5h-2.5" />}>
-          Aggiorna
-        </Collegamento>
       </header>
 
       <div className="relative min-h-0 flex-1">
@@ -70,6 +83,8 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
 
         <div className="h-full overflow-auto py-4 pl-[17rem] pr-4">
           <div className="flex flex-wrap content-start gap-4">
+            <Documenti riepilogo={riepilogo} onNuovo={onNuovo} onElenco={onElenco} />
+            <Anagrafiche riepilogo={riepilogo} />
             <DaChiamare clienti={clienti} giorno={giorno} />
             <PostIt attivo={attivo} />
             <DdtDiOggi ddt={ddtOggi} onApri={onApri} onNuovo={onNuovo} onElenco={onElenco} />
@@ -107,7 +122,7 @@ function CercaComando({ onEsegui }: { onEsegui: (c: Comando) => void }) {
     onEsegui(c.voce.comando);
   };
   return (
-    <div className="relative ml-auto self-center">
+    <div className="relative">
       <input
         value={testo}
         onChange={(e) => {
@@ -369,7 +384,7 @@ function DaChiamare({ clienti, giorno }: { clienti: ClientiDelGiorno | null; gio
   );
 }
 
-/** Il riquadro dei widget piccoli: un quadrato come le schede della Home di Arca. */
+/** Il riquadro dei widget piccoli: un quadrato come le schede della Home di Arca, nello stile del marchio. */
 function Widget({ titolo, conteggio, title, children }: { titolo: string; conteggio?: string; title?: string; children: React.ReactNode }) {
   return (
     <section
@@ -377,12 +392,106 @@ function Widget({ titolo, conteggio, title, children }: { titolo: string; conteg
       title={title}
       className="flex h-80 w-72 flex-col rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
     >
-      <h2 className="flex items-baseline gap-2 text-[15px] font-semibold">
-        {titolo}
-        {conteggio !== undefined && <span className="text-[12px] font-normal tabular-nums text-zinc-500">{conteggio}</span>}
+      <h2 className="flex items-center gap-2">
+        <Etichetta>{titolo}</Etichetta>
+        {conteggio !== undefined && <span className="text-[11px] tabular-nums text-zinc-500">{conteggio}</span>}
+        <Strisce className="ml-auto size-3 text-zinc-300 dark:text-zinc-700" />
       </h2>
-      <div className="mt-2 flex min-h-0 flex-1 flex-col">{children}</div>
+      <div className="mt-3 flex min-h-0 flex-1 flex-col">{children}</div>
     </section>
+  );
+}
+
+/** "49.7K" come Arca: le migliaia con un decimale, troncato. */
+function compatto(n: number): string {
+  return n >= 1000 ? `${Math.floor(n / 100) / 10}K` : String(n);
+}
+
+function Numero({ valore, titolo }: { valore: string; titolo?: string }) {
+  return (
+    <span className="text-[52px] font-extralight leading-none tracking-tight tabular-nums" title={titolo}>
+      {valore}
+    </span>
+  );
+}
+
+function Riga({ nome, valore, nota }: { nome: string; valore: string; nota?: string }) {
+  return (
+    <div className="flex items-baseline gap-2 border-t border-zinc-100 py-1.5 text-[12px] dark:border-zinc-800">
+      <span className="font-semibold uppercase tracking-[0.18em] text-zinc-600 dark:text-zinc-400">{nome}</span>
+      {nota && <span className="font-mono text-[9.5px] tracking-widest text-zinc-400">[{nota}]</span>}
+      <span className="ml-auto text-[15px] font-light tabular-nums">{valore}</span>
+    </div>
+  );
+}
+
+function Azione({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primario-testo hover:underline">
+      {children}
+    </button>
+  );
+}
+
+/** I numeri dei documenti, come la scheda "Documenti" di Arca. */
+function Documenti({ riepilogo, onNuovo, onElenco }: { riepilogo: Riepilogo | null; onNuovo: () => void; onElenco: () => void }) {
+  return (
+    <Widget titolo="Documenti">
+      <button type="button" onClick={onElenco} className="text-left" title={riepilogo ? `${riepilogo.bolle} DDT di vendita: apri l'elenco` : undefined}>
+        <Numero valore={riepilogo ? compatto(riepilogo.bolle) : "…"} />
+        <span className="mt-1 block text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Bolle</span>
+      </button>
+      <div className="mt-auto">
+        <Riga nome="Fatture" valore="—" nota="TASK 7" />
+        <Riga nome="Note accredito" valore="—" nota="TASK 7" />
+        <div className="flex border-t border-zinc-100 pt-2 dark:border-zinc-800">
+          <Azione onClick={onNuovo}>+ Crea nuovo</Azione>
+          <span className="ml-auto">
+            <Azione onClick={onElenco}>Elenco →</Azione>
+          </span>
+        </div>
+      </div>
+    </Widget>
+  );
+}
+
+const AREE = [
+  { chiave: "italia", nome: "Italia", colore: "bg-primario" },
+  { chiave: "ue", nome: "UE", colore: "bg-anello" },
+  { chiave: "extra_ue", nome: "Extra UE", colore: "bg-amber-500" },
+] as const;
+
+function Barra({ area }: { area: PerArea }) {
+  return (
+    <div className="flex h-1.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800" title={AREE.map((a) => `${a.nome} ${area[a.chiave]}`).join(" · ")}>
+      {AREE.map((a) => (area[a.chiave] > 0 ? <span key={a.chiave} className={a.colore} style={{ width: `${(area[a.chiave] / Math.max(area.totale, 1)) * 100}%` }} /> : null))}
+    </div>
+  );
+}
+
+/** Clienti e fornitori, come la scheda "Anagrafiche" di Arca (gli anelli Italia, UE, Extra UE). */
+function Anagrafiche({ riepilogo }: { riepilogo: Riepilogo | null }) {
+  return (
+    <Widget titolo="Anagrafiche">
+      <Numero valore={riepilogo ? String(riepilogo.clienti.totale) : "…"} />
+      <span className="mt-1 block text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Clienti</span>
+      {riepilogo && (
+        <div className="mt-3">
+          <Barra area={riepilogo.clienti} />
+        </div>
+      )}
+      <div className="mt-auto">
+        <Riga nome="Fornitori" valore={riepilogo ? String(riepilogo.fornitori.totale) : "…"} />
+        <div className="flex gap-3 border-t border-zinc-100 pt-2 text-[10.5px] uppercase tracking-[0.15em] text-zinc-500 dark:border-zinc-800">
+          {AREE.map((a) => (
+            <span key={a.chiave} className="flex items-center gap-1.5">
+              <span className={`size-1.5 rounded-full ${a.colore}`} />
+              {a.nome} {riepilogo ? riepilogo.clienti[a.chiave] : ""}
+            </span>
+          ))}
+        </div>
+      </div>
+    </Widget>
   );
 }
 

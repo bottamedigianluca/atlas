@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/client";
 import type { Nota } from "../api/tipi";
 import { useSincronizzazione } from "../sincronizzazione/contesto";
+import { Etichetta, Strisce } from "./stile";
 
 export function PostIt({ attivo }: { attivo: boolean }) {
   const [note, setNote] = useState<Nota[]>([]);
@@ -39,7 +40,10 @@ export function PostIt({ attivo }: { attivo: boolean }) {
       aria-label="Post-it"
       className="flex h-80 w-72 rotate-[-0.6deg] flex-col rounded-sm bg-[#fff3a3] p-4 text-zinc-800 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.45)] dark:bg-[#4d4620] dark:text-zinc-100"
     >
-      <h2 className="text-[15px] font-semibold">Post-it</h2>
+      <h2 className="flex items-center">
+        <Etichetta>Post-it</Etichetta>
+        <Strisce className="ml-auto size-3 text-black/20 dark:text-white/25" />
+      </h2>
       <ul className="mt-2 min-h-0 flex-1 overflow-auto" aria-label="Righe del post-it">
         {note.map((n) => (
           <li key={n.id} className="group flex items-start gap-1">
