@@ -7,7 +7,7 @@
 // le porta o "in Arca" (fino ad allora si fanno lì).
 
 /** Comandi che ATLAS sa eseguire dalla Home. */
-export type Comando = "elenco" | "nuovo" | "partitaIva" | "sincronizzazione";
+export type Comando = "elenco" | "nuovo" | "partitaIva" | "sincronizzazione" | "clienti" | "articoli";
 
 export interface Voce {
   nome: string;
@@ -39,12 +39,12 @@ export const MENU: Gruppo[] = [
     nome: "Anagrafiche",
     voci: [
       { nome: "Partita IVA online", comando: "partitaIva" },
-      { nome: "Clienti", nota: ARCA },
+      { nome: "Clienti", comando: "clienti" },
       { nome: "Fornitori", nota: ARCA },
       { nome: "Agenti", nota: ARCA },
     ],
   },
-  { nome: "Articoli", voci: [{ nome: "Gestione Articoli", nota: ARCA }] },
+  { nome: "Articoli", voci: [{ nome: "Gestione Articoli", comando: "articoli" }] },
   { nome: "Listini", voci: [{ nome: "Gestione Listini", nota: ARCA }] },
   {
     nome: "Scadenzario",

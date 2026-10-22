@@ -21,8 +21,9 @@ import { PartitaIva } from "../anagrafiche/PartitaIva";
 import { PostIt } from "./PostIt";
 import { Etichetta, Strisce } from "./stile";
 
-export function Home({ attivo, onNuovo, onElenco, onApri, onSincronizzazione }: {
+export function Home({ attivo, onArea, onNuovo, onElenco, onApri, onSincronizzazione }: {
   attivo: boolean;
+  onArea: (area: "clienti" | "articoli") => void;
   onNuovo: () => void;
   onElenco: () => void;
   onApri: (id: number) => void;
@@ -41,6 +42,7 @@ export function Home({ attivo, onNuovo, onElenco, onApri, onSincronizzazione }: 
     if (c === "nuovo") onNuovo();
     else if (c === "elenco") onElenco();
     else if (c === "sincronizzazione") onSincronizzazione();
+    else if (c === "clienti" || c === "articoli") onArea(c);
     else setPartitaIva(true);
   };
 
@@ -92,7 +94,7 @@ export function Home({ attivo, onNuovo, onElenco, onApri, onSincronizzazione }: 
         <div className="h-full overflow-auto py-4 pl-[17rem] pr-4">
           <div className="flex flex-wrap content-start gap-4">
             <Documenti riepilogo={riepilogo} onNuovo={onNuovo} onElenco={onElenco} />
-            <Anagrafiche riepilogo={riepilogo} />
+            <Anagrafiche riepilogo={riepilogo} onClienti={() => onArea("clienti")} />
             <DaChiamare clienti={clienti} giorno={giorno} />
             <PostIt attivo={attivo} />
             <DdtDiOggi ddt={ddtOggi} onApri={onApri} onNuovo={onNuovo} onElenco={onElenco} />
@@ -479,7 +481,7 @@ function Barra({ area }: { area: PerArea }) {
 }
 
 /** Clienti e fornitori, come la scheda "Anagrafiche" di Arca (gli anelli Italia, UE, Extra UE). */
-function Anagrafiche({ riepilogo }: { riepilogo: Riepilogo | null }) {
+function Anagrafiche({ riepilogo, onClienti }: { riepilogo: Riepilogo | null; onClienti: () => void }) {
   return (
     <Widget titolo="Anagrafiche">
       <Numero valore={riepilogo ? String(riepilogo.clienti.totale) : "…"} />
@@ -498,6 +500,9 @@ function Anagrafiche({ riepilogo }: { riepilogo: Riepilogo | null }) {
               {a.nome} {riepilogo ? riepilogo.clienti[a.chiave] : ""}
             </span>
           ))}
+          <span className="ml-auto normal-case tracking-normal">
+            <Azione onClick={onClienti}>Elenco →</Azione>
+          </span>
         </div>
       </div>
     </Widget>

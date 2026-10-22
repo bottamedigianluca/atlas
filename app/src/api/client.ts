@@ -7,6 +7,7 @@ import type {
   Calcolo,
   CampiNota,
   ClienteBreve,
+  ClienteCreato,
   ClienteScheda,
   ClientiDelGiorno,
   DatiAzienda,
@@ -16,6 +17,7 @@ import type {
   DdtScheda,
   Nota,
   Notifica,
+  NuovoCliente,
   NumeriLiberi,
   Prezzi,
   Riepilogo,
@@ -110,6 +112,7 @@ export const api = {
   clienti: (cerca: string, segnale?: AbortSignal) =>
     chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 50 })}`, undefined, segnale),
   elencoClienti: (cerca?: string) => chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 1000, obsoleti: true })}`),
+  creaCliente: (cliente: NuovoCliente) => chiama<ClienteCreato>("POST", "/clienti", cliente),
   prossimoCodiceCliente: () => chiama<string>("GET", "/clienti/prossimo-codice"),
   elencoArticoli: (cerca?: string) => chiama<ArticoloBreve[]>("GET", `/articoli${query({ cerca, limite: 1000, obsoleti: true })}`),
   articolo: (codice: string) => chiama<ArticoloScheda>("GET", `/articoli/${encodeURIComponent(codice)}`),

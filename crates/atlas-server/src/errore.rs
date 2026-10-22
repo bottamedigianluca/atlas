@@ -53,6 +53,7 @@ impl ErroreApi {
             Self::Sync(e) => match e {
                 ErroreSync::Db(e) => classe_db(e),
                 ErroreSync::NumeroOccupato { .. } => ("numero_occupato", StatusCode::CONFLICT),
+                ErroreSync::CodiceOccupato { .. } => ("codice_occupato", StatusCode::CONFLICT),
                 ErroreSync::NessunConflitto { .. } => ("nessun_conflitto", StatusCode::CONFLICT),
                 ErroreSync::ForseLoStesso { .. } => ("forse_lo_stesso", StatusCode::CONFLICT),
                 ErroreSync::AltroDatabase { .. } | ErroreSync::NonClone(_) => {
@@ -88,6 +89,7 @@ impl ErroreApi {
 fn classe_db(e: &ErroreDb) -> (&'static str, StatusCode) {
     match e {
         ErroreDb::NumeroOccupato { .. } => ("numero_occupato", StatusCode::CONFLICT),
+        ErroreDb::CodiceOccupato(_) => ("codice_occupato", StatusCode::CONFLICT),
         ErroreDb::Numerazione(_) => ("numero_non_valido", StatusCode::UNPROCESSABLE_ENTITY),
         ErroreDb::DocumentoNonValido(_) | ErroreDb::RiferimentiInesistenti(_) => {
             ("documento_non_valido", StatusCode::UNPROCESSABLE_ENTITY)

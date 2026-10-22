@@ -27,6 +27,10 @@ use chrono::NaiveDateTime;
 use tiberius::Query;
 
 use crate::ErroreSync;
+use crate::clienti::NuovoCliente;
+
+/// Tipo dell'evento di un cliente nuovo nell'outbox.
+pub const TIPO_CLIENTE: &str = "CF";
 
 /// Prima attesa dopo un tentativo fallito; raddoppia a ogni tentativo fino a [`ATTESA_MASSIMA`].
 const ATTESA_INIZIALE: Duration = Duration::from_secs(5);
@@ -38,7 +42,7 @@ pub fn attesa(tentativi: i64) -> Duration {
     ATTESA_INIZIALE.saturating_mul(1 << raddoppi).min(ATTESA_MASSIMA)
 }
 
-/// Come è finito in Arca il documento di un evento.
+/// Come è finito in Arca il documento (o il cliente) di un evento.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Replicato {
     Scritto(i32),
@@ -186,6 +190,9 @@ impl Arca {
     }
 
     async fn scrivi(&mut self, evento: &Evento) -> Result<Replicato, ErroreSync> {
+        if evento.documento_tipo == TIPO_CLIENTE && evento.operazione == Operazione::Crea {
+            return self.scrivi_cliente(evento).await;
+        }
         if evento.documento_tipo != TIPO_DOCUMENTO || evento.operazione != Operazione::Crea {
             return Err(ErroreSync::NonGestito(format!(
                 "{} {} di Arca",
@@ -210,6 +217,35 @@ impl Arca {
         let scritto = scrittura::scrivi(&mut s.conn, &tabelle).await?;
         scrittura::conferma(&mut s.conn).await?;
         Ok(Replicato::Scritto(scritto.id_testata))
+    }
+}
+
+impl Arca {
+    /// Il cliente nuovo in `CF` e `CFContatto`. Se il codice c'è già con la stessa ragione sociale
+    /// è lo stesso cliente scritto da un tentativo precedente; con un'altra, il codice è stato preso
+    /// in Arca nel frattempo e la coda si ferma.
+    async fn scrivi_cliente(&mut self, evento: &Evento) -> Result<Replicato, ErroreSync> {
+        let cliente: NuovoCliente = serde_json::from_str(&evento.payload).map_err(atlas_db::ErroreDb::from)?;
+        let (cf, contatto) = cliente.righe_arca()?;
+        let s = self.sessione().await?;
+        let mut query = Query::new("select Id_CF, Descrizione from CF where Cd_CF = @P1");
+        query.bind(cliente.codice().to_owned());
+        if let Some(row) = query.query(&mut s.conn).await?.into_row().await? {
+            let id = row.try_get::<i32, _>("Id_CF")?.unwrap_or_default();
+            let descrizione = row.try_get::<&str, _>("Descrizione")?.unwrap_or_default().trim_end();
+            let nostra = cliente.cf.get("Descrizione").and_then(serde_json::Value::as_str).unwrap_or_default().trim_end();
+            return if descrizione == nostra {
+                Ok(Replicato::GiaPresente(id))
+            } else {
+                Err(ErroreSync::CodiceOccupato {
+                    codice: cliente.codice().to_owned(),
+                    id,
+                })
+            };
+        }
+        let id = scrittura::scrivi_cliente(&mut s.conn, &cf, contatto.as_ref()).await?;
+        scrittura::conferma(&mut s.conn).await?;
+        Ok(Replicato::Scritto(id))
     }
 }
 

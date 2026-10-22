@@ -59,7 +59,7 @@ pub fn router(servizio: Servizio) -> Router {
         .route("/stato", get(stato))
         .route("/sincronizza", post(sincronizza))
         .route("/tabelle", get(tabelle))
-        .route("/clienti", get(cerca_clienti))
+        .route("/clienti", get(cerca_clienti).post(crea_cliente))
         .route("/clienti/prossimo-codice", get(prossimo_codice_cliente))
         .route("/clienti/{codice}", get(cliente))
         .route("/articoli", get(cerca_articoli))
@@ -195,6 +195,18 @@ async fn crea_ddt(State(s): State<Servizio>, c: Result<Json<Bozza>, JsonRejectio
     let creato = s.crea_ddt(corpo(c)?).await?;
     let mut intestazioni = HeaderMap::new();
     if let Ok(dove) = HeaderValue::from_str(&format!("/api/ddt/{}", creato.id)) {
+        intestazioni.insert(header::LOCATION, dove);
+    }
+    Ok((StatusCode::CREATED, intestazioni, Json(creato)).into_response())
+}
+
+async fn crea_cliente(
+    State(s): State<Servizio>,
+    c: Result<Json<atlas_sync::clienti::NuovoCliente>, JsonRejection>,
+) -> Result<Response, ErroreApi> {
+    let creato = s.crea_cliente(corpo(c)?).await?;
+    let mut intestazioni = HeaderMap::new();
+    if let Ok(dove) = HeaderValue::from_str(&format!("/api/clienti/{}", creato.codice)) {
         intestazioni.insert(header::LOCATION, dove);
     }
     Ok((StatusCode::CREATED, intestazioni, Json(creato)).into_response())

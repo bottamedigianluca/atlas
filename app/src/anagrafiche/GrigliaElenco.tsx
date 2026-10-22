@@ -27,14 +27,20 @@ function testoFiltro<T>(c: Colonna<T>, r: T): string {
   return typeof v === "string" || typeof v === "number" ? String(v) : "";
 }
 
-export function GrigliaElenco<T>({ nome, griglia, colonne: tutte, righe, chiave, attivo, onApri, piede }: {
+export function GrigliaElenco<T>({ nome, griglia, colonne: tutte, righe, chiave, attivo, selezionato, onApri, onScelta, classeRiga, piede }: {
   nome: string;
   griglia: Griglia;
   colonne: readonly Colonna<T>[];
   righe: T[];
   chiave: (r: T) => string;
   attivo: boolean;
+  /** Chiave della riga da scegliere (la scheda aperta, dopo Precedente/Successivo). */
+  selezionato?: string | null;
   onApri: (r: T) => void;
+  /** La riga scelta e le righe filtrate, nell'ordine a video (per Precedente/Successivo). */
+  onScelta?: (r: T | null, filtrate: T[]) => void;
+  /** Colore della riga non scelta, come la legenda di Arca (obsoleto, fittizio). */
+  classeRiga?: (r: T) => string | undefined;
   /** Legenda a sinistra della barra in fondo. */
   piede?: React.ReactNode;
 }) {
@@ -62,7 +68,21 @@ export function GrigliaElenco<T>({ nome, griglia, colonne: tutte, righe, chiave,
       }),
     );
   }, [righe, filtri, perId]);
-  useEffect(() => setScelta((s) => Math.min(s, Math.max(filtrate.length - 1, 0))), [filtrate]);
+  // Cambiando i filtri la scelta resta sulla stessa riga, se c'è ancora (come in Arca).
+  const sceltaChiave = useRef<string | null>(null);
+  useEffect(() => {
+    const i = sceltaChiave.current === null ? -1 : filtrate.findIndex((r) => chiave(r) === sceltaChiave.current);
+    setScelta((s) => (i >= 0 ? i : Math.min(s, Math.max(filtrate.length - 1, 0))));
+  }, [filtrate]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const r = filtrate[scelta];
+    if (r) sceltaChiave.current = chiave(r);
+  }, [filtrate, scelta]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const i = selezionato ? filtrate.findIndex((r) => chiave(r) === selezionato) : -1;
+    if (i >= 0) setScelta(i);
+  }, [selezionato]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => onScelta?.(filtrate[scelta] ?? null, filtrate), [filtrate, scelta]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -131,7 +151,9 @@ export function GrigliaElenco<T>({ nome, griglia, colonne: tutte, righe, chiave,
                 onDoubleClick={() => onApri(r)}
                 style={{ height: ALTEZZA }}
                 className={`flex border-b border-zinc-100 text-[11.5px] dark:border-zinc-900 ${
-                  selezionata ? "bg-primario text-white shadow-[inset_4px_0_0_var(--atlas-primario-forte)]" : i % 2 ? "bg-[#f9fafb] dark:bg-white/[0.025]" : ""
+                  selezionata
+                    ? "bg-primario text-white shadow-[inset_4px_0_0_var(--atlas-primario-forte)]"
+                    : `${i % 2 ? "bg-[#f9fafb] dark:bg-white/[0.025]" : ""} ${classeRiga?.(r) ?? ""}`
                 }`}
               >
                 {colonne.map((c) => (

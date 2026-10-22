@@ -9,12 +9,12 @@
 
 use atlas_arca::scrittura::Connessione;
 use atlas_db::anagrafiche::{
-    Aliquota, Anagrafiche, Articolo, ClienteFornitore, Codifica, Destinazione, Listino, Pagamento,
+    Aliquota, Anagrafiche, Articolo, ClienteFornitore, Codifica, Contatto, Destinazione, Listino, Pagamento,
     PredefinitiRighe, PrezzoListino, RevisioneListino, UnitaArticolo,
 };
 use chrono::{NaiveDate, NaiveDateTime};
 use rust_decimal::Decimal;
-use tiberius::Row;
+use tiberius::{ColumnData, FromSql, Row};
 
 use crate::ErroreSync;
 
@@ -101,10 +101,22 @@ pub(crate) enum Tipo {
     Decimale,
     /// `smalldatetime`: "AAAA-MM-GG hh:mm:ss".
     Data,
+    /// `int`
+    Intero,
+    /// `xml`: letto come testo (`CAST … AS nvarchar(max)`).
+    Xml,
 }
 
 /// I campi di `CF` che la scheda cliente mostra oltre a quelli che ATLAS usa nei calcoli
 /// (nomi e tipi dallo schema di Arca in `docs/sorgenti_arca_decompilati/04_SCHEMI_DATABASE_E_DATI`).
+/// Le colonne di `CF` che sono colonne vere di `clienti_fornitori`.
+pub(crate) const CF_COLONNE: &str = "Cd_CF, Descrizione, Indirizzo, Cap, Localita, Cd_Provincia, Cd_Nazione, PartitaIva, \
+    CodiceFiscale, CodiceFPR, CodiceIPA, Cliente, Fornitore, Cd_PG, Cd_LS_1, Iban, BicCode, Cd_CGConto_Banca, \
+    Cd_CGConto_Merce, Cd_Agente_1, IvaSplit, EntePubblico, Cd_Aliquota, Cd_CF_Fatt, Fido, Note_CF, Obsoleto";
+
+/// Le colonne di `AR` che sono colonne vere di `articoli`.
+pub(crate) const AR_COLONNE: &str = "Cd_AR, Descrizione, DescrizioneBreve, Cd_ARMisura, Cd_Aliquota_V, Cd_CGConto_VI, Obsoleto";
+
 pub(crate) const CF_EXTRA: &[(&str, Tipo)] = &[
     ("TipoDitta", Tipo::Testo),
     ("Cd_NazioneIva", Tipo::Testo),
@@ -172,6 +184,39 @@ pub(crate) const CF_EXTRA: &[(&str, Tipo)] = &[
     ("PdBrk4Zona", Tipo::Bit),
     ("PdBrk4SedeAmministrativa", Tipo::Bit),
     ("PdBrk4DestinazioneDiversa", Tipo::Bit),
+    ("Cd_NazioneProvincia", Tipo::Testo),
+    ("ProspectCliente", Tipo::Bit),
+    ("ProspectFornitore", Tipo::Bit),
+    ("TipoCF_1", Tipo::Testo),
+    ("Cd_INTRAConsegna", Tipo::Testo),
+    ("Cd_INTRATrasporto", Tipo::Testo),
+    ("Cd_INTRATransazione", Tipo::Testo),
+    ("Cd_Nazione_Origine", Tipo::Testo),
+    ("Cd_Provincia_Origine", Tipo::Testo),
+    ("Cd_Nazione_Destinazione", Tipo::Testo),
+    ("Cd_Provincia_Destinazione", Tipo::Testo),
+    ("Cd_Nazione_Provenienza", Tipo::Testo),
+    ("Cd_CACda", Tipo::Testo),
+    ("SO_Indirizzo", Tipo::Testo),
+    ("SO_NumeroCivico", Tipo::Testo),
+    ("SO_Cap", Tipo::Testo),
+    ("SO_Localita", Tipo::Testo),
+    ("SO_Cd_Provincia", Tipo::Testo),
+    ("SO_Cd_Nazione", Tipo::Testo),
+    ("RF_PartitaIva", Tipo::Testo),
+    ("RF_RagioneSociale", Tipo::Testo),
+    ("RF_Nome", Tipo::Testo),
+    ("RF_Cognome", Tipo::Testo),
+    ("RF_Cd_Nazione", Tipo::Testo),
+    ("FTE_RegimeFiscale", Tipo::Testo),
+    ("FTE_Cd_CN", Tipo::Testo),
+    ("Cd_ParcT", Tipo::Testo),
+    ("Cd_CF_BPoint", Tipo::Testo),
+    ("Ricarica", Tipo::Testo),
+    // Personalizzazione Bottamedi: codice cliente negli export Conad, Gastropool, Hogast.
+    ("xCd_Exp", Tipo::Testo),
+    ("Attributi", Tipo::Xml),
+    ("ExtraInfo", Tipo::Xml),
     ("UserIns", Tipo::Testo),
     ("TimeIns", Tipo::Data),
     ("UserUpd", Tipo::Testo),
@@ -224,6 +269,42 @@ pub(crate) const AR_EXTRA: &[(&str, Tipo)] = &[
     ("xRicarico", Tipo::Decimale),
     ("xCd_ARLottoP", Tipo::Testo),
     ("WebDescrizione", Tipo::Testo),
+    ("WebNote_AR", Tipo::Testo),
+    ("WebInfoLink", Tipo::Testo),
+    ("WebGiacenza", Tipo::Decimale),
+    ("WebB2CPubblica", Tipo::Bit),
+    ("WebB2BPubblica", Tipo::Bit),
+    ("NoteOfferta", Tipo::Testo),
+    ("Cd_CAVda_VI", Tipo::Testo),
+    ("Cd_CAVda_VE", Tipo::Testo),
+    ("Cd_CAVda_AI", Tipo::Testo),
+    ("Cd_CAVda_AE", Tipo::Testo),
+    ("Cd_ARPrdClasse", Tipo::Testo),
+    ("Id_ARCategoria", Tipo::Intero),
+    ("Cd_IntraServizio", Tipo::Testo),
+    ("ScortaMassima", Tipo::Decimale),
+    ("PesoFattore", Tipo::Decimale),
+    ("DimensioniFattore", Tipo::Decimale),
+    ("DBKit", Tipo::Bit),
+    ("DBFantasma", Tipo::Bit),
+    ("TipoGestComm", Tipo::Byte),
+    ("MrpGiorniRiordino", Tipo::Corto),
+    ("MrpProduzioneMassima", Tipo::Decimale),
+    ("MrpIncludi", Tipo::Bit),
+    ("MrpGiorniCopertura", Tipo::Corto),
+    ("MrpResa", Tipo::Corto),
+    ("MrpLottoRiordino", Tipo::Bit),
+    ("MrpLottoMinimo", Tipo::Bit),
+    ("MrpPuntoRiordino", Tipo::Byte),
+    ("MrpIgnoraDistinta", Tipo::Bit),
+    ("MrpAggiornaCostoDistinta", Tipo::Bit),
+    ("MrpForzaExpDistinta", Tipo::Bit),
+    ("MRPConsideraDaAcquistare", Tipo::Bit),
+    ("AmsManaged", Tipo::Bit),
+    ("FTE_CodiceTipo", Tipo::Testo),
+    ("FTE_CodiceValore", Tipo::Testo),
+    ("Attributi", Tipo::Xml),
+    ("ExtraInfo", Tipo::Xml),
     ("UserIns", Tipo::Testo),
     ("TimeIns", Tipo::Data),
     ("UserUpd", Tipo::Testo),
@@ -241,6 +322,8 @@ impl Riga<'_> {
                 Tipo::Bit => self.row.try_get::<bool, _>(colonna)?.map(serde_json::Value::from),
                 Tipo::Byte => self.row.try_get::<u8, _>(colonna)?.map(serde_json::Value::from),
                 Tipo::Corto => self.row.try_get::<i16, _>(colonna)?.map(serde_json::Value::from),
+                Tipo::Intero => self.row.try_get::<i32, _>(colonna)?.map(serde_json::Value::from),
+                Tipo::Xml => self.codice_opz(colonna)?.map(serde_json::Value::from),
                 Tipo::Decimale => self.decimale_opz(colonna)?.map(|d| serde_json::Value::from(d.to_string())),
                 Tipo::Data => self
                     .row
@@ -253,11 +336,73 @@ impl Riga<'_> {
     }
 }
 
-/// `select` delle colonne date più quelle `extra`.
+/// `select` delle colonne date più quelle `extra` (gli `xml` convertiti in testo).
 fn con_extra(colonne: &str, extra: &[(&str, Tipo)], tabella: &str) -> String {
-    let altre: Vec<&str> = extra.iter().map(|(c, _)| *c).collect();
+    let altre: Vec<String> = extra
+        .iter()
+        .map(|&(c, tipo)| match tipo {
+            Tipo::Xml => format!("CAST({c} AS nvarchar(max)) AS {c}"),
+            _ => c.to_owned(),
+        })
+        .collect();
     format!("select {colonne}, {} from {tabella}", altre.join(", "))
 }
+
+/// Tutte le colonne di una riga letta con `select *`, tranne `escluse`, in un oggetto JSON con i
+/// nomi di Arca: per le tabelle di cui non si scrive a mano l'elenco (`CFDest`, `CFContatto`), così
+/// nessun campo resta fuori. Stessi formati di [`Riga::extra`]; i binari (`timestamp`) si saltano.
+fn tutte_le_colonne(row: &Row, tabella: &'static str, escluse: &[&str]) -> Result<String, ErroreSync> {
+    let mut oggetto = serde_json::Map::new();
+    for (colonna, dato) in row.cells() {
+        let nome = colonna.name();
+        if escluse.iter().any(|e| e.eq_ignore_ascii_case(nome)) {
+            continue;
+        }
+        let errore = |e: tiberius::error::Error| ErroreSync::Dato {
+            tabella,
+            colonna: "*",
+            problema: format!("{nome}: {e}"),
+        };
+        let valore = match dato {
+            ColumnData::U8(v) => v.map(serde_json::Value::from),
+            ColumnData::I16(v) => v.map(serde_json::Value::from),
+            ColumnData::I32(v) => v.map(serde_json::Value::from),
+            ColumnData::I64(v) => v.map(serde_json::Value::from),
+            ColumnData::F32(v) => v.map(serde_json::Value::from),
+            ColumnData::F64(v) => v.map(serde_json::Value::from),
+            ColumnData::Bit(v) => v.map(serde_json::Value::from),
+            ColumnData::String(v) => v
+                .as_deref()
+                .map(str::trim_end)
+                .filter(|t| !t.is_empty())
+                .map(serde_json::Value::from),
+            ColumnData::Guid(v) => v.map(|g| serde_json::Value::from(g.to_string())),
+            ColumnData::Numeric(_) => Decimal::from_sql(dato)
+                .map_err(errore)?
+                .map(|d| serde_json::Value::from(d.normalize().to_string())),
+            ColumnData::Xml(v) => v.as_deref().map(|x| serde_json::Value::from(x.to_string())),
+            ColumnData::Binary(_) => continue,
+            _ => NaiveDateTime::from_sql(dato)
+                .map_err(errore)?
+                .map(|d| serde_json::Value::from(d.format("%Y-%m-%d %H:%M:%S").to_string())),
+        };
+        oggetto.insert(nome.to_owned(), valore.unwrap_or(serde_json::Value::Null));
+    }
+    serde_json::to_string(&oggetto).map_err(|e| ErroreSync::Dato {
+        tabella,
+        colonna: "*",
+        problema: e.to_string(),
+    })
+}
+
+/// Colonne di `CFDest` già colonne vere di `destinazioni`, o tecniche.
+const CFDEST_DATE: &[&str] = &[
+    "Id_CFDest", "Cd_CF", "Cd_CFDest", "Descrizione", "Indirizzo", "Cap", "Localita", "Cd_Provincia", "Cd_Nazione",
+    "Cd_Agente", "Cd_Aliquota", "DefaultDestinazione", "Obsoleto", "Ts",
+];
+
+/// Colonne tecniche di `CFContatto`, fuori dai dati del contatto.
+const CFCONTATTO_ESCLUSE: &[&str] = &["Ts"];
 
 async fn leggi<T>(
     conn: &mut Connessione,
@@ -333,7 +478,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
     let articoli = leggi(
         conn,
         "AR",
-        &con_extra("Cd_AR, Descrizione, DescrizioneBreve, Cd_ARMisura, Cd_Aliquota_V, Cd_CGConto_VI, Obsoleto", AR_EXTRA, "AR"),
+        &con_extra(AR_COLONNE, AR_EXTRA, "AR"),
         |r| {
             Ok(Articolo {
                 codice: r.codice("Cd_AR")?,
@@ -385,9 +530,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
         conn,
         "CF",
         &con_extra(
-            "Cd_CF, Descrizione, Indirizzo, Cap, Localita, Cd_Provincia, Cd_Nazione, PartitaIva, CodiceFiscale, \
-             CodiceFPR, CodiceIPA, Cliente, Fornitore, Cd_PG, Cd_LS_1, Iban, BicCode, Cd_CGConto_Banca, Cd_CGConto_Merce, \
-             Cd_Agente_1, IvaSplit, EntePubblico, Cd_Aliquota, Cd_CF_Fatt, Fido, Note_CF, Obsoleto",
+            CF_COLONNE,
             CF_EXTRA,
             "CF",
         ),
@@ -429,8 +572,7 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
     let destinazioni = leggi(
         conn,
         "CFDest",
-        "select Cd_CF, Cd_CFDest, Descrizione, Indirizzo, Cap, Localita, Cd_Provincia, Cd_Nazione, Cd_Agente, \
-         Cd_Aliquota, DefaultDestinazione, Obsoleto from CFDest",
+        "select * from CFDest",
         |r| {
             Ok(Destinazione {
                 cliente: r.codice("Cd_CF")?,
@@ -445,9 +587,21 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
                 aliquota: r.codice_opz("Cd_Aliquota")?,
                 predefinita: r.bit("DefaultDestinazione")?,
                 obsoleto: r.bit("Obsoleto")?,
+                extra: tutte_le_colonne(r.row, "CFDest", CFDEST_DATE)?,
             })
         },
     )
+    .await?;
+
+    // Contatti dei clienti e delle destinazioni (telefono, email, PEC…): tutte le colonne.
+    let contatti = leggi(conn, "CFContatto", "select * from CFContatto", |r| {
+        Ok(Contatto {
+            id: r.intero("Id_CFContatto")?,
+            cliente: r.codice("Cd_CF")?,
+            destinazione: r.codice_opz("Cd_CFDest")?,
+            dati: tutte_le_colonne(r.row, "CFContatto", CFCONTATTO_ESCLUSE)?,
+        })
+    })
     .await?;
 
     // Default delle righe documento di vendita (`fedi_doc`, cursore `Impostazione`).
@@ -487,6 +641,67 @@ pub async fn leggi_anagrafiche(conn: &mut Connessione) -> Result<Anagrafiche, Er
         prezzi_listino,
         clienti_fornitori,
         destinazioni,
+        contatti,
         predefiniti_righe,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Lo schema delle tabelle di Arca esportato dal database del negozio.
+    const SCHEMA: &str = include_str!("../../../docs/sorgenti_arca_decompilati/04_SCHEMI_DATABASE_E_DATI/schema/schema_arca_core.json");
+
+    fn colonne_di_arca(tabella: &str) -> Vec<String> {
+        let schema: serde_json::Value = serde_json::from_str(SCHEMA).unwrap();
+        let mut colonne: Vec<String> = Vec::new();
+        for c in schema[tabella].as_array().unwrap() {
+            let nome = c["COLUMN_NAME"].as_str().unwrap().to_owned();
+            if !colonne.contains(&nome) {
+                colonne.push(nome);
+            }
+        }
+        colonne
+    }
+
+    /// Tabella di Arca, colonne vere, colonne `extra` e colonne lasciate fuori.
+    type Caso = (&'static str, &'static str, &'static [(&'static str, Tipo)], &'static [&'static str]);
+
+    /// Nessuna colonna di `CF` e `AR` resta fuori dall'importazione senza un motivo scritto qui.
+    #[test]
+    fn tutte_le_colonne_di_cf_e_ar_sono_importate() {
+        let casi: [Caso; 2] = [
+            (
+                "CF",
+                CF_COLONNE,
+                CF_EXTRA,
+                // Identità e rowversion; stato interno di Arca; cronologia e note in XML (le note in
+                // chiaro sono `Note_CF`).
+                &["Id_CF", "Ts", "Reserved_1", "EvtnInfo", "HistoryData", "NoteXML"],
+            ),
+            (
+                "AR",
+                AR_COLONNE,
+                AR_EXTRA,
+                // Identità e rowversion; colonne calcolate da Arca (misure in unità MKS, classi e
+                // gruppi concatenati); note in XML (in chiaro `Note_AR`).
+                &[
+                    "Id_AR", "Ts", "NoteXML", "PesoLordoMks", "PesoNettoMks", "AltezzaMks", "LunghezzaMks", "LarghezzaMks",
+                    "VolumeMks", "Cd_ARClasse12", "Cd_ARClasse123", "Cd_ARGruppo12", "Cd_ARGruppo123",
+                ],
+            ),
+        ];
+        for (tabella, base, extra, escluse) in casi {
+            let lette: Vec<&str> = base
+                .split(',')
+                .map(str::trim)
+                .chain(extra.iter().map(|(c, _)| *c))
+                .chain(escluse.iter().copied())
+                .collect();
+            let mancanti: Vec<String> = colonne_di_arca(tabella).into_iter().filter(|c| !lette.contains(&c.as_str())).collect();
+            assert!(mancanti.is_empty(), "{tabella}: colonne non importate {mancanti:?}");
+            assert!(con_extra(base, extra, tabella).starts_with(&format!("select {base}")));
+        }
+    }
 }

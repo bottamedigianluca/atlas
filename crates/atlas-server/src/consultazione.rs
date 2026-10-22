@@ -75,6 +75,8 @@ pub struct ClienteBreve {
     pub codice_destinatario: Option<String>,
     /// Gli altri campi di Arca (`CF.Cd_CFGruppo1`…), per le colonne dell'elenco.
     pub extra: serde_json::Value,
+    /// Il contatto principale (`CFContatto`: `Telefono`, `Email`…), per le colonne dell'elenco.
+    pub contatto: serde_json::Value,
 }
 
 /// I campi `extra` delle anagrafiche (oggetto JSON scritto dall'importazione).
@@ -93,14 +95,19 @@ pub fn prossimo_codice_cliente(conn: &Connection) -> Result<String, ErroreApi> {
     Ok(format!("C{:06}", massimo.unwrap_or(0) + 1))
 }
 
+/// Il contatto principale del cliente (`CFContatto` senza destinazione, l'"Aziendale" con
+/// `Id_CFContattoTipo = -1` prima), da cui l'elenco prende telefono, fax ed email come Arca.
+const CONTATTO_PRINCIPALE: &str = "(SELECT k.dati FROM contatti k WHERE k.cliente = clienti_fornitori.codice \
+     AND k.destinazione IS NULL ORDER BY json_extract(k.dati, '$.Id_CFContattoTipo') IS NOT -1, k.id LIMIT 1)";
+
 pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<ClienteBreve>, ErroreApi> {
-    let mut stmt = conn.prepare_cached(
+    let mut stmt = conn.prepare_cached(&format!(
         "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto, indirizzo, cap, provincia, nazione, \
-         codice_fiscale, codice_destinatario, extra FROM clienti_fornitori \
+         codice_fiscale, codice_destinatario, extra, {CONTATTO_PRINCIPALE} FROM clienti_fornitori \
          WHERE cliente = 1 AND (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR ragione_sociale LIKE ?2 ESCAPE '\\') \
          ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
-    )?;
+    ))?;
     let cerca = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty());
     let (uguale, inizia) = pertinenza(cerca);
     let righe = stmt.query_map(params![ricerca.obsoleti, cerca.map(contiene), limite(ricerca.limite), uguale, inizia], |r| {
@@ -117,6 +124,7 @@ pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Cliente
             codice_fiscale: r.get(9)?,
             codice_destinatario: r.get(10)?,
             extra: json(&r.get::<_, String>(11)?),
+            contatto: r.get::<_, Option<String>>(12)?.map_or(serde_json::Value::Null, |d| json(&d)),
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -131,6 +139,16 @@ pub struct DestinazioneVista {
     pub provincia: Option<String>,
     pub predefinita: bool,
     pub obsoleto: bool,
+    /// Gli altri campi di `CFDest` (codice destinatario, codice IPA, codice export…).
+    pub extra: serde_json::Value,
+}
+
+/// Un contatto del cliente o di una destinazione: le colonne di `CFContatto`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ContattoVista {
+    pub id: i64,
+    pub destinazione: Option<String>,
+    pub dati: serde_json::Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -156,6 +174,7 @@ pub struct ClienteScheda {
     pub scissione_pagamenti: bool,
     pub obsoleto: bool,
     pub destinazioni: Vec<DestinazioneVista>,
+    pub contatti: Vec<ContattoVista>,
     pub nazione: Option<String>,
     /// Codice ufficio della PA (`CF.CodiceIPA`).
     pub codice_ipa: Option<String>,
@@ -203,6 +222,7 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
                 iban: r.get(17)?,
                 bic: r.get(18)?,
                 destinazioni: Vec::new(),
+                contatti: Vec::new(),
                 nazione: None,
                 codice_ipa: None,
                 conto_banca: None,
@@ -235,7 +255,7 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
         Ok(())
     })?;
     let mut stmt = conn.prepare_cached(
-        "SELECT codice, descrizione, indirizzo, localita, provincia, predefinita, obsoleto FROM destinazioni \
+        "SELECT codice, descrizione, indirizzo, localita, provincia, predefinita, obsoleto, extra FROM destinazioni \
          WHERE cliente = ?1 ORDER BY predefinita DESC, codice",
     )?;
     let destinazioni = stmt.query_map([&scheda.codice], |r| {
@@ -247,9 +267,22 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
             provincia: r.get(4)?,
             predefinita: r.get(5)?,
             obsoleto: r.get(6)?,
+            extra: json(&r.get::<_, String>(7)?),
         })
     })?;
     scheda.destinazioni = destinazioni.collect::<Result<_, _>>()?;
+    let mut stmt = conn.prepare_cached(
+        "SELECT id, destinazione, dati FROM contatti WHERE cliente = ?1 \
+         ORDER BY destinazione IS NOT NULL, destinazione, json_extract(dati, '$.Id_CFContattoTipo') IS NOT -1, id",
+    )?;
+    let contatti = stmt.query_map([&scheda.codice], |r| {
+        Ok(ContattoVista {
+            id: r.get(0)?,
+            destinazione: r.get(1)?,
+            dati: json(&r.get::<_, String>(2)?),
+        })
+    })?;
+    scheda.contatti = contatti.collect::<Result<_, _>>()?;
     Ok(scheda)
 }
 
@@ -666,6 +699,8 @@ pub struct Coda {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct EventoFermo {
     pub evento: i64,
+    /// Il cliente nuovo (`C000405`) se l'evento è di un cliente e non di un DDT.
+    pub cliente: Option<String>,
     pub ddt: i64,
     pub numero: Option<u32>,
     pub esercizio: Option<i32>,
@@ -678,14 +713,17 @@ pub fn coda(conn: &Connection) -> Result<Coda, ErroreApi> {
     let in_coda = atlas_db::outbox::in_attesa(conn)?;
     let fermo = conn
         .prepare_cached(
-            "SELECT o.id, o.documento_id, d.numero, d.esercizio, o.tentativi, o.ultimo_errore, o.prossimo_tentativo_il \
-             FROM outbox_eventi o LEFT JOIN ddt d ON d.id = o.documento_id \
+            "SELECT o.id, o.documento_id, d.numero, d.esercizio, o.tentativi, o.ultimo_errore, o.prossimo_tentativo_il, \
+             o.documento_tipo = 'CF' \
+             FROM outbox_eventi o LEFT JOIN ddt d ON d.id = o.documento_id AND o.documento_tipo = 'BO' \
              WHERE o.replicato_il IS NULL AND o.ultimo_errore IS NOT NULL \
              AND o.id = (SELECT min(id) FROM outbox_eventi WHERE replicato_il IS NULL)",
         )?
         .query_row([], |r| {
+            let cliente: bool = r.get(7)?;
             Ok(EventoFermo {
                 evento: r.get(0)?,
+                cliente: cliente.then(|| format!("C{:06}", r.get::<_, i64>(1).unwrap_or_default())),
                 ddt: r.get(1)?,
                 numero: r.get(2)?,
                 esercizio: r.get(3)?,
@@ -754,7 +792,14 @@ mod tests {
             ..Ricerca::default()
         };
         assert!(cerca_articoli(&conn, &ricerca).unwrap().is_empty(), "% preso alla lettera");
-        assert_eq!(cliente(&conn, "c000380").unwrap().destinazioni[0].codice, "ALI");
+        let scheda = cliente(&conn, "c000380").unwrap();
+        assert_eq!(scheda.destinazioni[0].codice, "ALI");
+        assert!(scheda.destinazioni[0].extra.get("CodiceFPR").is_some(), "tutte le colonne di CFDest");
+        assert_eq!(scheda.contatti[0].dati["Telefono"], "0461 602772");
+        // Nell'elenco il telefono del contatto principale, come le colonne di Arca.
+        let c = cerca_clienti(&conn, &Ricerca::default()).unwrap();
+        let telefoni: Vec<(&str, &serde_json::Value)> = c.iter().map(|c| (c.codice.as_str(), &c.contatto["Telefono"])).collect();
+        assert_eq!(telefoni, [("C000002", &serde_json::Value::Null), ("C000380", &serde_json::json!("0461 602772"))]);
         assert_eq!(articolo(&conn, "ban").unwrap().unita[0].unita_misura, "KG");
         assert_eq!(tabelle(&conn).unwrap().aliquote.len(), 3);
     }

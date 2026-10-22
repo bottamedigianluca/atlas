@@ -47,6 +47,8 @@ struct StatoFinto {
     replicati: Vec<u32>,
     /// Numeri scritti in Arca dopo che ATLAS li ha letti liberi: la lettura dei numeri non li vede.
     dopo_la_lettura: Vec<u32>,
+    /// Clienti nuovi scritti in `CF`, con il loro payload.
+    clienti: Vec<Value>,
 }
 
 /// Arca finta condivisa fra le tre connessioni del worker e il test.
@@ -141,6 +143,13 @@ impl Origine for Finta {
 
 impl Destinazione for Finta {
     async fn replica(&mut self, evento: &Evento) -> Result<Replicato, ErroreSync> {
+        if evento.documento_tipo == "CF" {
+            let cliente: Value = serde_json::from_str(&evento.payload).unwrap();
+            return Ok(self.con(|s| {
+                s.clienti.push(cliente);
+                Replicato::Scritto(400 + s.clienti.len() as i32)
+            }));
+        }
         let ddt = evento.ddt()?;
         self.con(|s| {
             let chiave = (2026, ddt.numero);
@@ -556,4 +565,68 @@ async fn partita_iva_dai_dati_ufficiali() {
     let (stato, errore) = chiama(&b.router, "GET", "/api/partita-iva/01484340227", None).await;
     assert_eq!(stato, StatusCode::SERVICE_UNAVAILABLE, "{errore}");
     assert!(errore["messaggio"].as_str().unwrap().contains("MS_UNAVAILABLE"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn cliente_nuovo_salvato_e_replicato_in_cf_e_cfcontatto() {
+    let arca = Finta::default();
+    let b = banco("cliente-nuovo", Some(arca.clone()));
+    let (_, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!(codice, "C000381");
+    let nuovo = json!({
+        "cf": {
+            "Cd_CF": "C000381",
+            "Descrizione": "BOTTAMEDI PIERLUIGI",
+            "PartitaIva": "02273530226",
+            "Indirizzo": "VIA S. ANTONIO 7",
+            "Cap": "38017",
+            "Localita": "MEZZOLOMBARDO",
+            "Cd_Provincia": "TN",
+            "Cd_PG": "B030",
+            "CodiceFPR": "0000000"
+        },
+        "contatto": { "Telefono": "0461 602534", "Fax": "0461 602534", "Email": "info@bottamedi.it" }
+    });
+
+    // Controlli: un motivo per riga, nulla salvato.
+    let mut errato = nuovo.clone();
+    errato["cf"]["PartitaIva"] = json!("02273530227");
+    errato["cf"]["Cd_PG"] = json!("ZZZ");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(errato)).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    assert!(errore["dettagli"][0].as_str().unwrap().contains("cifra di controllo"), "{errore}");
+    let mut senza_pagamento = nuovo.clone();
+    senza_pagamento["cf"]["Cd_PG"] = json!("ZZZ");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(senza_pagamento)).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    assert!(errore["messaggio"].as_str().unwrap().contains("pagamento ZZZ inesistente"), "{errore}");
+
+    let (stato, creato) = chiama(&b.router, "POST", "/api/clienti", Some(nuovo.clone())).await;
+    assert_eq!(stato, StatusCode::CREATED, "{creato}");
+    assert_eq!(creato["codice"], "C000381");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(nuovo)).await;
+    assert_eq!((stato, errore["codice"].as_str()), (StatusCode::CONFLICT, Some("codice_occupato")));
+
+    // Subito nelle anagrafiche di ATLAS, con i predefiniti di Arca e il contatto.
+    let (_, scheda) = chiama(&b.router, "GET", "/api/clienti/C000381", None).await;
+    assert_eq!(scheda["ragione_sociale"], "BOTTAMEDI PIERLUIGI");
+    assert_eq!(scheda["descrizione_pagamento"], "Bonifico 30 gg");
+    assert_eq!(scheda["extra"]["Cd_VL"], "EUR");
+    assert_eq!(scheda["extra"]["Id_Lingua"], 1040);
+    assert_eq!(scheda["contatti"][0]["dati"]["Telefono"], "0461 602534");
+    let (_, elenco) = chiama(&b.router, "GET", "/api/clienti?cerca=C000381", None).await;
+    assert_eq!(elenco[0]["contatto"]["Email"], "info@bottamedi.it");
+    let (_, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!(codice, "C000382");
+
+    // La replica lo scrive in Arca con tutte le colonne obbligatorie di CF.
+    aspetta(&b.router, |s| s["coda"]["in_coda"] == 0).await;
+    let scritti = arca.con(|s| s.clienti.clone());
+    assert_eq!(scritti.len(), 1);
+    let cf = &scritti[0]["cf"];
+    for (colonna, atteso) in [("Cliente", json!(true)), ("TipoCF", json!("C")), ("Ue", json!(true)), ("UserIns", json!("190"))] {
+        assert_eq!(cf[colonna], atteso, "{colonna}");
+    }
+    assert_eq!(scritti[0]["contatto"]["Id_CFContattoTipo"], -1);
+    assert_eq!(scritti[0]["contatto"]["Descrizione"], "Aziendale");
 }

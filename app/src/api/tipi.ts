@@ -139,6 +139,8 @@ export interface ClienteBreve {
   codice_fiscale: string | null;
   codice_destinatario: string | null;
   extra: Extra | null;
+  /** Il contatto principale (`CFContatto`): `Telefono`, `Email`… */
+  contatto: Extra | null;
 }
 
 export interface DestinazioneVista {
@@ -149,6 +151,15 @@ export interface DestinazioneVista {
   provincia: string | null;
   predefinita: boolean;
   obsoleto: boolean;
+  /** Gli altri campi di `CFDest` (codice destinatario, codice IPA, codice export…). */
+  extra: Extra | null;
+}
+
+/** Un contatto (`CFContatto`) del cliente o di una sua destinazione. */
+export interface ContattoVista {
+  id: number;
+  destinazione: string | null;
+  dati: Extra;
 }
 
 export interface ClienteScheda {
@@ -172,6 +183,7 @@ export interface ClienteScheda {
   scissione_pagamenti: boolean;
   obsoleto: boolean;
   destinazioni: DestinazioneVista[];
+  contatti: ContattoVista[];
   nazione: string | null;
   codice_ipa: string | null;
   conto_banca: string | null;
@@ -435,6 +447,8 @@ export interface Stato {
     in_coda: number;
     fermo: {
       evento: number;
+      /** Il cliente nuovo, se l'evento è di un cliente e non di un DDT. */
+      cliente: string | null;
       ddt: number;
       numero: number | null;
       esercizio: number | null;
@@ -457,6 +471,7 @@ export type Notifica =
   | { evento: "stato"; dati: StatoSync }
   | { evento: "ddt_creato"; dati: DdtCreato }
   | { evento: "ddt_rinumerato"; dati: Rinumerato }
+  | { evento: "cliente_creato"; dati: ClienteCreato }
   | { evento: "replica"; dati: { scritti: number; gia_presenti: number; fallito: [number, string] | null } }
   | {
       evento: "importazione";
@@ -464,6 +479,20 @@ export type Notifica =
     }
   | { evento: "note_cambiate" }
   | { evento: "ritardo"; dati: { perse: number } };
+
+/** Cliente nuovo salvato in ATLAS e accodato per Arca. */
+export interface ClienteCreato {
+  codice: string;
+  evento: number;
+}
+
+/** Campi con i nomi delle colonne di Arca, per `POST /api/clienti`. */
+export type CampiArca = Record<string, string | number | boolean | null>;
+
+export interface NuovoCliente {
+  cf: CampiArca;
+  contatto: CampiArca | null;
+}
 
 /** Riga del post-it della Home, condivisa fra le postazioni; si barra quando è fatta. */
 export interface Nota {

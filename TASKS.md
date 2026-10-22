@@ -276,6 +276,36 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     lotti, pesi e misure, costo e ricarico, origine). API: scheda cliente e articolo con `extra`, scheda articolo
     con i prezzi validi oggi per listino (ultima revisione), `GET /api/clienti/prossimo-codice` (C###### + 1).
     **Il database va riallineato** con `importa-anagrafiche` sul database di Arca (fino ad allora `extra` = `{}`).
+  - **Maschere Clienti e Articoli** (5b, il titolare: "snella ma con tutto completa"), verificate pagina per pagina
+    sulle maschere di Arca e sulle personalizzazioni (`docs/COPERTURA_ANAGRAFICHE.md`):
+    - Aree "Clienti" e "Articoli" nella barra, voci del menu Home (Anagrafiche › Clienti, Articoli › Gestione
+      Articoli) e "Elenco →" nel widget Anagrafiche. Ogni area (`anagrafiche/Area.tsx`) ha strumenti (Salva, Nuovo,
+      Aggiorna, |◀ ◀ ▶ ▶|), pagine Elenco e Scheda (`Ctrl+1/2`), `Alt+←/→` sull'ordine dell'elenco filtrato, `Esc`
+      dalla scheda all'elenco sulla stessa riga, `F5` rilegge.
+    - Elenchi con le colonne di Arca nel suo ordine (clienti: Telefono, Fax, Email dal contatto "Aziendale";
+      articoli: OB/AF e la legenda Fittizio/Obsoleto), filtri per colonna, layout salvato nella postazione.
+    - Scheda in una pagina sola a sezioni con l'indice a sinistra (`Alt+1…9`), campi con le decodifiche di
+      pagamenti, listini, agenti, aliquote, UM; i campi stanno in `anagrafiche/campi.ts` con i nomi di Arca.
+      Cliente: anche contatti, destinazioni con tutti i campi di `CFDest`, ultimi 30 DDT (si aprono nella Gestione
+      Documenti), Export (`xCd_Exp`), stabile organizzazione e rappresentante fiscale, Intra. Articolo: UM e fattori,
+      prezzi validi oggi, FE, produzione, eBusiness; avviso se manca l'IVA vendite (`xARIvaObb`).
+    - Importazione completata: `CF` e `AR` per intero (la prova `tutte_le_colonne_di_cf_e_ar_sono_importate`
+      confronta lo schema del negozio, le escluse hanno il motivo scritto), `CFDest` e `CFContatto` con `select *`
+      (migrazione 0007: `destinazioni.extra`, tabella `contatti`); `campi.test.ts` controlla che ogni colonna
+      importata abbia il suo campo nella scheda. Prima mancavano, fra gli altri, sede e rappresentante fiscale e
+      regime fiscale per la FE, codice export, codici articolo FE, scorta massima, giorni di riordino.
+    - **Cliente nuovo** (`Ctrl+N`): partita IVA → VIES → scheda precompilata con il codice successivo; `F10` salva
+      (`POST /api/clienti`, worker): `atlas-sync/src/clienti.rs` completa i campi obbligatori di `CF` letti sul
+      clone (TipoDitta, Cliente, TipoCF, Cd_VL, Id_Lingua 1040, Sconto/Provvigione vuoti, Fido 0, giorni fissi, Ue
+      dalla nazione, flag a 0), controlla partita IVA (cifra di controllo), codice fiscale, IBAN, codice
+      destinatario (7 caratteri o PEC), lunghezze delle colonne di `CF`, codifiche esistenti, codice libero; il
+      cliente è subito in ATLAS con il contatto "Aziendale" e un evento `CF` nell'outbox (migrazione 0007). La
+      replica lo scrive in `CF` e `CFContatto` in una transazione (nessun trigger sull'inserimento: si controlla
+      che siano quelli attesi), idempotente (stesso codice e ragione sociale = già scritto; altra ragione sociale =
+      coda ferma, "codice occupato" nel pannello Sincronizzazione). I contatti nati in ATLAS lasciano il posto a
+      quelli di Arca alla prima importazione.
+    - Prove: 6 vitest delle schede, 4 di `clienti.rs`, API del cliente nuovo con Arca finta, 3 scenari Playwright
+      (elenco e scheda clienti con documenti e frecce, cliente nuovo con errori e salvataggio, articoli).
 
   - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
     (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
@@ -410,34 +440,17 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Guardrail antierrore da tastiera: avviso per `Tara >= Lordo` o `Colli con decimali` (gestibili al 100% da tastiera: `Esc` correggi, `Invio` conferma).
    - Tasti funzione: `F3` (lookup prezzi), `F10` (salva documento), `Esc` (esci/annulla riga), `F12` (nuova riga).
 
-5b. **Maschere Clienti e Articoli (in corso)** — il titolare: "snella ma con tutto completa" (le schede di Arca
-   sono macchinose, ma nessun campo deve mancare). Fatto: backend (sopra) e `app/src/anagrafiche/GrigliaElenco.tsx`
-   (griglia generica degli elenchi: intestazioni personalizzabili, riga dei filtri, frecce/PgSu/PgGiù, `Invio`
-   apre, contatore). Tipi e chiamate già in `app/src/api` (`elencoClienti`, `prossimoCodiceCliente`,
-   `elencoArticoli`, `articolo`, `tabelle`). Da fare:
-   - `Clienti.tsx`: elenco con le colonne di Arca (Ragione Sociale, Codice, Indirizzo, CAP, Località, Provincia,
-     Nazione, Telefono, Fax, Cod.Dest./Email B2B, Partita Iva, Cod.Fiscale, Famiglia/Gruppo/Sottogruppo, Email) e
-     scheda a sezioni in una pagina sola: Anagrafica (codice, ragione sociale, tipo figura, P.IVA + nazione IVA con
-     "Cerca online", CF, PEPPOL, indirizzo); Contatti (da `CFContatto`, colonne da avere dal titolare);
-     Fatturazione elettronica (codice destinatario, IPA, ente pubblico, split, IVA sospesa, tipo fattura, aliquota,
-     reverse charge); Condizioni (pagamento, listini 1-2, agenti 1-2, sconto, provvigione, giorni fissi, spese
-     incasso/bolli); Banca (IBAN, BIC, banca sconto, ABI/CAB, SDD); DDT (vettore, porto, spedizione, destinazioni);
-     Altro (conto mastro, valuta, stato, fido, zona, settore, lingua, classi e gruppi, REA, ATECO, flag, cliente di
-     fatturazione); Note; inserito/modificato. Le decodifiche da `api.tabelle()`.
-   - "Nuovo cliente" parte dalla partita IVA (VIES precompila, `prossimo-codice`, predefiniti di Arca: EUR, conto
-     04010101001, EsclusoBlackList, FE_AddASW, italiano, persona giuridica). **Salva spento** finché non c'è la
-     scrittura in Arca (`CF`, `CFContatto`), da provare sul clone: servono dal titolare i risultati di
-     `SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN
-     ('CF','CFContatto') ORDER BY TABLE_NAME, ORDINAL_POSITION` e `SELECT TOP 3 * FROM CF WHERE Cd_CF IN
-     ('C000001','C000008','C000041')` (e lo stesso per `CFContatto`).
-   - `Articoli.tsx`: elenco (Codice, Descrizione, Famiglia/Gruppo/Sottogruppo, Marca, Categoria/Classe/Sottoclasse,
-     Sconto, Provvigione, Scorta minima, Lotto minimo, Lotto riordino, IVA vendite, IVA acquisti, Stato, UM) e
-     scheda: Generale (UM e fattori, stato, marca/modello, fittizio, lotto predefinito, classi, origine); IVA e
-     conti (l'IVA vendite è obbligatoria: `Preferenza.xARIvaObb`, `fedi_articolo_extracted.prg:162-176`); Prezzi
-     (listini validi, costo, ricarico, costo standard); Magazzino (scorte, lotti, ABC, valorizzazione, pesi e
-     misure); Note.
-   - Aree nell'App (come "documenti") e voci del menu Home (Anagrafiche › Clienti, Articoli › Gestione Articoli)
-     al posto di "[in Arca]"; prove Playwright; README.
+5b. **Maschere Clienti e Articoli** — fatte (vedi sopra e `docs/COPERTURA_ANAGRAFICHE.md`). Resta:
+   - **Da provare sul clone**: un cliente nuovo da ATLAS (F10) e la replica in `CF` + `CFContatto`; controllare in
+     Arca la scheda (Generale, Contabilità, contatto "Aziendale") e che `Id_CFContattoTipo` sia la colonna del tipo
+     del contatto. Poi `importa-anagrafiche` per avere in ATLAS tutti i campi, i contatti e le destinazioni complete.
+   - Contatto del cliente nuovo: oggi Telefono, Fax, Email. Per Cellulare, PEC, sito servono i nomi delle colonne di
+     `CFContatto` (dopo `importa-anagrafiche` sono nei dati dei contatti importati).
+   - Modifica ed eliminazione di clienti e articoli, articoli nuovi, destinazioni nuove, fornitori e agenti: per ora
+     in Arca. La modifica di `CF` passa dal trigger `CF_atrg_brd` (BEFORE UPDATE): va provata sul clone come per
+     `DOTes`.
+   - Pagina Documenti dell'articolo (righe di DDT), immagini (`ARImg`), dichiarazioni d'intento, ritenuta, cronologia
+     (`HistoryData`): vedi la copertura.
 
 6. **Gestione Cancellazioni Documenti e Riuso Numerazione**:
    - Hard Delete dal database operativo (zero colonne `is_deleted` nel DB ordinario).

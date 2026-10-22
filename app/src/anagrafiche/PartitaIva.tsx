@@ -1,7 +1,8 @@
 // "Partita IVA": si batte il numero e si leggono i dati ufficiali dell'azienda (servizio VIES della
 // Commissione europea, chiamato dal backend), già divisi nei campi dell'anagrafica: ragione
 // sociale, indirizzo, CAP, località, provincia. È il primo passo dell'anagrafica di un cliente
-// nuovo; con `confronto` mette accanto i dati che si hanno, per vedere se sono quelli ufficiali.
+// nuovo (con `onNuovo`, dalla maschera Clienti); con `confronto` mette accanto i dati che si hanno,
+// per vedere se sono quelli ufficiali.
 
 import { useEffect, useRef, useState } from "react";
 import { api, ErroreApi } from "../api/client";
@@ -24,11 +25,15 @@ const uguale = (a: string, b: string) => {
   return semplice(a) === semplice(b);
 };
 
-export function PartitaIva({ iniziale = "", confronto, onChiudi }: {
+export function PartitaIva({ iniziale = "", confronto, onChiudi, onNuovo, onApri }: {
   iniziale?: string;
   /** I dati che si hanno, campo per campo, da confrontare con quelli ufficiali. */
   confronto?: Partial<Record<Campo, string>>;
   onChiudi: () => void;
+  /** Cliente nuovo con i dati ufficiali (`null`: senza, per chi non ha partita IVA o senza rete). */
+  onNuovo?: (dati: DatiAzienda | null, numero: string) => void;
+  /** Apre il cliente che ha già questa partita IVA. */
+  onApri?: (codice: string) => void;
 }) {
   const [numero, setNumero] = useState(iniziale);
   const [dati, setDati] = useState<DatiAzienda | null>(null);
@@ -135,6 +140,25 @@ export function PartitaIva({ iniziale = "", confronto, onChiudi }: {
               </tbody>
             </table>
             {dati.indirizzo_vies && <p className="text-[11px] text-zinc-400">Indirizzo come lo dà VIES: {dati.indirizzo_vies.replace(/\n/g, " · ")}</p>}
+          </div>
+        )}
+
+        {onNuovo && (
+          <div className="flex items-center justify-end gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+            <button type="button" className="pulsante" onClick={() => onNuovo(null, numero.trim())}>
+              {numero.trim() ? "Nuovo cliente senza i dati ufficiali" : "Nuovo cliente senza partita IVA"}
+            </button>
+            {dati?.gia_presente && onApri ? (
+              <button type="button" className="pulsante-primario" onClick={() => onApri(dati.gia_presente!)}>
+                Apri {dati.gia_presente}
+              </button>
+            ) : (
+              dati && (
+                <button type="button" className="pulsante-primario" onClick={() => onNuovo(dati, numero.trim())}>
+                  Nuovo cliente con questi dati
+                </button>
+              )
+            )}
           </div>
         )}
       </div>

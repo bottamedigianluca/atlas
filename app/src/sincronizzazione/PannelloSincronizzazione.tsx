@@ -48,7 +48,10 @@ export function PannelloSincronizzazione() {
                 <Voce nome="Ultimo giro" valore={s.replica.ultimo_giro?.replace("T", " ") ?? "—"} />
                 {stato.coda.fermo && (
                   <p className="mt-2 text-rose-600 dark:text-rose-400">
-                    Fermo sul DDT {stato.coda.fermo.numero}/{stato.coda.fermo.esercizio} ({stato.coda.fermo.tentativi} tentativi):{" "}
+                    {stato.coda.fermo.cliente
+                      ? `Fermo sul cliente nuovo ${stato.coda.fermo.cliente}`
+                      : `Fermo sul DDT ${stato.coda.fermo.numero}/${stato.coda.fermo.esercizio}`}{" "}
+                    ({stato.coda.fermo.tentativi} tentativi):{" "}
                     {stato.coda.fermo.ultimo_errore}
                   </p>
                 )}

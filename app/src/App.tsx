@@ -1,5 +1,5 @@
-// All'avvio la Home (widget della postazione, `home/Home.tsx`), poi la finestra "Gestione
-// Documenti" di Arca per i DDT (BO): barra degli strumenti, pagine Elenco,
+// All'avvio la Home (widget della postazione, `home/Home.tsx`), poi le finestre Clienti e Articoli
+// (`anagrafiche/`, con i loro strumenti e tasti) e la finestra "Gestione Documenti" di Arca per i DDT (BO): barra degli strumenti, pagine Elenco,
 // Generale e DMS come in Arca, barra di stato con esito, totali, server e firma (direttiva
 // §3.6-3.7). La pagina Generale tiene montato il DDT in battitura: aprendo un documento
 // dall'elenco e tornando indietro, quello che si stava battendo è ancora lì.
@@ -17,6 +17,8 @@ import { Marchio, MarchioEsteso } from "./componenti/Marchio";
 import { Modale } from "./componenti/Modale";
 import { Consultazione } from "./documento/Consultazione";
 import { type ComandiDocumento, type Esito, NuovoDocumento } from "./documento/NuovoDocumento";
+import { Articoli } from "./anagrafiche/Articoli";
+import { Clienti } from "./anagrafiche/Clienti";
 import { PartitaIva } from "./anagrafiche/PartitaIva";
 import { Elenco } from "./elenco/Elenco";
 import { Home } from "./home/Home";
@@ -25,6 +27,7 @@ import { PannelloSincronizzazione } from "./sincronizzazione/PannelloSincronizza
 import { ProviderSincronizzazione, useSincronizzazione } from "./sincronizzazione/contesto";
 
 type Pagina = "Elenco" | "Generale" | "DMS";
+type AreaApp = "home" | "documenti" | "clienti" | "articoli";
 type Tema = "sistema" | "chiaro" | "scuro";
 type Totali = { righe: number; imponibile: string; totale: string } | null;
 
@@ -94,7 +97,11 @@ export function App() {
 }
 
 function Guscio() {
-  const [area, setArea] = useState<"home" | "documenti">("home");
+  const [area, setArea] = useState<AreaApp>("home");
+  // Clienti e Articoli si montano alla prima apertura e poi restano (un cliente nuovo in battitura
+  // non si perde passando ai documenti).
+  const [aperte, setAperte] = useState<ReadonlySet<AreaApp>>(new Set(["home", "documenti"]));
+  useEffect(() => setAperte((a) => (a.has(area) ? a : new Set([...a, area]))), [area]);
   const [pagina, setPaginaDocumenti] = useState<Pagina>("Generale");
   const setPagina = useCallback((p: Pagina) => {
     setArea("documenti");
@@ -165,6 +172,15 @@ function Guscio() {
           setArea("home");
           return;
         }
+      }
+      if (e.key === "F1") {
+        e.preventDefault();
+        setInformazioni(true);
+        return;
+      }
+      // Nelle anagrafiche gli altri tasti sono delle loro finestre (`anagrafiche/Area.tsx`).
+      if (area === "clienti" || area === "articoli") return;
+      if (e.ctrlKey && !e.shiftKey && !e.altKey) {
         const scelta = PAGINE.find((p) => p.tasto === e.key);
         if (scelta) {
           e.preventDefault();
@@ -191,14 +207,10 @@ function Guscio() {
         e.preventDefault();
         salva(e.key === "F12");
       }
-      if (e.key === "F1") {
-        e.preventDefault();
-        setInformazioni(true);
-      }
     };
     window.addEventListener("keydown", tasto);
     return () => window.removeEventListener("keydown", tasto);
-  }, [finestra, nuovo, salva, vai, setPagina]);
+  }, [finestra, nuovo, salva, vai, setPagina, area]);
 
   return (
     <div className="flex h-full flex-col">
@@ -209,6 +221,8 @@ function Guscio() {
             [
               ["home", "Home", "⌃0"],
               ["documenti", "Gestione Documenti", ""],
+              ["clienti", "Clienti", ""],
+              ["articoli", "Articoli", ""],
             ] as const
           ).map(([a, nome, tasto]) => (
             <button
@@ -287,9 +301,10 @@ function Guscio() {
       </div>
 
       <main className="min-h-0 flex-1">
-        <div className={inDocumenti ? "hidden" : "h-full"}>
+        <div className={area === "home" ? "h-full" : "hidden"}>
           <Home
-            attivo={!inDocumenti && !finestra}
+            attivo={area === "home" && !finestra}
+            onArea={setArea}
             onNuovo={nuovo}
             onApri={(id) => {
               setAperto(id);
@@ -323,6 +338,23 @@ function Guscio() {
         {inDocumenti && pagina === "Generale" && aperto !== null && (
           <div className="h-full">
             <Consultazione key={aperto} id={aperto} attivo={!finestra} />
+          </div>
+        )}
+        {aperte.has("clienti") && (
+          <div className={area === "clienti" ? "h-full" : "hidden"}>
+            <Clienti
+              attivo={area === "clienti" && !finestra}
+              onApriDdt={(id) => {
+                setAperto(id);
+                setCursore(id);
+                setPagina("Generale");
+              }}
+            />
+          </div>
+        )}
+        {aperte.has("articoli") && (
+          <div className={area === "articoli" ? "h-full" : "hidden"}>
+            <Articoli attivo={area === "articoli" && !finestra} />
           </div>
         )}
         {inDocumenti && pagina === "DMS" && (

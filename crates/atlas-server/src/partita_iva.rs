@@ -60,33 +60,12 @@ pub fn normalizza(nazione: &str, numero: &str) -> Result<(String, String), Error
     if numero.is_empty() || numero.len() > 14 || !numero.chars().all(|c| c.is_ascii_alphanumeric()) {
         return Err(ErroreApi::Bozza(vec![format!("partita IVA {numero} non valida")]));
     }
-    if nazione == "IT" && !cifra_di_controllo(&numero) {
+    if nazione == "IT" && !atlas_sync::clienti::cifra_di_controllo(&numero) {
         return Err(ErroreApi::Bozza(vec![format!("partita IVA {numero} non valida: la cifra di controllo non torna")]));
     }
     Ok((nazione, numero))
 }
 
-/// Cifra di controllo della partita IVA italiana (algoritmo di Luhn sulle prime 10 cifre).
-fn cifra_di_controllo(numero: &str) -> bool {
-    let cifre: Vec<u32> = numero.chars().filter_map(|c| c.to_digit(10)).collect();
-    if cifre.len() != 11 || numero.len() != 11 {
-        return false;
-    }
-    let somma: u32 = cifre
-        .iter()
-        .take(10)
-        .enumerate()
-        .map(|(i, &c)| {
-            if i.is_multiple_of(2) {
-                c
-            } else {
-                let doppio = c * 2;
-                if doppio > 9 { doppio - 9 } else { doppio }
-            }
-        })
-        .sum();
-    cifre.get(10) == Some(&((10 - somma % 10) % 10))
-}
 
 /// Indirizzo italiano di VIES ("VIA S. ANTONIO 7 \n38017 MEZZOLOMBARDO TN\n") nei campi
 /// dell'anagrafica; se non ha la forma attesa resta tutto in `indirizzo`.
@@ -186,6 +165,7 @@ impl Vies {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use atlas_sync::clienti::cifra_di_controllo;
 
     #[test]
     fn cifra_di_controllo_italiana() {

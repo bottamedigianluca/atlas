@@ -46,4 +46,6 @@ pub enum ErroreDb {
     RiferimentiInesistenti(String),
     #[error("{0} inesistente")]
     NonTrovato(String),
+    #[error("il codice {0} è già di un altro cliente")]
+    CodiceOccupato(String),
 }

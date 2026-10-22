@@ -97,6 +97,11 @@ impl Servizio {
         self.lettori.leggi(|conn| Ok(atlas_db::note::elenco(conn)?)).await
     }
 
+    pub async fn crea_cliente(&self, cliente: atlas_sync::clienti::NuovoCliente) -> Result<crate::worker::ClienteCreato, ErroreApi> {
+        let cliente = Box::new(cliente);
+        self.al_worker(|risposta| Comando::CreaCliente { cliente, risposta }).await?
+    }
+
     pub async fn nota(&self, operazione: OperazioneNota) -> Result<Option<atlas_db::note::Nota>, ErroreApi> {
         self.al_worker(|risposta| Comando::Nota { operazione, risposta }).await?
     }
@@ -171,7 +176,7 @@ impl Servizio {
             .leggi(move |conn| {
                 let coda = consultazione::coda(conn)?;
                 let mut conflitti = Vec::new();
-                if let Some(fermo) = &coda.fermo {
+                if let Some(fermo) = coda.fermo.as_ref().filter(|f| f.cliente.is_none()) {
                     conflitti.push(Conflitto {
                         origine: "replica",
                         ddt: fermo.ddt,

@@ -136,6 +136,13 @@ pub fn anagrafiche() -> Anagrafiche {
             aliquota: None,
             predefinita: true,
             obsoleto: false,
+            extra: r#"{"CodiceFPR":null,"xCd_Exp":null}"#.into(),
+        }],
+        contatti: vec![Contatto {
+            id: 1,
+            cliente: "C000380".into(),
+            destinazione: None,
+            dati: r#"{"Descrizione":"Aziendale","Fax":"0461 602772","Id_CFContattoTipo":-1,"Telefono":"0461 602772"}"#.into(),
         }],
         predefiniti_righe: PredefinitiRighe {
             conto_ricavo: "07010101001".into(),

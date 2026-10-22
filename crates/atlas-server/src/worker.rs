@@ -24,6 +24,7 @@ use atlas_core::numerazione::{NumeroNonValido, Sezionale, TipoDocumento};
 use atlas_db::ddt::{self, TIPO_DOCUMENTO};
 use atlas_db::note::{self, CampiNota, Nota};
 use atlas_db::{ErroreDb, importazione as stato_importazione, outbox};
+use atlas_sync::clienti::NuovoCliente;
 use atlas_sync::importazione::{self, Origine};
 use atlas_sync::numerazione::{self, ATTESA_ARCA};
 use atlas_sync::replica::{self, Destinazione};
@@ -115,6 +116,14 @@ pub struct DdtCreato {
     pub senza_arca: Option<String>,
 }
 
+/// Un cliente nuovo appena salvato in ATLAS.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ClienteCreato {
+    pub codice: String,
+    /// Evento di replica accodato.
+    pub evento: i64,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Rinumerato {
     pub id: i64,
@@ -146,6 +155,11 @@ pub enum Comando {
         esercizio: i32,
         risposta: oneshot::Sender<Result<NumeriLiberi, ErroreApi>>,
     },
+    /// Cliente nuovo: salvato in ATLAS e accodato per Arca (`CF`, `CFContatto`).
+    CreaCliente {
+        cliente: Box<NuovoCliente>,
+        risposta: oneshot::Sender<Result<ClienteCreato, ErroreApi>>,
+    },
     /// Giri di replica e importazione subito.
     Sincronizza { risposta: oneshot::Sender<()> },
     /// Post-it della Home: crea, modifica o elimina (allora la risposta è `None`).
@@ -168,6 +182,7 @@ impl std::fmt::Debug for Comando {
             Self::Crea { bozza, .. } => f.debug_struct("Crea").field("cliente", &bozza.cliente).finish(),
             Self::Rinumera { id, .. } => f.debug_struct("Rinumera").field("id", id).finish(),
             Self::Liberi { esercizio, .. } => f.debug_struct("Liberi").field("esercizio", esercizio).finish(),
+            Self::CreaCliente { cliente, .. } => f.debug_struct("CreaCliente").field("codice", &cliente.codice()).finish(),
             Self::Sincronizza { .. } => f.write_str("Sincronizza"),
             Self::Nota { operazione, .. } => f.debug_tuple("Nota").field(operazione).finish(),
         }
@@ -235,6 +250,7 @@ impl StatoSync {
 pub enum Notifica {
     DdtCreato(DdtCreato),
     DdtRinumerato(Rinumerato),
+    ClienteCreato(ClienteCreato),
     /// Documenti scritti in Arca da un giro di replica.
     Replica { scritti: usize, gia_presenti: usize, fallito: Option<(i64, String)> },
     /// Documenti del database ATLAS cambiati da un giro di importazione.
@@ -587,6 +603,14 @@ impl<O: Origine, D: Replica> Worker<O, D> {
             Comando::Liberi { esercizio, risposta } => {
                 let _ = risposta.send(self.liberi(esercizio).await);
             }
+            Comando::CreaCliente { mut cliente, risposta } => {
+                let esito = self.crea_cliente(&mut cliente);
+                if let Ok(creato) = &esito {
+                    let _ = self.notifiche.send(Notifica::ClienteCreato(creato.clone()));
+                    self.prossima_replica = Some(Instant::now());
+                }
+                let _ = risposta.send(esito);
+            }
             Comando::Sincronizza { risposta } => {
                 self.prossima_replica = Some(Instant::now());
                 self.prossima_importazione = Instant::now();
@@ -600,6 +624,23 @@ impl<O: Origine, D: Replica> Worker<O, D> {
                 let _ = risposta.send(esito);
             }
         }
+    }
+
+    /// Completa il cliente con i predefiniti di Arca, lo controlla e lo salva con il suo evento.
+    fn crea_cliente(&mut self, cliente: &mut NuovoCliente) -> Result<ClienteCreato, ErroreApi> {
+        let adesso = adesso();
+        cliente.completa(&self.predefiniti.operatore, adesso);
+        let problemi = cliente.controlla();
+        if !problemi.is_empty() {
+            return Err(ErroreApi::Bozza(problemi));
+        }
+        let payload = serde_json::to_string(&cliente).map_err(ErroreDb::from)?;
+        let contatto = cliente.contatto.as_ref().map(|c| serde_json::Value::Object(c.clone()).to_string());
+        let salvato = atlas_db::anagrafiche::crea_cliente(&mut self.db, &cliente.in_atlas(), contatto.as_deref(), &payload, adesso)?;
+        Ok(ClienteCreato {
+            codice: salvato.codice,
+            evento: salvato.evento,
+        })
     }
 
     fn nota(&self, operazione: OperazioneNota) -> Result<Option<Nota>, ErroreApi> {
