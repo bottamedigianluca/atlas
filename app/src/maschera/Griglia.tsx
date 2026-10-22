@@ -138,7 +138,7 @@ export function Griglia({ stato, calcolate, layout, attiva, solaLettura = false,
 
   return (
     <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-zinc-950" role="grid" aria-label="Righe del documento">
-      <div style={{ width: larghezzaTotale }} className="relative">
+      <div style={{ width: larghezzaTotale }} className="relative flex min-h-full flex-col">
         <Intestazione
           griglia={GRIGLIA_RIGHE}
           colonne={colonne}
@@ -162,6 +162,12 @@ export function Griglia({ stato, calcolate, layout, attiva, solaLettura = false,
             onTasto={tasto}
           />
         ))}
+        {/* Sotto le righe le linee delle colonne continuano fino in fondo, come nella griglia di Arca. */}
+        <div aria-hidden className="flex flex-1">
+          {colonne.map((c) => (
+            <div key={c.id} style={{ width: layout.larghezze[c.id] ?? c.larghezza }} className="shrink-0 border-r border-zinc-200/70 last:border-r-0 dark:border-zinc-800" />
+          ))}
+        </div>
       </div>
       {menu && (
         <MenuColonne

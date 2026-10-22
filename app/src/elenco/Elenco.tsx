@@ -91,7 +91,12 @@ function giorniFa(n: number): string {
   return fData(d.toLocaleDateString("sv-SE"));
 }
 
-export function Elenco({ attivo, onApri }: { attivo: boolean; onApri: (id: number) => void }) {
+export function Elenco({ attivo, onApri, onDocumenti }: {
+  attivo: boolean;
+  onApri: (id: number) => void;
+  /** Gli id nell'ordine dell'elenco: servono a Precedente/Successivo della barra strumenti. */
+  onDocumenti?: (ids: number[]) => void;
+}) {
   const [dal, setDal] = useState(giorniFa(7));
   const [al, setAl] = useState("");
   const [cliente, setCliente] = useState("");
@@ -113,6 +118,7 @@ export function Elenco({ attivo, onApri }: { attivo: boolean; onApri: (id: numbe
       .then((d) => {
         if (!valida) return;
         setDocumenti(d);
+        onDocumenti?.(d.map((x) => x.id));
         setErrore(null);
         setScelta((s) => Math.min(s, Math.max(d.length - 1, 0)));
       })
@@ -173,7 +179,7 @@ export function Elenco({ attivo, onApri }: { attivo: boolean; onApri: (id: numbe
           e.preventDefault();
         }}
       >
-        <div style={{ width: larghezza }}>
+        <div style={{ width: larghezza }} className="flex min-h-full flex-col">
           <Intestazione griglia={GRIGLIA_ELENCO} colonne={colonne} layout={layout} altezza={20} onLayout={setLayout} onMenu={(x, y) => setMenu({ x, y })} />
           {documenti.map((d, i) => {
             const selezionata = i === scelta;
@@ -211,6 +217,11 @@ export function Elenco({ attivo, onApri }: { attivo: boolean; onApri: (id: numbe
               </div>
             );
           })}
+          <div aria-hidden className="flex flex-1">
+            {colonne.map((c) => (
+              <div key={c.id} style={{ width: layout.larghezze[c.id] ?? c.larghezza }} className="shrink-0 border-r border-zinc-100 dark:border-zinc-900" />
+            ))}
+          </div>
         </div>
         {menu && (
           <MenuColonne griglia={GRIGLIA_ELENCO} layout={layout} x={menu.x} y={menu.y} onLayout={setLayout} onChiudi={() => setMenu(null)} />

@@ -284,13 +284,15 @@ export const NuovoDocumento = forwardRef<ComandiDocumento, Props>(function Nuovo
             )}
           </>
         }
-      />
-      <BarraSchede
-        attiva={schedaAttiva}
-        onScheda={(s) => {
-          setSchedaAttiva(s);
-          if (s === "Righe") setZona("griglia");
-        }}
+        schede={
+          <BarraSchede
+            attiva={schedaAttiva}
+            onScheda={(s) => {
+              setSchedaAttiva(s);
+              if (s === "Righe") setZona("griglia");
+            }}
+          />
+        }
       />
       <div className="flex min-h-0 flex-1 flex-col bg-white dark:bg-zinc-950">
         {schedaAttiva === "Righe" && (

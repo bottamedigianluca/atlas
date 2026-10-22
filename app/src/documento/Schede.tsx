@@ -15,7 +15,7 @@ export type Scheda = (typeof SCHEDE)[number];
 
 export function BarraSchede({ attiva, onScheda }: { attiva: Scheda; onScheda: (s: Scheda) => void }) {
   return (
-    <div role="tablist" aria-label="Schede del documento" className="flex gap-0.5 border-b border-zinc-200 px-3 dark:border-zinc-800">
+    <div role="tablist" aria-label="Schede del documento" title="Ctrl+PgSu / Ctrl+PgGiù: scheda precedente / successiva" className="flex gap-0.5">
       {SCHEDE.map((s) => (
         <button
           key={s}
@@ -24,7 +24,7 @@ export function BarraSchede({ attiva, onScheda }: { attiva: Scheda; onScheda: (s
           aria-selected={attiva === s}
           tabIndex={-1}
           onClick={() => onScheda(s)}
-          className={`-mb-px rounded-t-md border px-3 py-1 text-[12px] font-medium ${
+          className={`-mb-px rounded-t-md border px-2.5 py-0.5 text-[12px] font-medium ${
             attiva === s
               ? "border-zinc-200 border-b-white bg-white text-zinc-900 dark:border-zinc-800 dark:border-b-zinc-950 dark:bg-zinc-950 dark:text-white"
               : "border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
@@ -33,9 +33,6 @@ export function BarraSchede({ attiva, onScheda }: { attiva: Scheda; onScheda: (s
           {s}
         </button>
       ))}
-      <span className="ml-auto self-center text-[10px] text-zinc-400">
-        <kbd className="tasto">Ctrl</kbd>+<kbd className="tasto">PgSu</kbd>/<kbd className="tasto">PgGiù</kbd> scheda
-      </span>
     </div>
   );
 }

@@ -95,5 +95,12 @@ test("un DDT battuto solo da tastiera, con F3 prezzi, guardrail e F10", async ({
   await page.keyboard.press("Enter");
   await expect(page.locator("[data-prova=ragione-sociale]:visible")).toContainText("Catering Service");
   await expect(page.getByRole("button", { name: "Torna al documento in battitura" })).toBeVisible();
+  // Dal documento in battitura, Alt+↓ (Precedente, le frecce di Arca) apre l'ultimo DDT salvato.
+  await page.getByRole("button", { name: "Torna al documento in battitura" }).click();
+  await expect(page.locator("#testata-cliente")).toBeVisible();
+  await page.keyboard.press("Alt+ArrowDown");
+  await expect(page.locator("[data-prova=ragione-sociale]:visible")).toContainText("Catering Service");
+  await page.keyboard.press("Alt+ArrowUp");
+  await expect(page.locator("#testata-cliente")).toBeVisible();
   await page.screenshot({ path: "test-results/maschera-salvata.png" });
 });

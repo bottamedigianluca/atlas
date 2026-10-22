@@ -214,10 +214,13 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   `app/src-tauri`):
   - **Rifatta sulla finestra di Arca** (richiesta del titolare: "stile iOS ma praticamente come era su Arca, se no un
     operatore non sa più come muoversi"; riferimenti `docs/screenshot_arca/01_…` e `04_…` e la struttura di
-    `fedi_doc`): finestra "Gestione Documenti" con barra strumenti (Nuovo `Ctrl+N`, Salva `F10`, Salva e stampa
-    `F12`, Annulla, Elimina per il Task 6) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Generale: testata in
+    `fedi_doc`): finestra "Gestione Documenti" con la barra strumenti nell'ordine di quella di Arca (Salva `F10`,
+    Annulla | Salva e stampa `F12` | Nuovo `Ctrl+N`, Elimina per il Task 6 | documento Precedente/Successivo
+    `Alt+↓/↑`, le frecce arancioni di Arca) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Tema chiaro
+    predefinito (priorità del titolare: le posizioni come in Arca, colori e forme liberi). Generale: testata in
     una fila (Tipo BO, Cliente, Data GG-MM-AAAA, Numero, Valuta EUR, Cambio 1.000000, Destinazione se il cliente ne
-    ha) con il riquadro rosso di ragione sociale, indirizzo e codice destinatario; schede Testa, Righe, Piede, Totali,
+    ha) e sotto le schede, con il riquadro rosso di ragione sociale, indirizzo e codice destinatario alla loro destra;
+    le linee delle colonne della griglia arrivano fino in fondo come in Arca; schede Testa, Righe, Piede, Totali,
     Info, Evasioni, Stampe (`Ctrl+PgSu/PgGiù`) con i riquadri dei contenitori di Arca (pagamento, dati contabili,
     varie, stato; dati DDT con trasporto V, spedizione M, porto F, aspetto beni AV e pesi a zero come nei BO di
     Arca; totali, merce, IVA, provvigioni). Righe: titolo rosso "DETTAGLIO DOCUMENTO", griglia, sotto "Evade" a

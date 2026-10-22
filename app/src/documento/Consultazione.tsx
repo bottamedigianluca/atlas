@@ -93,8 +93,8 @@ export function Consultazione({ id, attivo }: { id: number; attivo: boolean }) {
             <BadgeArca stato={ddt.arca} />
           </>
         }
+        schede={<BarraSchede attiva={schedaAttiva} onScheda={setSchedaAttiva} />}
       />
-      <BarraSchede attiva={schedaAttiva} onScheda={setSchedaAttiva} />
       <div className="flex min-h-0 flex-1 flex-col bg-white dark:bg-zinc-950">
         {schedaAttiva === "Righe" && (
           <Griglia

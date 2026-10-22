@@ -3,11 +3,14 @@
 // §3.6-3.7). La pagina Generale tiene montato il DDT in battitura: aprendo un documento
 // dall'elenco e tornando indietro, quello che si stava battendo è ancora lì.
 //
-// Tasti: Ctrl+N nuovo, F10 salva, F12 salva e stampa, Ctrl+1/2/3 pagine Elenco/Generale/DMS,
-// F1 informazioni.
+// La barra strumenti ha l'ordine di quella di Arca: Salva, Annulla | Stampa | Nuovo, Elimina |
+// documento precedente e successivo (le frecce arancioni di Arca).
+//
+// Tasti: Ctrl+N nuovo, F10 salva, F12 salva e stampa, Alt+↓/↑ documento precedente/successivo,
+// Ctrl+1/2/3 pagine Elenco/Generale/DMS, F1 informazioni.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { impostaServer, indirizzoServer } from "./api/client";
+import { api, impostaServer, indirizzoServer } from "./api/client";
 import { BadgeSemaforo } from "./componenti/Badge";
 import { Modale } from "./componenti/Modale";
 import { Consultazione } from "./documento/Consultazione";
@@ -35,9 +38,10 @@ export const SPEC = '[ SPEC: BG-2026 / 46.2144° N, 11.0964° E — MEZZOLOMBARD
 function leggiTema(): Tema {
   try {
     const t = localStorage.getItem("atlas.tema");
-    return t === "chiaro" || t === "scuro" ? t : "sistema";
+    // Predefinito il chiaro, quello della postazione al banco; scuro e sistema si scelgono.
+    return t === "sistema" || t === "scuro" ? t : "chiaro";
   } catch {
-    return "sistema";
+    return "chiaro";
   }
 }
 
@@ -59,7 +63,7 @@ function useTema(): [Tema, () => void] {
     sistema.addEventListener("change", applica);
     return () => sistema.removeEventListener("change", applica);
   }, [tema]);
-  const prossimo = () => setTema((t) => (t === "sistema" ? "scuro" : t === "scuro" ? "chiaro" : "sistema"));
+  const prossimo = () => setTema((t) => (t === "chiaro" ? "scuro" : t === "scuro" ? "sistema" : "chiaro"));
   return [tema, prossimo];
 }
 
@@ -91,6 +95,27 @@ function Guscio() {
     setEsito(null);
     documento.current?.nuovo();
   }, []);
+  // Precedente e Successivo scorrono i documenti nell'ordine dell'elenco (dal più recente). Dal
+  // documento in battitura, Precedente apre l'ultimo salvato.
+  const [documenti, setDocumenti] = useState<number[]>([]);
+  const scorri = useCallback(
+    async (passo: 1 | -1) => {
+      let ids = documenti;
+      if (!ids.length) {
+        ids = (await api.elencoDdt({ limite: 1000 }).catch(() => [])).map((d) => d.id);
+        setDocumenti(ids);
+      }
+      const posizione = aperto === null ? -1 : ids.indexOf(aperto);
+      const prossimo = ids[posizione + passo];
+      if (prossimo !== undefined) {
+        setAperto(prossimo);
+        setPagina("Generale");
+      } else if (passo === -1 && aperto !== null) {
+        setAperto(null);
+      }
+    },
+    [documenti, aperto],
+  );
   const salva = useCallback(
     (stampa: boolean) => {
       if (inBattitura) documento.current?.salva(stampa);
@@ -116,6 +141,11 @@ function Guscio() {
           return;
         }
       }
+      if (e.altKey && !e.ctrlKey && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+        e.preventDefault();
+        void scorri(e.key === "ArrowDown" ? 1 : -1);
+        return;
+      }
       if (e.key === "F10" || e.key === "F12") {
         e.preventDefault();
         salva(e.key === "F12");
@@ -127,7 +157,7 @@ function Guscio() {
     };
     window.addEventListener("keydown", tasto);
     return () => window.removeEventListener("keydown", tasto);
-  }, [finestra, nuovo, salva]);
+  }, [finestra, nuovo, salva, scorri]);
 
   return (
     <div className="flex h-full flex-col">
@@ -151,14 +181,28 @@ function Guscio() {
 
       {/* Barra degli strumenti della finestra documenti. */}
       <nav aria-label="Strumenti" className="flex h-9 shrink-0 items-center gap-1 border-b border-zinc-200 bg-zinc-50/80 px-2 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <Strumento nome="Nuovo" tasto="Ctrl+N" onClick={nuovo} />
-        <Strumento nome="Salva" tasto="F10" disabled={!inBattitura} onClick={() => salva(false)} />
-        <Strumento nome="Salva e stampa" tasto="F12" disabled={!inBattitura} onClick={() => salva(true)} />
-        <Strumento nome="Annulla" disabled={!inBattitura} onClick={() => documento.current?.annulla()} />
-        <Strumento nome="Elimina" disabled title="Eliminazione dei DDT: Task 6" />
-        <span className="mx-2 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />
+        <Strumento icona="salva" nome="Salva" tasto="F10" disabled={!inBattitura} onClick={() => salva(false)} />
+        <Strumento icona="annulla" nome="Annulla" disabled={!inBattitura} onClick={() => documento.current?.annulla()} />
+        <Separatore />
+        <Strumento icona="stampa" nome="Salva e stampa" tasto="F12" disabled={!inBattitura} onClick={() => salva(true)} />
+        <Separatore />
+        <Strumento icona="nuovo" nome="Nuovo" tasto="Ctrl+N" onClick={nuovo} />
+        <Strumento icona="elimina" nome="Elimina" disabled title="Eliminazione dei DDT: Task 6" />
+        <Separatore />
+        <Strumento icona="giu" nome="Precedente" tasto="Alt+↓" title="Documento precedente (più vecchio)" onClick={() => void scorri(1)} />
+        <Strumento
+          icona="su"
+          nome="Successivo"
+          tasto="Alt+↑"
+          title="Documento successivo (più recente); dall'ultimo torna al documento in battitura"
+          disabled={aperto === null}
+          onClick={() => void scorri(-1)}
+        />
         {aperto !== null && pagina === "Generale" && (
-          <Strumento nome="Torna al documento in battitura" onClick={() => setAperto(null)} />
+          <>
+            <Separatore />
+            <Strumento icona="nuovo" nome="Torna al documento in battitura" onClick={() => setAperto(null)} />
+          </>
         )}
       </nav>
 
@@ -188,6 +232,7 @@ function Guscio() {
         <div className={pagina === "Elenco" ? "h-full" : "hidden"}>
           <Elenco
             attivo={pagina === "Elenco" && !finestra}
+            onDocumenti={setDocumenti}
             onApri={(id) => {
               setAperto(id);
               setPagina("Generale");
@@ -195,7 +240,11 @@ function Guscio() {
           />
         </div>
         <div className={inBattitura ? "h-full" : "hidden"}>
-          <NuovoDocumento ref={documento} attivo={inBattitura && !finestra} onEsito={setEsito} onTotali={setTotali} />
+          <NuovoDocumento ref={documento} attivo={inBattitura && !finestra} onEsito={(e) => {
+              setEsito(e);
+              // Un DDT salvato cambia l'elenco di Precedente/Successivo: si rilegge alla prossima freccia.
+              if (e?.tipo === "salvato" || e?.tipo === "avviso") setDocumenti([]);
+            }} onTotali={setTotali} />
         </div>
         {pagina === "Generale" && aperto !== null && (
           <div className="h-full">
@@ -220,19 +269,52 @@ function Guscio() {
   );
 }
 
-function Strumento({ nome, tasto, disabled, title, onClick }: { nome: string; tasto?: string; disabled?: boolean; title?: string; onClick?: () => void }) {
+type NomeIcona = "salva" | "annulla" | "stampa" | "nuovo" | "elimina" | "giu" | "su";
+
+const ICONE: Record<NomeIcona, React.ReactNode> = {
+  salva: <path d="M3 2.5h8.5L14 5v8.5H3zM5.5 2.5v3.5h5v-3.5M5 13.5v-4h7v4" />,
+  annulla: <path d="M5 4 2.5 6.5 5 9M2.5 6.5H10a3.5 3.5 0 0 1 0 7H6" />,
+  stampa: <path d="M4.5 6V2.5h7V6M4.5 11H2.5V6h11v5h-2M4.5 9h7v4.5h-7z" />,
+  nuovo: <path d="M4 1.5h5.5L12.5 4.5v10H4zM9.5 1.5v3h3M8.25 7v5M5.75 9.5h5" />,
+  elimina: <path d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.7 9.5h5.6l.7-9.5" />,
+  giu: <path d="M8 2.5v11M3.5 9 8 13.5 12.5 9" />,
+  su: <path d="M8 13.5v-11M3.5 7 8 2.5 12.5 7" />,
+};
+
+function Strumento({ icona, nome, tasto, disabled, title, onClick }: {
+  icona: NomeIcona;
+  nome: string;
+  tasto?: string;
+  disabled?: boolean;
+  title?: string;
+  onClick?: () => void;
+}) {
+  const freccia = icona === "giu" || icona === "su";
   return (
     <button
       type="button"
       disabled={disabled}
       title={title}
       onClick={onClick}
-      className="flex h-7 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium text-zinc-700 hover:bg-zinc-200/70 disabled:opacity-40 disabled:hover:bg-transparent dark:text-zinc-200 dark:hover:bg-zinc-700/60"
+      className="flex h-7 items-center gap-1.5 rounded-md px-2 text-[12px] font-medium text-zinc-700 hover:bg-zinc-200/70 disabled:opacity-40 disabled:hover:bg-transparent dark:text-zinc-200 dark:hover:bg-zinc-700/60"
     >
+      <svg
+        viewBox="0 0 16 16"
+        aria-hidden
+        className={`size-4 shrink-0 fill-none stroke-[1.4] [stroke-linecap:round] [stroke-linejoin:round] ${
+          freccia ? "stroke-[#e8890c]" : "stroke-[#007aff] dark:stroke-[#0a84ff]"
+        }`}
+      >
+        {ICONE[icona]}
+      </svg>
       {nome}
       {tasto && <kbd className="tasto">{tasto}</kbd>}
     </button>
   );
+}
+
+function Separatore() {
+  return <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" />;
 }
 
 const COLORI_ESITO = {

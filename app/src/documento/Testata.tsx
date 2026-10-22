@@ -1,7 +1,7 @@
 // Testata del documento come nella maschera di Arca (`docs/screenshot_arca/01_…`): una fila con
-// Tipo, Cliente, Data, Numero, Valuta, Cambio e, a destra, il riquadro con ragione sociale,
-// indirizzo e codice destinatario in rosso. La destinazione (`txtCFDest`) compare quando il
-// cliente ne ha.
+// Tipo, Cliente, Data, Numero, Valuta, Cambio, sotto le schede (Testa, Righe, Piede…) e, a destra
+// di entrambe, il riquadro con ragione sociale, indirizzo e codice destinatario in rosso. La
+// destinazione (`txtCFDest`) compare quando il cliente ne ha.
 //
 // Nel DDT nuovo si battono Cliente (F3 ricerca), Data, Numero (F3 numeri liberi; vuoto = il
 // prossimo) e Destinazione (F3). `Invio` sul cliente porta alla destinazione, se c'è, e poi
@@ -40,9 +40,11 @@ interface Props {
   onTasto?: (campo: keyof CampiTestata, e: KeyboardEvent<HTMLInputElement>) => void;
   onFuoco?: () => void;
   stato?: ReactNode;
+  /** Barra delle schede, sotto i campi come in Arca. */
+  schede?: ReactNode;
 }
 
-export function Testata({ vista, campi, conDestinazioni = false, onCampo, onTasto, onFuoco, stato }: Props) {
+export function Testata({ vista, campi, conDestinazioni = false, onCampo, onTasto, onFuoco, stato, schede }: Props) {
   const modifica = !!campi;
   const props = (campo: keyof CampiTestata) =>
     modifica
@@ -61,33 +63,36 @@ export function Testata({ vista, campi, conDestinazioni = false, onCampo, onTast
   const mostraDestinazione = conDestinazioni || !!vista.destinazione;
 
   return (
-    <section aria-label="Testata del documento" className="flex items-stretch gap-3 border-b border-zinc-200 px-3 py-1.5 dark:border-zinc-800">
-      <div className="flex items-end gap-2">
-        <Campo etichetta="Tipo" readOnly value="BO" larghezza={40} tabIndex={-1} className="text-center font-semibold" />
-        <Campo etichetta="Cliente" tasto={modifica ? "F3" : undefined} larghezza={96} className="font-mono font-semibold uppercase" {...props("cliente")} />
-        <Campo
-          etichetta="Data"
-          larghezza={92}
-          placeholder="GG-MM-AAAA"
-          aria-invalid={dataErrata || undefined}
-          className={`cifre ${dataErrata ? "border-rose-500 text-rose-600" : ""}`}
-          {...props("data")}
-        />
-        <Campo etichetta="Numero" tasto={modifica ? "F3" : undefined} numerico larghezza={84} placeholder={modifica ? "auto" : ""} inputMode="numeric" {...props("numero")} />
-        <Campo etichetta="Valuta" readOnly value="EUR" larghezza={46} tabIndex={-1} />
-        <Campo etichetta="Cambio" readOnly value="1.000000" numerico larghezza={76} tabIndex={-1} />
-        {mostraDestinazione && (
+    <section aria-label="Testata del documento" className="flex items-stretch gap-3 border-b border-zinc-200 px-3 pt-1.5 dark:border-zinc-800">
+      <div className="flex shrink-0 flex-col gap-1.5">
+        <div className="flex items-end gap-2">
+          <Campo etichetta="Tipo" readOnly value="BO" larghezza={40} tabIndex={-1} className="text-center font-semibold" />
+          <Campo etichetta="Cliente" tasto={modifica ? "F3" : undefined} larghezza={96} className="font-mono font-semibold uppercase" {...props("cliente")} />
           <Campo
-            etichetta="Destinazione"
-            tasto={modifica ? "F3" : undefined}
+            etichetta="Data"
             larghezza={92}
-            className="font-mono uppercase"
-            {...props("destinazione")}
+            placeholder="GG-MM-AAAA"
+            aria-invalid={dataErrata || undefined}
+            className={`cifre ${dataErrata ? "border-rose-500 text-rose-600" : ""}`}
+            {...props("data")}
           />
-        )}
+          <Campo etichetta="Numero" tasto={modifica ? "F3" : undefined} numerico larghezza={84} placeholder={modifica ? "auto" : ""} inputMode="numeric" {...props("numero")} />
+          <Campo etichetta="Valuta" readOnly value="EUR" larghezza={46} tabIndex={-1} />
+          <Campo etichetta="Cambio" readOnly value="1.000000" numerico larghezza={76} tabIndex={-1} />
+          {mostraDestinazione && (
+            <Campo
+              etichetta="Destinazione"
+              tasto={modifica ? "F3" : undefined}
+              larghezza={92}
+              className="font-mono uppercase"
+              {...props("destinazione")}
+            />
+          )}
+        </div>
+        {schede}
       </div>
       {/* Riquadro anagrafico in rosso, come in Arca. */}
-      <div className="min-w-0 flex-1 rounded-md border border-zinc-300 px-2 py-1 text-[11.5px] leading-tight text-[#c0161e] dark:border-zinc-700 dark:text-[#ff6b6b]">
+      <div className="mb-1.5 min-w-0 flex-1 rounded-md border border-zinc-300 px-2 py-1 text-[11.5px] leading-tight text-[#c0161e] dark:border-zinc-700 dark:text-[#ff6b6b]">
         <div className="truncate font-semibold" data-prova="ragione-sociale">
           {vista.ragioneSociale || " "}
         </div>
@@ -97,7 +102,7 @@ export function Testata({ vista, campi, conDestinazioni = false, onCampo, onTast
           {vista.descrizioneDestinazione && <span className="ml-3">Destinazione: {vista.descrizioneDestinazione}</span>}
         </div>
       </div>
-      {stato && <div className="flex w-44 shrink-0 flex-col items-end justify-center gap-1 text-[11px]">{stato}</div>}
+      {stato && <div className="mb-1.5 flex w-44 shrink-0 flex-col items-end justify-center gap-1 text-[11px]">{stato}</div>}
     </section>
   );
 }
