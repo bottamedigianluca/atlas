@@ -1,4 +1,4 @@
-import { data, decimale, importo, mostra, prezzo, valore } from "./numeri";
+import { data, decimale, fattore, importo, mostra, prezzo, quantita, valore } from "./numeri";
 
 test("decimali battuti con la virgola o il punto", () => {
   expect(decimale("5,46")).toBe("5.46");
@@ -13,11 +13,13 @@ test("decimali battuti con la virgola o il punto", () => {
   expect(valore("x")).toBe(0);
 });
 
-test("numeri del backend in formato italiano senza perdere cifre", () => {
-  expect(importo("1234.5")).toBe("1.234,50");
-  expect(prezzo("1.5")).toBe("1,50");
-  expect(prezzo("1.8125")).toBe("1,8125");
-  expect(mostra("5.16")).toBe("5,16");
+test("numeri e date del backend come li mostra Arca", () => {
+  expect(importo("1234.5")).toBe("1234.50");
+  expect(prezzo("1.55")).toBe("1.550");
+  expect(prezzo("1.8125")).toBe("1.8125");
+  expect(fattore("1")).toBe("1.00000");
+  expect(quantita("0")).toBe("0.00");
+  expect(mostra("5.16")).toBe("5.16");
   expect(mostra(null)).toBe("");
-  expect(data("2026-10-22")).toBe("22/10/2026");
+  expect(data("2026-10-21")).toBe("21-10-2026");
 });

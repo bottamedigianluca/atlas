@@ -1,5 +1,13 @@
-import { COLONNE } from "./colonne";
-import { alterna, carica, layoutDiFabbrica, normalizza, ridimensiona, ripristina, salva, sposta, visibili } from "./layout";
+import { COLONNE, GRIGLIA_RIGHE as G } from "./colonne";
+import * as L from "./layout";
+import { ridimensiona, sposta, visibili } from "./layout";
+
+const layoutDiFabbrica = () => L.layoutDiFabbrica(G);
+const alterna = (l: L.Layout, id: string) => L.alterna(G, l, id);
+const carica = () => L.carica(G);
+const salva = (l: L.Layout) => L.salva(G, l);
+const ripristina = () => L.ripristina(G);
+const normalizza = (g: unknown) => L.normalizza(G, g);
 
 test("40 colonne di UserPref 1443 nell'ordine e con le larghezze di Arca", () => {
   expect(COLONNE).toHaveLength(40);

@@ -66,15 +66,48 @@ pub struct ClienteBreve {
     pub localita: Option<String>,
     pub partita_iva: Option<String>,
     pub obsoleto: bool,
+    pub indirizzo: Option<String>,
+    pub cap: Option<String>,
+    pub provincia: Option<String>,
+    pub nazione: Option<String>,
+    pub codice_fiscale: Option<String>,
+    /// Codice destinatario SdI o PEC (`CF.CodiceFPR`).
+    pub codice_destinatario: Option<String>,
+    /// Gli altri campi di Arca (`CF.Cd_CFGruppo1`…), per le colonne dell'elenco.
+    pub extra: serde_json::Value,
+    /// Il contatto principale (`CFContatto`: `Telefono`, `Email`…), per le colonne dell'elenco.
+    pub contatto: serde_json::Value,
 }
 
+/// I campi `extra` delle anagrafiche (oggetto JSON scritto dall'importazione).
+fn json(testo: &str) -> serde_json::Value {
+    serde_json::from_str(testo).unwrap_or(serde_json::Value::Null)
+}
+
+/// Il prossimo codice cliente, come lo propone Arca: "C" e sei cifre, il più alto più uno.
+pub fn prossimo_codice_cliente(conn: &Connection) -> Result<String, ErroreApi> {
+    let massimo: Option<i64> = conn
+        .prepare_cached(
+            "SELECT max(CAST(substr(codice, 2) AS INTEGER)) FROM clienti_fornitori \
+             WHERE codice GLOB 'C[0-9][0-9][0-9][0-9][0-9][0-9]'",
+        )?
+        .query_row([], |r| r.get(0))?;
+    Ok(format!("C{:06}", massimo.unwrap_or(0) + 1))
+}
+
+/// Il contatto principale del cliente (`CFContatto` senza destinazione, l'"Aziendale" con
+/// `Id_CFContattoTipo = -1` prima), da cui l'elenco prende telefono, fax ed email come Arca.
+const CONTATTO_PRINCIPALE: &str = "(SELECT k.dati FROM contatti k WHERE k.cliente = clienti_fornitori.codice \
+     AND k.destinazione IS NULL ORDER BY json_extract(k.dati, '$.Id_CFContattoTipo') IS NOT -1, k.id LIMIT 1)";
+
 pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<ClienteBreve>, ErroreApi> {
-    let mut stmt = conn.prepare_cached(
-        "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto FROM clienti_fornitori \
+    let mut stmt = conn.prepare_cached(&format!(
+        "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto, indirizzo, cap, provincia, nazione, \
+         codice_fiscale, codice_destinatario, extra, {CONTATTO_PRINCIPALE} FROM clienti_fornitori \
          WHERE cliente = 1 AND (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR ragione_sociale LIKE ?2 ESCAPE '\\') \
          ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
-    )?;
+    ))?;
     let cerca = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty());
     let (uguale, inizia) = pertinenza(cerca);
     let righe = stmt.query_map(params![ricerca.obsoleti, cerca.map(contiene), limite(ricerca.limite), uguale, inizia], |r| {
@@ -84,6 +117,14 @@ pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Cliente
             localita: r.get(2)?,
             partita_iva: r.get::<_, Option<String>>(3)?.map(|p| p.trim().to_owned()),
             obsoleto: r.get(4)?,
+            indirizzo: r.get(5)?,
+            cap: r.get(6)?,
+            provincia: r.get(7)?,
+            nazione: r.get(8)?,
+            codice_fiscale: r.get(9)?,
+            codice_destinatario: r.get(10)?,
+            extra: json(&r.get::<_, String>(11)?),
+            contatto: r.get::<_, Option<String>>(12)?.map_or(serde_json::Value::Null, |d| json(&d)),
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -98,6 +139,16 @@ pub struct DestinazioneVista {
     pub provincia: Option<String>,
     pub predefinita: bool,
     pub obsoleto: bool,
+    /// Gli altri campi di `CFDest` (codice destinatario, codice IPA, codice export…).
+    pub extra: serde_json::Value,
+}
+
+/// Un contatto del cliente o di una destinazione: le colonne di `CFContatto`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ContattoVista {
+    pub id: i64,
+    pub destinazione: Option<String>,
+    pub dati: serde_json::Value,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -110,21 +161,43 @@ pub struct ClienteScheda {
     pub provincia: Option<String>,
     pub partita_iva: Option<String>,
     pub codice_fiscale: Option<String>,
+    /// Codice destinatario SdI (`CF.CodiceFPR`).
+    pub codice_destinatario: Option<String>,
     pub pagamento: Option<String>,
     pub descrizione_pagamento: Option<String>,
     pub listino: Option<String>,
+    pub descrizione_listino: Option<String>,
     pub agente: Option<String>,
+    pub descrizione_agente: Option<String>,
+    pub iban: Option<String>,
+    pub bic: Option<String>,
     pub scissione_pagamenti: bool,
     pub obsoleto: bool,
     pub destinazioni: Vec<DestinazioneVista>,
+    pub contatti: Vec<ContattoVista>,
+    pub nazione: Option<String>,
+    /// Codice ufficio della PA (`CF.CodiceIPA`).
+    pub codice_ipa: Option<String>,
+    pub conto_banca: Option<String>,
+    pub conto_merce: Option<String>,
+    pub ente_pubblico: bool,
+    /// Esenzione o aliquota del cliente (`CF.Cd_Aliquota`).
+    pub aliquota: Option<String>,
+    pub cliente_fatturazione: Option<String>,
+    pub fido: Option<String>,
+    pub note: Option<String>,
+    /// Gli altri campi di `CF` con i nomi delle colonne di Arca.
+    pub extra: serde_json::Value,
 }
 
 pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreApi> {
     let mut scheda = conn
         .prepare_cached(
             "SELECT c.codice, c.ragione_sociale, c.indirizzo, c.cap, c.localita, c.provincia, c.partita_iva, \
-             c.codice_fiscale, c.pagamento, p.descrizione, c.listino, c.agente, c.scissione_pagamenti, c.obsoleto \
+             c.codice_fiscale, c.pagamento, p.descrizione, c.listino, c.agente, c.scissione_pagamenti, c.obsoleto, \
+             c.codice_destinatario, l.descrizione, a.descrizione, c.iban, c.bic \
              FROM clienti_fornitori c LEFT JOIN pagamenti p ON p.codice = c.pagamento \
+             LEFT JOIN listini l ON l.codice = c.listino LEFT JOIN agenti a ON a.codice = c.agente \
              WHERE c.codice = ?1 AND c.cliente = 1",
         )?
         .query_row([codice.trim()], |r| {
@@ -143,13 +216,46 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
                 agente: r.get(11)?,
                 scissione_pagamenti: r.get(12)?,
                 obsoleto: r.get(13)?,
+                codice_destinatario: r.get(14)?,
+                descrizione_listino: r.get::<_, Option<String>>(15)?.map(|d| d.trim_end().to_owned()),
+                descrizione_agente: r.get::<_, Option<String>>(16)?.map(|d| d.trim_end().to_owned()),
+                iban: r.get(17)?,
+                bic: r.get(18)?,
                 destinazioni: Vec::new(),
+                contatti: Vec::new(),
+                nazione: None,
+                codice_ipa: None,
+                conto_banca: None,
+                conto_merce: None,
+                ente_pubblico: false,
+                aliquota: None,
+                cliente_fatturazione: None,
+                fido: None,
+                note: None,
+                extra: serde_json::Value::Null,
             })
         })
         .optional()?
         .ok_or_else(|| ErroreApi::NonTrovato(format!("cliente {}", codice.trim())))?;
+    conn.prepare_cached(
+        "SELECT nazione, codice_ipa, conto_banca, conto_merce, ente_pubblico, aliquota, cliente_fatturazione, fido, note, extra \
+         FROM clienti_fornitori WHERE codice = ?1",
+    )?
+    .query_row([&scheda.codice], |r| {
+        scheda.nazione = r.get(0)?;
+        scheda.codice_ipa = r.get(1)?;
+        scheda.conto_banca = r.get(2)?;
+        scheda.conto_merce = r.get(3)?;
+        scheda.ente_pubblico = r.get(4)?;
+        scheda.aliquota = r.get(5)?;
+        scheda.cliente_fatturazione = r.get(6)?;
+        scheda.fido = r.get(7)?;
+        scheda.note = r.get(8)?;
+        scheda.extra = json(&r.get::<_, String>(9)?);
+        Ok(())
+    })?;
     let mut stmt = conn.prepare_cached(
-        "SELECT codice, descrizione, indirizzo, localita, provincia, predefinita, obsoleto FROM destinazioni \
+        "SELECT codice, descrizione, indirizzo, localita, provincia, predefinita, obsoleto, extra FROM destinazioni \
          WHERE cliente = ?1 ORDER BY predefinita DESC, codice",
     )?;
     let destinazioni = stmt.query_map([&scheda.codice], |r| {
@@ -161,9 +267,22 @@ pub fn cliente(conn: &Connection, codice: &str) -> Result<ClienteScheda, ErroreA
             provincia: r.get(4)?,
             predefinita: r.get(5)?,
             obsoleto: r.get(6)?,
+            extra: json(&r.get::<_, String>(7)?),
         })
     })?;
     scheda.destinazioni = destinazioni.collect::<Result<_, _>>()?;
+    let mut stmt = conn.prepare_cached(
+        "SELECT id, destinazione, dati FROM contatti WHERE cliente = ?1 \
+         ORDER BY destinazione IS NOT NULL, destinazione, json_extract(dati, '$.Id_CFContattoTipo') IS NOT -1, id",
+    )?;
+    let contatti = stmt.query_map([&scheda.codice], |r| {
+        Ok(ContattoVista {
+            id: r.get(0)?,
+            destinazione: r.get(1)?,
+            dati: json(&r.get::<_, String>(2)?),
+        })
+    })?;
+    scheda.contatti = contatti.collect::<Result<_, _>>()?;
     Ok(scheda)
 }
 
@@ -174,11 +293,13 @@ pub struct ArticoloBreve {
     pub unita_misura: String,
     pub aliquota: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di Arca (`AR.Cd_ARClasse1`…), per le colonne dell'elenco.
+    pub extra: serde_json::Value,
 }
 
 pub fn cerca_articoli(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<ArticoloBreve>, ErroreApi> {
     let mut stmt = conn.prepare_cached(
-        "SELECT codice, descrizione, unita_misura, aliquota_vendita, obsoleto FROM articoli \
+        "SELECT codice, descrizione, unita_misura, aliquota_vendita, obsoleto, extra FROM articoli \
          WHERE (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR descrizione LIKE ?2 ESCAPE '\\') \
          ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
@@ -192,6 +313,7 @@ pub fn cerca_articoli(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Artico
             unita_misura: r.get(2)?,
             aliquota: r.get(3)?,
             obsoleto: r.get(4)?,
+            extra: json(&r.get::<_, String>(5)?),
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -214,12 +336,27 @@ pub struct ArticoloScheda {
     pub conto_ricavo: Option<String>,
     pub obsoleto: bool,
     pub unita: Vec<UnitaVista>,
+    /// Gli altri campi di `AR` con i nomi delle colonne di Arca.
+    pub extra: serde_json::Value,
+    /// Il prezzo valido oggi in ogni listino che ha l'articolo.
+    pub prezzi: Vec<PrezzoArticolo>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct PrezzoArticolo {
+    pub listino: String,
+    pub descrizione: String,
+    pub revisione: Option<String>,
+    pub valido_dal: Option<NaiveDate>,
+    pub prezzo: String,
+    pub sconto: Option<String>,
+    pub ivato: bool,
 }
 
 pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, ErroreApi> {
     let mut scheda = conn
         .prepare_cached(
-            "SELECT codice, descrizione, descrizione_breve, unita_misura, aliquota_vendita, conto_ricavo, obsoleto \
+            "SELECT codice, descrizione, descrizione_breve, unita_misura, aliquota_vendita, conto_ricavo, obsoleto, extra \
              FROM articoli WHERE codice = ?1",
         )?
         .query_row([codice.trim()], |r| {
@@ -232,6 +369,8 @@ pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, Error
                 conto_ricavo: r.get(5)?,
                 obsoleto: r.get(6)?,
                 unita: Vec::new(),
+                extra: json(&r.get::<_, String>(7)?),
+                prezzi: Vec::new(),
             })
         })
         .optional()?
@@ -247,6 +386,30 @@ pub fn articolo(conn: &Connection, codice: &str) -> Result<ArticoloScheda, Error
         })
     })?;
     scheda.unita = unita.collect::<Result<_, _>>()?;
+    // Per ogni listino, il prezzo nella revisione valida oggi più recente che contiene l'articolo.
+    let mut stmt = conn.prepare_cached(
+        "SELECT l.codice, l.descrizione, r.descrizione, r.valido_dal, p.prezzo, p.sconto, l.ivato \
+         FROM listini l \
+         JOIN listini_prezzi p ON p.id = (SELECT p2.id FROM listini_prezzi p2 \
+              JOIN listini_revisioni r2 ON r2.id = p2.revisione \
+              WHERE r2.listino = l.codice AND p2.articolo = ?1 AND (r2.valido_dal IS NULL OR r2.valido_dal <= ?2) \
+              ORDER BY r2.valido_dal DESC, r2.id DESC LIMIT 1) \
+         JOIN listini_revisioni r ON r.id = p.revisione \
+         ORDER BY l.codice",
+    )?;
+    let oggi = chrono::Local::now().date_naive();
+    let prezzi = stmt.query_map(rusqlite::params![&scheda.codice, oggi], |r| {
+        Ok(PrezzoArticolo {
+            listino: r.get(0)?,
+            descrizione: r.get::<_, String>(1)?.trim_end().to_owned(),
+            revisione: r.get::<_, Option<String>>(2)?.map(|d| d.trim_end().to_owned()),
+            valido_dal: r.get(3)?,
+            prezzo: r.get(4)?,
+            sconto: r.get::<_, Option<String>>(5)?.filter(|s| !s.trim().is_empty()),
+            ivato: r.get(6)?,
+        })
+    })?;
+    scheda.prezzi = prezzi.collect::<Result<_, _>>()?;
     Ok(scheda)
 }
 
@@ -346,9 +509,20 @@ pub struct DdtBreve {
     pub cliente: String,
     pub ragione_sociale: String,
     pub destinazione: Option<String>,
+    /// Descrizione e località della destinazione (colonne Bottamedi dell'elenco di Arca).
+    pub descrizione_destinazione: Option<String>,
     pub localita_destinazione: Option<String>,
+    pub pagamento: Option<String>,
+    pub listino_cliente: Option<String>,
+    pub agente: Option<String>,
+    pub descrizione_agente: Option<String>,
+    pub righe: i64,
     pub totale_imponibile: Decimal,
     pub totale_documento: Decimal,
+    /// Netto a pagare: senza l'imposta in scissione dei pagamenti.
+    pub netto_a_pagare: Decimal,
+    /// `DOTes.Id_DoTes` in Arca.
+    pub arca_id_testata: Option<i32>,
     pub arca: StatoArca,
 }
 
@@ -362,9 +536,12 @@ fn decimale(r: &rusqlite::Row<'_>, i: usize) -> rusqlite::Result<Decimal> {
 pub fn elenco_ddt(conn: &Connection, filtro: &FiltroDdt) -> Result<Vec<DdtBreve>, ErroreApi> {
     let mut stmt = conn.prepare_cached(&format!(
         "SELECT d.id, d.esercizio, d.numero, d.data, d.cliente, c.ragione_sociale, d.destinazione, t.localita, \
-         d.totale_imponibile, d.totale_documento, {STATO_ARCA} \
+         d.totale_imponibile, d.totale_documento, {STATO_ARCA}, t.descrizione, d.pagamento, d.listino_cliente, \
+         d.agente, a.descrizione, (SELECT count(*) FROM ddt_righe r WHERE r.ddt = d.id), \
+         CASE WHEN d.scissione_pagamenti THEN d.totale_imponibile ELSE d.totale_documento END, d.arca_id_testata \
          FROM ddt d JOIN clienti_fornitori c ON c.codice = d.cliente \
          LEFT JOIN destinazioni t ON t.cliente = d.cliente AND t.codice = d.destinazione \
+         LEFT JOIN agenti a ON a.codice = d.agente \
          WHERE (?1 IS NULL OR d.data >= ?1) AND (?2 IS NULL OR d.data <= ?2) AND (?3 IS NULL OR d.cliente = ?3) \
          AND (?4 IS NULL OR d.numero = ?4) \
          ORDER BY d.data DESC, d.numero DESC LIMIT ?5"
@@ -380,10 +557,18 @@ pub fn elenco_ddt(conn: &Connection, filtro: &FiltroDdt) -> Result<Vec<DdtBreve>
             cliente: r.get(4)?,
             ragione_sociale: r.get::<_, String>(5)?.trim_end().to_owned(),
             destinazione: r.get(6)?,
-            localita_destinazione: r.get(7)?,
+            localita_destinazione: r.get::<_, Option<String>>(7)?.map(|d| d.trim_end().to_owned()),
             totale_imponibile: decimale(r, 8)?,
             totale_documento: decimale(r, 9)?,
             arca: stato_arca(&r.get::<_, String>(10)?),
+            descrizione_destinazione: r.get::<_, Option<String>>(11)?.map(|d| d.trim_end().to_owned()),
+            pagamento: r.get(12)?,
+            listino_cliente: r.get(13)?,
+            agente: r.get(14)?,
+            descrizione_agente: r.get::<_, Option<String>>(15)?.map(|d| d.trim_end().to_owned()),
+            righe: r.get(16)?,
+            netto_a_pagare: decimale(r, 17)?,
+            arca_id_testata: r.get(18)?,
         })
     })?;
     Ok(righe.collect::<Result<_, _>>()?)
@@ -514,6 +699,8 @@ pub struct Coda {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct EventoFermo {
     pub evento: i64,
+    /// Il cliente nuovo (`C000405`) se l'evento è di un cliente e non di un DDT.
+    pub cliente: Option<String>,
     pub ddt: i64,
     pub numero: Option<u32>,
     pub esercizio: Option<i32>,
@@ -526,14 +713,17 @@ pub fn coda(conn: &Connection) -> Result<Coda, ErroreApi> {
     let in_coda = atlas_db::outbox::in_attesa(conn)?;
     let fermo = conn
         .prepare_cached(
-            "SELECT o.id, o.documento_id, d.numero, d.esercizio, o.tentativi, o.ultimo_errore, o.prossimo_tentativo_il \
-             FROM outbox_eventi o LEFT JOIN ddt d ON d.id = o.documento_id \
+            "SELECT o.id, o.documento_id, d.numero, d.esercizio, o.tentativi, o.ultimo_errore, o.prossimo_tentativo_il, \
+             o.documento_tipo = 'CF' \
+             FROM outbox_eventi o LEFT JOIN ddt d ON d.id = o.documento_id AND o.documento_tipo = 'BO' \
              WHERE o.replicato_il IS NULL AND o.ultimo_errore IS NOT NULL \
              AND o.id = (SELECT min(id) FROM outbox_eventi WHERE replicato_il IS NULL)",
         )?
         .query_row([], |r| {
+            let cliente: bool = r.get(7)?;
             Ok(EventoFermo {
                 evento: r.get(0)?,
+                cliente: cliente.then(|| format!("C{:06}", r.get::<_, i64>(1).unwrap_or_default())),
                 ddt: r.get(1)?,
                 numero: r.get(2)?,
                 esercizio: r.get(3)?,
@@ -602,7 +792,14 @@ mod tests {
             ..Ricerca::default()
         };
         assert!(cerca_articoli(&conn, &ricerca).unwrap().is_empty(), "% preso alla lettera");
-        assert_eq!(cliente(&conn, "c000380").unwrap().destinazioni[0].codice, "ALI");
+        let scheda = cliente(&conn, "c000380").unwrap();
+        assert_eq!(scheda.destinazioni[0].codice, "ALI");
+        assert!(scheda.destinazioni[0].extra.get("CodiceFPR").is_some(), "tutte le colonne di CFDest");
+        assert_eq!(scheda.contatti[0].dati["Telefono"], "0461 602772");
+        // Nell'elenco il telefono del contatto principale, come le colonne di Arca.
+        let c = cerca_clienti(&conn, &Ricerca::default()).unwrap();
+        let telefoni: Vec<(&str, &serde_json::Value)> = c.iter().map(|c| (c.codice.as_str(), &c.contatto["Telefono"])).collect();
+        assert_eq!(telefoni, [("C000002", &serde_json::Value::Null), ("C000380", &serde_json::json!("0461 602772"))]);
         assert_eq!(articolo(&conn, "ban").unwrap().unita[0].unita_misura, "KG");
         assert_eq!(tabelle(&conn).unwrap().aliquote.len(), 3);
     }
@@ -618,6 +815,8 @@ mod tests {
         let stati: Vec<(u32, StatoArca)> = elenco.iter().map(|d| (d.numero, d.arca)).collect();
         assert_eq!(stati, [(5458, StatoArca::Errore), (5457, StatoArca::InArca)]);
         assert_eq!(elenco[0].totale_documento, dec!(21.98));
+        assert_eq!((elenco[0].righe, elenco[0].netto_a_pagare, elenco[1].arca_id_testata), (2, dec!(21.98), Some(120_545)));
+        assert_eq!(elenco[0].descrizione_destinazione.as_deref(), Some("Mensa"));
         let filtro = FiltroDdt {
             numero: Some(5457),
             ..FiltroDdt::default()

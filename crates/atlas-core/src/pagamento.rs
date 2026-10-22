@@ -103,7 +103,7 @@ impl CondizionePagamento {
                 .checked_add_days(Days::new(u64::from(giorni)))
                 .ok_or(ErroreCalcolo::DataFuoriCalendario),
             Partenza::FineMese => {
-                if giorni % 30 != 0 {
+                if !giorni.is_multiple_of(30) {
                     return Err(ErroreCalcolo::DilazioneNonMensile { giorni });
                 }
                 let mesi = Months::new(u32::from(giorni / 30));

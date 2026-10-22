@@ -2,19 +2,28 @@
 
 import type {
   ArticoloBreve,
+  ArticoloScheda,
   Bozza,
   Calcolo,
+  CampiNota,
   ClienteBreve,
+  ClienteCreato,
   ClienteScheda,
+  ClientiDelGiorno,
+  DatiAzienda,
   CorpoErrore,
   DdtBreve,
   DdtCreato,
   DdtScheda,
+  Nota,
   Notifica,
+  NuovoCliente,
   NumeriLiberi,
   Prezzi,
+  Riepilogo,
   Rinumerato,
   Stato,
+  Tabelle,
 } from "./tipi";
 
 const CHIAVE_SERVER = "atlas.server";
@@ -68,7 +77,7 @@ function query(parametri?: Parametri): string {
   return testo ? `?${testo}` : "";
 }
 
-async function chiama<T>(metodo: "GET" | "POST", percorso: string, corpo?: unknown, segnale?: AbortSignal): Promise<T> {
+async function chiama<T>(metodo: "GET" | "POST" | "PUT" | "DELETE", percorso: string, corpo?: unknown, segnale?: AbortSignal): Promise<T> {
   let risposta: Response;
   try {
     risposta = await fetch(`${indirizzoServer()}/api${percorso}`, {
@@ -102,6 +111,12 @@ export const api = {
   ddt: (id: number) => chiama<DdtScheda>("GET", `/ddt/${id}`),
   clienti: (cerca: string, segnale?: AbortSignal) =>
     chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 50 })}`, undefined, segnale),
+  elencoClienti: (cerca?: string) => chiama<ClienteBreve[]>("GET", `/clienti${query({ cerca, limite: 1000, obsoleti: true })}`),
+  creaCliente: (cliente: NuovoCliente) => chiama<ClienteCreato>("POST", "/clienti", cliente),
+  prossimoCodiceCliente: () => chiama<string>("GET", "/clienti/prossimo-codice"),
+  elencoArticoli: (cerca?: string) => chiama<ArticoloBreve[]>("GET", `/articoli${query({ cerca, limite: 1000, obsoleti: true })}`),
+  articolo: (codice: string) => chiama<ArticoloScheda>("GET", `/articoli/${encodeURIComponent(codice)}`),
+  tabelle: () => chiama<Tabelle>("GET", "/tabelle"),
   cliente: (codice: string) => chiama<ClienteScheda>("GET", `/clienti/${encodeURIComponent(codice)}`),
   articoli: (cerca: string, segnale?: AbortSignal) =>
     chiama<ArticoloBreve[]>("GET", `/articoli${query({ cerca, limite: 50 })}`, undefined, segnale),
@@ -112,6 +127,14 @@ export const api = {
     unita_misura?: string;
     quantita?: string;
   }) => chiama<Prezzi>("GET", `/prezzi${query(richiesta)}`),
+  partitaIva: (numero: string, nazione?: string) =>
+    chiama<DatiAzienda>("GET", `/partita-iva/${encodeURIComponent(numero)}${query({ nazione })}`),
+  riepilogo: () => chiama<Riepilogo>("GET", "/home/riepilogo"),
+  clientiDelGiorno: (data?: string) => chiama<ClientiDelGiorno>("GET", `/home/clienti${query({ data })}`),
+  note: () => chiama<Nota[]>("GET", "/note"),
+  creaNota: (campi: CampiNota) => chiama<Nota>("POST", "/note", campi),
+  aggiornaNota: (id: number, campi: CampiNota) => chiama<Nota>("PUT", `/note/${id}`, campi),
+  eliminaNota: (id: number) => chiama<null>("DELETE", `/note/${id}`),
 };
 
 /**

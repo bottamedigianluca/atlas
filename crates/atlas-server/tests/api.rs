@@ -15,7 +15,7 @@ use atlas_db::anagrafiche::Anagrafiche;
 use atlas_db::outbox::Evento;
 use atlas_server::config::Config;
 use atlas_server::servizio::Servizio;
-use atlas_server::worker::{Maniglia, Replica, Sorgenti};
+use atlas_server::worker::{Maniglia, Notifica, Replica, Sorgenti};
 use atlas_sync::ErroreSync;
 use atlas_sync::importazione::Origine;
 use atlas_sync::replica::{Destinazione, Replicato};
@@ -45,6 +45,10 @@ struct StatoFinto {
     appesa: bool,
     scollegamenti: usize,
     replicati: Vec<u32>,
+    /// Numeri scritti in Arca dopo che ATLAS li ha letti liberi: la lettura dei numeri non li vede.
+    dopo_la_lettura: Vec<u32>,
+    /// Clienti nuovi scritti in `CF`, con il loro payload.
+    clienti: Vec<Value>,
 }
 
 /// Arca finta condivisa fra le tre connessioni del worker e il test.
@@ -116,7 +120,7 @@ impl Origine for Finta {
         Ok(self.con(|s| {
             s.documenti
                 .iter()
-                .filter(|((e, _), _)| *e == esercizio)
+                .filter(|((e, n), _)| *e == esercizio && !s.dopo_la_lettura.contains(n))
                 .map(|((_, n), d)| (*n, d.data))
                 .collect()
         }))
@@ -139,6 +143,13 @@ impl Origine for Finta {
 
 impl Destinazione for Finta {
     async fn replica(&mut self, evento: &Evento) -> Result<Replicato, ErroreSync> {
+        if evento.documento_tipo == "CF" {
+            let cliente: Value = serde_json::from_str(&evento.payload).unwrap();
+            return Ok(self.con(|s| {
+                s.clienti.push(cliente);
+                Replicato::Scritto(400 + s.clienti.len() as i32)
+            }));
+        }
         let ddt = evento.ddt()?;
         self.con(|s| {
             let chiave = (2026, ddt.numero);
@@ -193,6 +204,10 @@ impl Drop for Banco {
 }
 
 fn banco(nome: &str, arca: Option<Finta>) -> Banco {
+    banco_con(nome, arca, |file| Config::nuova(file))
+}
+
+fn banco_con(nome: &str, arca: Option<Finta>, config: impl FnOnce(&std::path::Path) -> Config) -> Banco {
     let cartella = std::env::temp_dir().join(format!("atlas-server-{nome}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&cartella);
     std::fs::create_dir_all(&cartella).unwrap();
@@ -205,7 +220,7 @@ fn banco(nome: &str, arca: Option<Finta>) -> Banco {
         importazione: arca.clone(),
         replica: arca,
     };
-    let (servizio, maniglia) = atlas_server::prepara(&Config::nuova(&file), sorgenti).unwrap();
+    let (servizio, maniglia) = atlas_server::prepara(&config(&file), sorgenti).unwrap();
     Banco {
         router: atlas_server::rotte::router(servizio.clone()),
         servizio,
@@ -324,12 +339,14 @@ async fn numerazione_unica_replica_e_conflitto_risolto_rinumerando() {
     // Arca prende il 5459 subito dopo che ATLAS lo ha letto libero: la replica si ferma.
     let (_, liberi) = chiama(&b.router, "GET", "/api/numerazione/2026/liberi", None).await;
     assert_eq!(liberi["prossimo"], 5459);
+    // Arca scrive il 5459 fra la lettura dei numeri e la replica del DDT ATLAS.
+    arca.scrivi(5459, "C000002");
+    arca.con(|s| s.dopo_la_lettura.push(5459));
     let mut a_mano = bozza();
     a_mano["numero"] = json!(5459);
     let (stato, conteso) = chiama(&b.router, "POST", "/api/ddt", Some(a_mano.clone())).await;
     assert_eq!(stato, StatusCode::CREATED);
-    arca.scrivi(5459, "C000002");
-    chiama(&b.router, "POST", "/api/sincronizza", None).await;
+    arca.con(|s| s.dopo_la_lettura.clear());
     let stato = aspetta(&b.router, |s| !s["conflitti"].as_array().unwrap().is_empty()).await;
     let conflitto = &stato["conflitti"][0];
     assert_eq!((conflitto["origine"].as_str(), conflitto["numero"].as_u64()), (Some("replica"), Some(5459)), "{stato}");
@@ -380,6 +397,13 @@ async fn prezzi_anagrafiche_e_strumenti() {
     assert_eq!(clienti[0]["codice"], "C000380");
     let (_, articolo) = chiama(&b.router, "GET", "/api/articoli/pist", None).await;
     assert_eq!(articolo["aliquota"], "10");
+    // Anagrafiche complete: i campi di Arca senza colonna propria in `extra`, i prezzi validi oggi.
+    let (_, cliente) = chiama(&b.router, "GET", "/api/clienti/C000380", None).await;
+    assert_eq!(cliente["extra"]["Cd_CFZona"], "MEZ");
+    let (_, banane) = chiama(&b.router, "GET", "/api/articoli/BAN", None).await;
+    assert_eq!(banane["prezzi"][0]["listino"], "0000001", "{banane}");
+    let (stato, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!((stato, codice), (StatusCode::OK, json!("C000381")));
     let (_, tabelle) = chiama(&b.router, "GET", "/api/tabelle", None).await;
     assert_eq!(tabelle["magazzini"][0]["codice"], "00001");
 
@@ -461,4 +485,148 @@ async fn il_worker_si_ferma_quando_si_chiude_il_servizio() {
         .await
         .unwrap()
         .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn home_post_it_e_clienti_del_giorno() {
+    let b = banco("home", None);
+    let mut notifiche = b.servizio.notifiche();
+    let (stato, nota) = chiama(&b.router, "POST", "/api/note", Some(json!({"testo": "Cassette a Dinamos"}))).await;
+    assert_eq!(stato, StatusCode::CREATED, "{nota}");
+    assert_eq!((nota["testo"].as_str(), nota["fatta"].as_bool()), (Some("Cassette a Dinamos"), Some(false)));
+    // Prima possono arrivare le notifiche di stato dell'avvio.
+    loop {
+        let notifica = tokio::time::timeout(std::time::Duration::from_secs(5), notifiche.recv()).await.unwrap().unwrap();
+        if matches!(notifica, Notifica::NoteCambiate) {
+            break;
+        }
+    }
+
+    let id = nota["id"].as_i64().unwrap();
+    let (stato, barrata) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"fatta": true}))).await;
+    assert_eq!(stato, StatusCode::OK, "{barrata}");
+    assert_eq!((barrata["fatta"].as_bool(), barrata["testo"].as_str()), (Some(true), Some("Cassette a Dinamos")));
+    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"testo": "  "}))).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY);
+    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"x": 1}))).await;
+    assert_eq!(stato, StatusCode::BAD_REQUEST);
+    let (_, elenco) = chiama(&b.router, "GET", "/api/note", None).await;
+    assert_eq!(elenco.as_array().map(Vec::len), Some(1));
+    let (stato, _) = chiama(&b.router, "DELETE", &format!("/api/note/{id}"), None).await;
+    assert_eq!(stato, StatusCode::NO_CONTENT);
+    let (stato, _) = chiama(&b.router, "DELETE", &format!("/api/note/{id}"), None).await;
+    assert_eq!(stato, StatusCode::NOT_FOUND);
+
+    let (stato, giorno) = chiama(&b.router, "GET", "/api/home/clienti?data=2026-10-22", None).await;
+    assert_eq!(stato, StatusCode::OK, "{giorno}");
+    assert_eq!((giorno["giorno"].as_str(), giorno["settimane"].as_u64()), (Some("giovedì"), Some(12)));
+    let (stato, riepilogo) = chiama(&b.router, "GET", "/api/home/riepilogo", None).await;
+    assert_eq!(stato, StatusCode::OK, "{riepilogo}");
+    assert!(riepilogo["clienti"]["totale"].as_u64().unwrap() > 0);
+}
+
+/// VIES finto: risponde per la partita IVA di Bottamedi, dice "non disponibile" per le altre.
+async fn vies_finto() -> String {
+    let app = Router::new().route(
+        "/check-vat-number",
+        axum::routing::post(|axum::Json(c): axum::Json<Value>| async move {
+            if c["vatNumber"] == "02273530226" {
+                axum::Json(json!({
+                    "countryCode": "IT", "vatNumber": "02273530226", "valid": true,
+                    "name": "BOTTAMEDI PIERLUIGI", "address": "VIA S. ANTONIO 7 \n38017 MEZZOLOMBARDO TN\n"
+                }))
+            } else {
+                axum::Json(json!({ "userError": "MS_UNAVAILABLE" }))
+            }
+        }),
+    );
+    let ascolto = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let indirizzo = ascolto.local_addr().unwrap();
+    tokio::spawn(async move { axum::serve(ascolto, app).await.unwrap() });
+    format!("http://{indirizzo}/check-vat-number")
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn partita_iva_dai_dati_ufficiali() {
+    let vies = vies_finto().await;
+    let b = banco_con("piva", None, |file| Config { vies_url: vies, ..Config::nuova(file) });
+    let (stato, dati) = chiama(&b.router, "GET", "/api/partita-iva/IT02273530226", None).await;
+    assert_eq!(stato, StatusCode::OK, "{dati}");
+    assert_eq!(dati["ragione_sociale"], "BOTTAMEDI PIERLUIGI");
+    assert_eq!((dati["indirizzo"].as_str(), dati["cap"].as_str()), (Some("VIA S. ANTONIO 7"), Some("38017")));
+    assert_eq!((dati["localita"].as_str(), dati["provincia"].as_str()), (Some("MEZZOLOMBARDO"), Some("TN")));
+    assert_eq!(dati["attiva"], true);
+    assert_eq!(dati["gia_presente"], Value::Null);
+
+    // Cifra di controllo sbagliata: non si chiede nemmeno a VIES.
+    let (stato, errore) = chiama(&b.router, "GET", "/api/partita-iva/02273530227", None).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    // VIES che non risponde: si scrive a mano.
+    let (stato, errore) = chiama(&b.router, "GET", "/api/partita-iva/01484340227", None).await;
+    assert_eq!(stato, StatusCode::SERVICE_UNAVAILABLE, "{errore}");
+    assert!(errore["messaggio"].as_str().unwrap().contains("MS_UNAVAILABLE"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn cliente_nuovo_salvato_e_replicato_in_cf_e_cfcontatto() {
+    let arca = Finta::default();
+    let b = banco("cliente-nuovo", Some(arca.clone()));
+    let (_, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!(codice, "C000381");
+    let nuovo = json!({
+        "cf": {
+            "Cd_CF": "C000381",
+            "Descrizione": "BOTTAMEDI PIERLUIGI",
+            "PartitaIva": "02273530226",
+            "Indirizzo": "VIA S. ANTONIO 7",
+            "Cap": "38017",
+            "Localita": "MEZZOLOMBARDO",
+            "Cd_Provincia": "TN",
+            "Cd_PG": "B030",
+            "CodiceFPR": "0000000"
+        },
+        "contatto": { "Telefono": "0461 602534", "Fax": "0461 602534", "Email": "info@bottamedi.it" }
+    });
+
+    // Controlli: un motivo per riga, nulla salvato.
+    let mut errato = nuovo.clone();
+    errato["cf"]["PartitaIva"] = json!("02273530227");
+    errato["cf"]["Cd_PG"] = json!("ZZZ");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(errato)).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    assert!(errore["dettagli"][0].as_str().unwrap().contains("cifra di controllo"), "{errore}");
+    let mut senza_pagamento = nuovo.clone();
+    senza_pagamento["cf"]["Cd_PG"] = json!("ZZZ");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(senza_pagamento)).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    assert!(errore["messaggio"].as_str().unwrap().contains("pagamento ZZZ inesistente"), "{errore}");
+
+    let (stato, creato) = chiama(&b.router, "POST", "/api/clienti", Some(nuovo.clone())).await;
+    assert_eq!(stato, StatusCode::CREATED, "{creato}");
+    assert_eq!(creato["codice"], "C000381");
+    let (stato, errore) = chiama(&b.router, "POST", "/api/clienti", Some(nuovo)).await;
+    assert_eq!((stato, errore["codice"].as_str()), (StatusCode::CONFLICT, Some("codice_occupato")));
+
+    // Subito nelle anagrafiche di ATLAS, con i predefiniti di Arca e il contatto.
+    let (_, scheda) = chiama(&b.router, "GET", "/api/clienti/C000381", None).await;
+    assert_eq!(scheda["ragione_sociale"], "BOTTAMEDI PIERLUIGI");
+    assert_eq!(scheda["descrizione_pagamento"], "Bonifico 30 gg");
+    assert_eq!(scheda["extra"]["Cd_VL"], "EUR");
+    assert_eq!(scheda["extra"]["Id_Lingua"], 1040);
+    assert_eq!(scheda["contatti"][0]["dati"]["Telefono"], "0461 602534");
+    let (_, elenco) = chiama(&b.router, "GET", "/api/clienti?cerca=C000381", None).await;
+    assert_eq!(elenco[0]["contatto"]["Email"], "info@bottamedi.it");
+    let (_, codice) = chiama(&b.router, "GET", "/api/clienti/prossimo-codice", None).await;
+    assert_eq!(codice, "C000382");
+
+    // La replica lo scrive in Arca con tutte le colonne obbligatorie di CF.
+    aspetta(&b.router, |s| s["coda"]["in_coda"] == 0).await;
+    let scritti = arca.con(|s| s.clienti.clone());
+    assert_eq!(scritti.len(), 1);
+    let cf = &scritti[0]["cf"];
+    for (colonna, atteso) in [("Cliente", json!(true)), ("TipoCF", json!("C")), ("Ue", json!(true)), ("UserIns", json!("190"))] {
+        assert_eq!(cf[colonna], atteso, "{colonna}");
+    }
+    assert_eq!(scritti[0]["contatto"]["Id_CFContattoTipo"], -1);
+    assert_eq!(scritti[0]["contatto"]["Descrizione"], "Aziendale");
 }

@@ -121,3 +121,6 @@ export function colonnaDi(campo: CampoRiga): Colonna {
  * delle colonne scelto dall'operatore.
  */
 export const SEQUENZA_INVIO: readonly CampoRiga[] = ["articolo", "unita_misura", "colli", "lordo", "tara", "prezzo"];
+
+/** La griglia righe per il layout salvato: l'articolo non si nasconde, è dove parte ogni riga. */
+export const GRIGLIA_RIGHE = { colonne: COLONNE, chiave: "atlas.griglia.righe.v1", fisse: ["ColCd_AR"] } as const;

@@ -1,11 +1,13 @@
 //! Sincronizzazione tra ATLAS e Arca.
 //!
 //! - [`anagrafiche`]: lettura delle anagrafiche di Arca per il database ATLAS (sola lettura).
-//! - [`replica`]: il worker che scrive in Arca i documenti accodati nell'outbox.
+//! - [`clienti`]: il cliente nuovo creato in ATLAS, con le righe di `CF` e `CFContatto`.
+//! - [`replica`]: il worker che scrive in Arca i documenti (e i clienti nuovi) accodati nell'outbox.
 //! - [`importazione`]: il worker che porta nel database ATLAS i BO scritti o cancellati in Arca.
 //! - [`numerazione`]: il numero dei nuovi documenti, sui documenti dei due sistemi.
 
 pub mod anagrafiche;
+pub mod clienti;
 #[cfg(test)]
 mod finta;
 pub mod importazione;
@@ -34,6 +36,8 @@ pub enum ErroreSync {
          ATLAS: sembra lo stesso documento modificato in Arca dopo la replica, rinumerarlo lo raddoppierebbe"
     )]
     ForseLoStesso { numero: u32, id_testata: i32 },
+    #[error("cliente {codice} già presente in Arca con un'altra ragione sociale (Id_CF {id}): va scelto un altro codice")]
+    CodiceOccupato { codice: String, id: i32 },
     #[error("replica non gestita: {0}")]
     NonGestito(String),
     #[error("database {0}: la replica scrive solo su un clone *_DEV")]

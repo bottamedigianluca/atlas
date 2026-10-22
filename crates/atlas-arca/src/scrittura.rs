@@ -61,8 +61,12 @@ pub struct DocumentoScritto {
     pub id_iva: Vec<i32>,
 }
 
-async fn controlla_trigger(conn: &mut Connessione) -> Result<(), ErroreArca> {
-    for (tabella, attesi, _) in TRIGGER {
+/// Trigger di `CF` e `CFContatto`: su cancellazione e modifica, nessuno sull'inserimento (letti
+/// sul clone il 22/10/2026). Restano attivi.
+const TRIGGER_CLIENTI: [(&str, &[&str]); 2] = [("CF", &["CF_atrg_brd", "CF_atrg_iod"]), ("CFContatto", &["CFContatto_atrg_brd"])];
+
+async fn controlla_trigger(conn: &mut Connessione, elenco: &[(&'static str, &'static [&'static str])]) -> Result<(), ErroreArca> {
+    for &(tabella, attesi) in elenco {
         let sql = format!("select name from sys.triggers where parent_id = object_id('{tabella}') order by name");
         let mut trovati: Vec<String> = Vec::new();
         for row in conn.simple_query(sql).await?.into_first_result().await? {
@@ -102,7 +106,8 @@ async fn inserisci(conn: &mut Connessione, record: &Record) -> Result<i32, Error
 /// Apre la transazione e scrive il documento. La transazione resta aperta: il chiamante la
 /// chiude con [`conferma`] o [`annulla`].
 pub async fn scrivi(conn: &mut Connessione, tabelle: &TabelleArca) -> Result<DocumentoScritto, ErroreArca> {
-    controlla_trigger(conn).await?;
+    let elenco: Vec<(&'static str, &'static [&'static str])> = TRIGGER.iter().map(|&(t, n, _)| (t, n)).collect();
+    controlla_trigger(conn, &elenco).await?;
     conn.simple_query("BEGIN TRANSACTION").await?.into_results().await?;
     alterna_trigger(conn, "DISABLE").await?;
 
@@ -139,6 +144,19 @@ pub async fn scrivi(conn: &mut Connessione, tabelle: &TabelleArca) -> Result<Doc
         id_totali,
         id_iva,
     })
+}
+
+/// Apre la transazione e scrive il cliente nuovo (`CF`) con il suo contatto (`CFContatto`).
+/// Restituisce `CF.Id_CF`. La transazione resta aperta: il chiamante la chiude con [`conferma`] o
+/// [`annulla`].
+pub async fn scrivi_cliente(conn: &mut Connessione, cf: &Record, contatto: Option<&Record>) -> Result<i32, ErroreArca> {
+    controlla_trigger(conn, &TRIGGER_CLIENTI).await?;
+    conn.simple_query("BEGIN TRANSACTION").await?.into_results().await?;
+    let id = inserisci(conn, cf).await?;
+    if let Some(contatto) = contatto {
+        inserisci(conn, contatto).await?;
+    }
+    Ok(id)
 }
 
 pub async fn conferma(conn: &mut Connessione) -> Result<(), ErroreArca> {

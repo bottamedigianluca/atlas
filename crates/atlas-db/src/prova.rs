@@ -50,6 +50,7 @@ pub fn cliente(codice: &str) -> ClienteFornitore {
         fido: None,
         note: None,
         obsoleto: false,
+        extra: r#"{"Cd_CFZona":"MEZ","Cd_VL":"EUR","EsclusoBlackList":true}"#.into(),
     }
 }
 
@@ -94,6 +95,7 @@ pub fn anagrafiche() -> Anagrafiche {
                 aliquota_vendita: None,
                 conto_ricavo: None,
                 obsoleto: false,
+                extra: "{}".into(),
             },
             Articolo {
                 codice: "PIST".into(),
@@ -103,6 +105,7 @@ pub fn anagrafiche() -> Anagrafiche {
                 aliquota_vendita: Some("10".into()),
                 conto_ricavo: None,
                 obsoleto: false,
+                extra: "{}".into(),
             },
         ],
         unita_articoli: vec![UnitaArticolo {
@@ -133,6 +136,13 @@ pub fn anagrafiche() -> Anagrafiche {
             aliquota: None,
             predefinita: true,
             obsoleto: false,
+            extra: r#"{"CodiceFPR":null,"xCd_Exp":null}"#.into(),
+        }],
+        contatti: vec![Contatto {
+            id: 1,
+            cliente: "C000380".into(),
+            destinazione: None,
+            dati: r#"{"Descrizione":"Aziendale","Fax":"0461 602772","Id_CFContattoTipo":-1,"Telefono":"0461 602772"}"#.into(),
         }],
         predefiniti_righe: PredefinitiRighe {
             conto_ricavo: "07010101001".into(),

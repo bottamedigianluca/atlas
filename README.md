@@ -9,9 +9,10 @@ crates/atlas-arca     replica dei DDT nelle tabelle di Arca (DOTes, DORig, MGMov
 crates/atlas-db       database primario ATLAS (SQLite WAL) con outbox di replica
 crates/atlas-sync     import anagrafiche e documenti da Arca, worker di replica dell'outbox, numerazione unica
 crates/atlas-server   backend Axum: API REST e WebSocket, worker unico scrittore (numerazione, replica, importazione)
-app/                  frontend desktop: React + TypeScript + Tailwind (maschera DDT, documenti, sincronizzazione)
+app/                  frontend desktop: React + TypeScript + Tailwind ("Gestione Documenti", Clienti, Articoli come in Arca)
 app/src-tauri         shell Tauri v2 (finestra nativa, installer NSIS/MSI); fuori dal workspace Cargo
 docs/ANALISI_ARCA.md  comportamento reale di Arca, misurato sui dati
+docs/COPERTURA_ANAGRAFICHE.md  le maschere Clienti e Articoli di Arca, pagina per pagina, e cosa c'è in ATLAS
 TASKS.md              stato del lavoro, decisioni aperte, vincoli
 ```
 
@@ -59,7 +60,11 @@ cargo run --release -p atlas-server --bin misura-latenze -- dati\atlas.sqlite  #
 API del backend (dettagli in `crates/atlas-server/src/rotte.rs`): `POST /api/ddt/calcola` (pesata e totali in tempo
 reale), `POST /api/ddt` (salvataggio con numerazione unica), `GET /api/prezzi` (tasto F3), `GET /api/ddt`,
 `GET /api/ddt/{id}`, `GET /api/stato` (replica, importazione, conflitti), `POST /api/ddt/{id}/rinumera`,
-`GET /api/numerazione/{anno}/liberi`, anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).
+`GET /api/numerazione/{anno}/liberi`, `GET /api/home/clienti` (clienti del giorno), `GET /api/home/riepilogo`,
+`GET /api/partita-iva/{numero}` (dati dell'azienda da VIES), `GET /api/clienti/prossimo-codice`, `POST /api/clienti`
+(cliente nuovo, replicato in `CF` e `CFContatto`), `GET /api/clienti`, `GET /api/clienti/{codice}` (con contatti e
+destinazioni), `GET /api/articoli`, `GET /api/articoli/{codice}` (con i prezzi validi oggi), `GET /api/tabelle`,
+`GET/POST/PUT/DELETE /api/note` (post-it della Home), `GET /api/strumenti` (JSON Schema per assistenti).
 
 ```powershell
 # app desktop (il backend deve essere avviato: indirizzo predefinito http://127.0.0.1:7878, modificabile con F1)
@@ -71,6 +76,13 @@ npm test                 # regole di tastiera e layout della griglia (vitest)
 npm run e2e              # prove end-to-end su una copia di dati\atlas.sqlite (Playwright; npx playwright install chromium la prima volta)
 ```
 
-Tasti della maschera DDT: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto
-o nuova riga sull'articolo, `F3` ricerca cliente/articolo, prezzi (sul prezzo), numeri liberi (sul numero), `F10` salva,
-`F12` salva e stampa, `Esc` annulla, `Ctrl+Canc` elimina riga, `Ctrl+1/2/3` viste, `F1` informazioni.
+La finestra ricalca "Gestione Documenti" di Arca (pagine Elenco, Generale, DMS; schede Testa, Righe, Piede, Totali,
+Info, Evasioni, Stampe; F3 "PREZZO/COSTO ARTICOLO"), con numeri a punto decimale e date GG-MM-AAAA come in Arca.
+All'avvio c'è la Home (`Ctrl+0`), con il menu di Arca e i widget: clienti da chiamare oggi, post-it condiviso, DDT di oggi, numeri liberi.
+Clienti e Articoli (menu Anagrafiche › Clienti, Articoli › Gestione Articoli): elenco con le colonne di Arca e filtri per
+colonna, scheda in una pagina sola a sezioni (`Alt+1…9`), `Ctrl+1/2` Elenco/Scheda, `Alt+←/→` anagrafica precedente/successiva,
+`Esc` torna all'elenco, `F5` rilegge; `Ctrl+N` nuovo cliente dalla partita IVA e `F10` per salvarlo.
+Tasti: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto o nuova riga
+sull'articolo, `F3` ricerca cliente/articolo/destinazione, prezzi (sul prezzo), numeri liberi (sul numero), `Ctrl+N`
+nuovo, `F10` salva, `F12` salva e stampa, `Alt+←/→` documento precedente/successivo (`Alt+Home/Fine` primo/ultimo), `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,
+`Ctrl+1/2/3` pagine Elenco/Generale/DMS, clic destro sulle intestazioni per le colonne, `F1` informazioni.

@@ -10,9 +10,11 @@ interface Props {
   onChiudi: () => void;
   children: ReactNode;
   piede?: ReactNode;
+  /** Titolo a destra, in evidenza, come le maschere di ricerca di Arca. */
+  titoloArca?: boolean;
 }
 
-export function Modale({ titolo, sottotitolo, larghezza = "max-w-3xl", onChiudi, children, piede }: Props) {
+export function Modale({ titolo, sottotitolo, larghezza = "max-w-3xl", onChiudi, children, piede, titoloArca = false }: Props) {
   const riquadro = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,15 +58,24 @@ export function Modale({ titolo, sottotitolo, larghezza = "max-w-3xl", onChiudi,
           }
         }}
       >
-        <header className="flex items-baseline justify-between gap-4 border-b border-zinc-200/80 px-5 py-3 dark:border-zinc-800">
-          <div>
-            <h2 className="text-[13px] font-semibold tracking-wide">{titolo}</h2>
-            {sottotitolo && <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{sottotitolo}</p>}
-          </div>
-          <span className="text-[11px] text-zinc-400">
-            <kbd className="tasto">Esc</kbd> chiude
-          </span>
-        </header>
+        {titoloArca ? (
+          <header className="flex items-baseline justify-between gap-4 border-b border-zinc-200/80 px-4 py-2 dark:border-zinc-800">
+            <span className="text-[11px] text-zinc-400">
+              <kbd className="tasto">Esc</kbd> chiude
+            </span>
+            <h2 className="text-[17px] font-bold tracking-wide text-primario-testo">{titolo}</h2>
+          </header>
+        ) : (
+          <header className="flex items-baseline justify-between gap-4 border-b border-zinc-200/80 px-5 py-3 dark:border-zinc-800">
+            <div>
+              <h2 className="text-[13px] font-semibold tracking-wide">{titolo}</h2>
+              {sottotitolo && <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{sottotitolo}</p>}
+            </div>
+            <span className="text-[11px] text-zinc-400">
+              <kbd className="tasto">Esc</kbd> chiude
+            </span>
+          </header>
+        )}
         <div className="max-h-[70vh] overflow-auto">{children}</div>
         {piede && (
           <footer className="border-t border-zinc-200/80 px-5 py-2.5 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">

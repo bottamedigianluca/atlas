@@ -123,12 +123,24 @@ export interface NumeriLiberi {
   senza_arca: string | null;
 }
 
+/** Gli altri campi di Arca di un'anagrafica, con i nomi delle colonne di Arca (`Cd_CFZona`…). */
+export type Extra = Record<string, string | number | boolean | null>;
+
 export interface ClienteBreve {
   codice: string;
   ragione_sociale: string;
   localita: string | null;
   partita_iva: string | null;
   obsoleto: boolean;
+  indirizzo: string | null;
+  cap: string | null;
+  provincia: string | null;
+  nazione: string | null;
+  codice_fiscale: string | null;
+  codice_destinatario: string | null;
+  extra: Extra | null;
+  /** Il contatto principale (`CFContatto`): `Telefono`, `Email`… */
+  contatto: Extra | null;
 }
 
 export interface DestinazioneVista {
@@ -139,6 +151,15 @@ export interface DestinazioneVista {
   provincia: string | null;
   predefinita: boolean;
   obsoleto: boolean;
+  /** Gli altri campi di `CFDest` (codice destinatario, codice IPA, codice export…). */
+  extra: Extra | null;
+}
+
+/** Un contatto (`CFContatto`) del cliente o di una sua destinazione. */
+export interface ContattoVista {
+  id: number;
+  destinazione: string | null;
+  dati: Extra;
 }
 
 export interface ClienteScheda {
@@ -150,13 +171,29 @@ export interface ClienteScheda {
   provincia: string | null;
   partita_iva: string | null;
   codice_fiscale: string | null;
+  codice_destinatario: string | null;
   pagamento: string | null;
   descrizione_pagamento: string | null;
   listino: string | null;
+  descrizione_listino: string | null;
   agente: string | null;
+  descrizione_agente: string | null;
+  iban: string | null;
+  bic: string | null;
   scissione_pagamenti: boolean;
   obsoleto: boolean;
   destinazioni: DestinazioneVista[];
+  contatti: ContattoVista[];
+  nazione: string | null;
+  codice_ipa: string | null;
+  conto_banca: string | null;
+  conto_merce: string | null;
+  ente_pubblico: boolean;
+  aliquota: string | null;
+  cliente_fatturazione: string | null;
+  fido: string | null;
+  note: string | null;
+  extra: Extra | null;
 }
 
 export interface ArticoloBreve {
@@ -165,6 +202,50 @@ export interface ArticoloBreve {
   unita_misura: string;
   aliquota: string | null;
   obsoleto: boolean;
+  extra: Extra | null;
+}
+
+export interface UnitaVista {
+  unita_misura: string;
+  fattore: Decimale;
+  predefinita: boolean;
+}
+
+export interface PrezzoArticolo {
+  listino: string;
+  descrizione: string;
+  revisione: string | null;
+  valido_dal: Data | null;
+  prezzo: Decimale;
+  sconto: string | null;
+  ivato: boolean;
+}
+
+export interface ArticoloScheda {
+  codice: string;
+  descrizione: string;
+  descrizione_breve: string | null;
+  unita_misura: string;
+  aliquota: string | null;
+  conto_ricavo: string | null;
+  obsoleto: boolean;
+  unita: UnitaVista[];
+  extra: Extra | null;
+  prezzi: PrezzoArticolo[];
+}
+
+export interface Codifica {
+  codice: string;
+  descrizione: string;
+}
+
+export interface Tabelle {
+  aliquote: Codifica[];
+  pagamenti: Codifica[];
+  unita_misura: Codifica[];
+  magazzini: Codifica[];
+  agenti: Codifica[];
+  listini: Codifica[];
 }
 
 export type StatoArca = "in_arca" | "in_coda" | "errore" | "solo_atlas";
@@ -178,9 +259,17 @@ export interface DdtBreve {
   cliente: string;
   ragione_sociale: string;
   destinazione: string | null;
+  descrizione_destinazione: string | null;
   localita_destinazione: string | null;
+  pagamento: string | null;
+  listino_cliente: string | null;
+  agente: string | null;
+  descrizione_agente: string | null;
+  righe: number;
   totale_imponibile: Decimale;
   totale_documento: Decimale;
+  netto_a_pagare: Decimale;
+  arca_id_testata: number | null;
   arca: StatoArca;
 }
 
@@ -232,8 +321,13 @@ export interface DdtScheda {
     data: Data;
     cliente: string;
     destinazione: string | null;
+    sede: string | null;
     pagamento: string | null;
     listino_cliente: string | null;
+    iban: string | null;
+    bic: string | null;
+    conto_banca: string | null;
+    agente: string | null;
     inizio_trasporto: Istante | null;
     scissione_pagamenti: boolean;
     operatore: string;
@@ -250,15 +344,17 @@ export interface DdtScheda {
 export interface VoceListino {
   listino: string;
   descrizione: string;
+  descrizione_revisione: string | null;
   proposto: boolean;
   ivato: boolean;
-  revisione: number;
+  revisione: number | null;
   valido_dal: Data | null;
-  id_listino_articolo: number;
+  id_listino_articolo: number | null;
   prezzo_listino: Decimale;
-  prezzo_ivato: Decimale | null;
+  prezzo_documento: Decimale;
   sconto: string | null;
-  prezzo_riga: Decimale;
+  /** `null`: il listino non ha l'articolo. */
+  prezzo_riga: Decimale | null;
 }
 
 export interface RiferimentoDocumento {
@@ -279,6 +375,7 @@ export interface VoceUltimo {
   fattore: Decimale;
   quantita: Decimale;
   aliquota: string;
+  percentuale_iva: Decimale | null;
   prezzo: Decimale;
   prezzo_ivato: Decimale | null;
   sconto: string;
@@ -350,6 +447,8 @@ export interface Stato {
     in_coda: number;
     fermo: {
       evento: number;
+      /** Il cliente nuovo, se l'evento è di un cliente e non di un DDT. */
+      cliente: string | null;
       ddt: number;
       numero: number | null;
       esercizio: number | null;
@@ -372,9 +471,88 @@ export type Notifica =
   | { evento: "stato"; dati: StatoSync }
   | { evento: "ddt_creato"; dati: DdtCreato }
   | { evento: "ddt_rinumerato"; dati: Rinumerato }
+  | { evento: "cliente_creato"; dati: ClienteCreato }
   | { evento: "replica"; dati: { scritti: number; gia_presenti: number; fallito: [number, string] | null } }
   | {
       evento: "importazione";
       dati: { nuovi: number; aggiornati: number; collegati: number; esclusi: number; cancellati: number };
     }
+  | { evento: "note_cambiate" }
   | { evento: "ritardo"; dati: { perse: number } };
+
+/** Cliente nuovo salvato in ATLAS e accodato per Arca. */
+export interface ClienteCreato {
+  codice: string;
+  evento: number;
+}
+
+/** Campi con i nomi delle colonne di Arca, per `POST /api/clienti`. */
+export type CampiArca = Record<string, string | number | boolean | null>;
+
+export interface NuovoCliente {
+  cf: CampiArca;
+  contatto: CampiArca | null;
+}
+
+/** Riga del post-it della Home, condivisa fra le postazioni; si barra quando è fatta. */
+export interface Nota {
+  id: number;
+  testo: string;
+  fatta: boolean;
+  autore: string;
+  creata_il: Istante;
+  aggiornata_il: Istante;
+}
+
+export interface CampiNota {
+  testo?: string;
+  fatta?: boolean;
+}
+
+/** Dati ufficiali dell'azienda dalla partita IVA (servizio VIES), nei campi dell'anagrafica. */
+export interface DatiAzienda {
+  nazione: string;
+  partita_iva: string;
+  attiva: boolean;
+  ragione_sociale: string | null;
+  indirizzo: string | null;
+  cap: string | null;
+  localita: string | null;
+  provincia: string | null;
+  indirizzo_vies: string | null;
+  gia_presente: string | null;
+}
+
+export interface PerArea {
+  totale: number;
+  italia: number;
+  ue: number;
+  extra_ue: number;
+}
+
+export interface Riepilogo {
+  bolle: number;
+  clienti: PerArea;
+  fornitori: PerArea;
+}
+
+export interface ClienteDelGiorno {
+  cliente: string;
+  ragione_sociale: string;
+  localita: string | null;
+  volte: number;
+  su: number;
+  ultimo: Data;
+  /** "09:10": ora mediana di registrazione dei suoi DDT in quel giorno della settimana. */
+  ora_tipica: string | null;
+  destinazione: string | null;
+  servito: { id: number; numero: number } | null;
+}
+
+export interface ClientiDelGiorno {
+  data: Data;
+  giorno: string;
+  settimane: number;
+  giorni_lavorati: number;
+  clienti: ClienteDelGiorno[];
+}

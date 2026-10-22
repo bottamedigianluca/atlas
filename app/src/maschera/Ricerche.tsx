@@ -3,7 +3,7 @@
 
 import { type ReactNode, useEffect, useState } from "react";
 import { api } from "../api/client";
-import type { ArticoloBreve, ClienteBreve, NumeriLiberi } from "../api/tipi";
+import type { ArticoloBreve, ClienteBreve, DestinazioneVista, NumeriLiberi } from "../api/tipi";
 import { Modale } from "../componenti/Modale";
 import { data as fData } from "../griglia/numeri";
 
@@ -73,7 +73,7 @@ function Lista<T>({ titolo, iniziale, cerca, chiave, riga, onScegli, onChiudi }:
             aria-selected={i === scelta}
             onMouseDown={() => onScegli(v)}
             className={`flex cursor-pointer items-baseline gap-3 px-4 py-1.5 text-sm ${
-              i === scelta ? "bg-sky-500/15 dark:bg-sky-400/15" : "hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+              i === scelta ? "bg-primario-tenue" : "hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
             }`}
           >
             {riga(v)}
@@ -185,12 +185,58 @@ export function NumeriLiberiF3({ esercizio, onScegli, onChiudi }: {
             role="option"
             aria-selected={i === scelta}
             onMouseDown={() => onScegli(v.numero)}
-            className={`flex cursor-pointer justify-between px-4 py-1.5 text-sm ${i === scelta ? "bg-sky-500/15" : ""}`}
+            className={`flex cursor-pointer justify-between px-4 py-1.5 text-sm ${i === scelta ? "bg-primario-tenue" : ""}`}
           >
             <span className="cifre">{v.testo}</span>
             <span className="text-xs text-zinc-500">{v.date}</span>
           </li>
         ))}
+      </ul>
+    </Modale>
+  );
+}
+
+/** Destinazioni del cliente (F3 sul campo Destinazione). */
+export function RicercaDestinazioni({ destinazioni, onScegli, onChiudi }: {
+  destinazioni: readonly DestinazioneVista[];
+  onScegli: (codice: string) => void;
+  onChiudi: () => void;
+}) {
+  const voci = destinazioni.filter((d) => !d.obsoleto);
+  const [scelta, setScelta] = useState(0);
+  return (
+    <Modale titolo="Destinazioni" larghezza="max-w-xl" onChiudi={onChiudi} piede={<span><kbd className="tasto">Invio</kbd> sceglie</span>}>
+      <ul
+        role="listbox"
+        aria-label="Destinazioni"
+        tabIndex={0}
+        data-fuoco-iniziale
+        className="py-1 outline-none"
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") setScelta((s) => Math.min(s + 1, voci.length - 1));
+          else if (e.key === "ArrowUp") setScelta((s) => Math.max(s - 1, 0));
+          else if (e.key === "Enter") {
+            const v = voci[scelta];
+            if (v) onScegli(v.codice);
+          } else return;
+          e.preventDefault();
+        }}
+      >
+        {voci.map((d, i) => (
+          <li
+            key={d.codice}
+            role="option"
+            aria-selected={i === scelta}
+            onMouseDown={() => onScegli(d.codice)}
+            className={`flex cursor-pointer items-baseline gap-3 px-4 py-1.5 text-sm ${i === scelta ? "bg-primario-tenue" : ""}`}
+          >
+            <span className="w-14 shrink-0 font-mono text-xs font-semibold">{d.codice}</span>
+            <span className="flex-1 truncate">{d.descrizione}</span>
+            <span className="truncate text-xs text-zinc-500">{d.localita ?? ""}</span>
+            {d.predefinita && <span className="text-[10px] text-zinc-400">predefinita</span>}
+          </li>
+        ))}
+        {voci.length === 0 && <li className="px-4 py-3 text-sm text-zinc-500">Il cliente non ha destinazioni</li>}
       </ul>
     </Modale>
   );

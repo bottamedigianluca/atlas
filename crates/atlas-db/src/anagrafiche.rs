@@ -62,6 +62,8 @@ pub struct Articolo {
     pub aliquota_vendita: Option<String>,
     pub conto_ricavo: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di `AR` per la scheda, con i nomi delle colonne di Arca (oggetto JSON).
+    pub extra: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -111,6 +113,8 @@ pub struct ClienteFornitore {
     pub fido: Option<Decimal>,
     pub note: Option<String>,
     pub obsoleto: bool,
+    /// Gli altri campi di `CF` per la scheda, con i nomi delle colonne di Arca (oggetto JSON).
+    pub extra: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -127,6 +131,17 @@ pub struct Destinazione {
     pub aliquota: Option<String>,
     pub predefinita: bool,
     pub obsoleto: bool,
+    /// Gli altri campi di `CFDest` (codice destinatario, codice export…), oggetto JSON.
+    pub extra: String,
+}
+
+/// Contatto di un cliente (`CFContatto`): tutte le colonne di Arca in un oggetto JSON.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Contatto {
+    pub id: i64,
+    pub cliente: String,
+    pub destinazione: Option<String>,
+    pub dati: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -150,6 +165,7 @@ pub struct Anagrafiche {
     pub prezzi_listino: Vec<PrezzoListino>,
     pub clienti_fornitori: Vec<ClienteFornitore>,
     pub destinazioni: Vec<Destinazione>,
+    pub contatti: Vec<Contatto>,
     pub predefiniti_righe: PredefinitiRighe,
 }
 
@@ -272,6 +288,7 @@ impl Tabella for Articolo {
         "aliquota_vendita",
         "conto_ricavo",
         "obsoleto",
+        "extra",
     ];
     fn valori(&self) -> Vec<Value> {
         vec![
@@ -282,6 +299,7 @@ impl Tabella for Articolo {
             testo_opz(self.aliquota_vendita.as_deref()),
             testo_opz(self.conto_ricavo.as_deref()),
             bit(self.obsoleto),
+            testo(&self.extra),
         ]
     }
 }
@@ -346,6 +364,7 @@ impl Tabella for ClienteFornitore {
         "fido",
         "note",
         "obsoleto",
+        "extra",
     ];
     fn valori(&self) -> Vec<Value> {
         vec![
@@ -376,6 +395,7 @@ impl Tabella for ClienteFornitore {
             self.fido.map_or(Value::Null, decimale),
             testo_opz(self.note.as_deref()),
             bit(self.obsoleto),
+            testo(&self.extra),
         ]
     }
 }
@@ -394,6 +414,7 @@ impl Tabella for Destinazione {
         "aliquota",
         "predefinita",
         "obsoleto",
+        "extra",
     ];
     fn valori(&self) -> Vec<Value> {
         vec![
@@ -409,6 +430,21 @@ impl Tabella for Destinazione {
             testo_opz(self.aliquota.as_deref()),
             bit(self.predefinita),
             bit(self.obsoleto),
+            testo(&self.extra),
+        ]
+    }
+}
+
+impl Tabella for Contatto {
+    const NOME: &'static str = "contatti";
+    const CHIAVE: &'static [&'static str] = &["id"];
+    const COLONNE: &'static [&'static str] = &["cliente", "destinazione", "dati"];
+    fn valori(&self) -> Vec<Value> {
+        vec![
+            Value::Integer(self.id),
+            testo(&self.cliente),
+            testo_opz(self.destinazione.as_deref()),
+            testo(&self.dati),
         ]
     }
 }
@@ -493,14 +529,89 @@ pub fn aggiorna(conn: &mut Connection, dati: &Anagrafiche) -> Result<Vec<Esito>,
         allinea(&tx, &dati.prezzi_listino)?,
         allinea(&tx, &dati.clienti_fornitori)?,
         allinea(&tx, &dati.destinazioni)?,
+        allinea(&tx, &dati.contatti)?,
         allinea(&tx, std::slice::from_ref(&dati.predefiniti_righe))?,
     ];
+    // I contatti di un cliente nato in ATLAS (identità negative) lasciano il posto a quelli che
+    // Arca ha registrato con la replica.
+    tx.execute(
+        "DELETE FROM contatti WHERE id < 0 AND cliente IN (SELECT cliente FROM contatti WHERE id > 0)",
+        [],
+    )?;
     let violazioni = violazioni_chiavi_esterne(&tx)?;
     if !violazioni.is_empty() {
         return Err(ErroreDb::RiferimentiInesistenti(violazioni.join("; ")));
     }
     tx.commit()?;
     Ok(esiti)
+}
+
+/// Cliente nato in ATLAS e salvato.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ClienteSalvato {
+    pub codice: String,
+    /// Evento di replica accodato (`CF`).
+    pub evento: i64,
+}
+
+/// Salva un cliente nuovo con il suo contatto e accoda, nella stessa transazione, l'evento che lo
+/// scrive in Arca (`payload`: i campi di `CF` e `CFContatto`). Il codice deve essere libero e le
+/// codifiche citate (pagamento, listino, agente, aliquota) presenti, come le chiede Arca.
+pub fn crea_cliente(
+    conn: &mut Connection,
+    cliente: &ClienteFornitore,
+    contatto: Option<&str>,
+    payload: &str,
+    adesso: chrono::NaiveDateTime,
+) -> Result<ClienteSalvato, ErroreDb> {
+    let numero: i64 = cliente
+        .codice
+        .strip_prefix('C')
+        .and_then(|n| n.parse().ok())
+        .ok_or_else(|| ErroreDb::DocumentoNonValido(format!("codice cliente {} non nella forma C000000", cliente.codice)))?;
+    let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
+    let esiste: bool = tx.query_row("SELECT count(*) > 0 FROM clienti_fornitori WHERE codice = ?1", [&cliente.codice], |r| r.get(0))?;
+    if esiste {
+        return Err(ErroreDb::CodiceOccupato(cliente.codice.clone()));
+    }
+    let riferimenti = [
+        ("pagamenti", "pagamento", cliente.pagamento.as_deref()),
+        ("listini", "listino", cliente.listino.as_deref()),
+        ("agenti", "agente", cliente.agente.as_deref()),
+        ("aliquote", "aliquota", cliente.aliquota.as_deref()),
+        ("clienti_fornitori", "cliente di fatturazione", cliente.cliente_fatturazione.as_deref()),
+    ];
+    let mut mancanti = Vec::new();
+    for (tabella, nome, codice) in riferimenti {
+        if let Some(codice) = codice {
+            let c: bool = tx.query_row(&format!("SELECT count(*) > 0 FROM {tabella} WHERE codice = ?1"), [codice], |r| r.get(0))?;
+            if !c {
+                mancanti.push(format!("{nome} {codice} inesistente"));
+            }
+        }
+    }
+    if !mancanti.is_empty() {
+        return Err(ErroreDb::RiferimentiInesistenti(mancanti.join("; ")));
+    }
+    allinea(&tx, std::slice::from_ref(cliente))?;
+    if let Some(dati) = contatto {
+        let id: i64 = tx.query_row("SELECT min(min(id), 0) - 1 FROM contatti", [], |r| r.get::<_, Option<i64>>(0))?.unwrap_or(-1);
+        allinea(
+            &tx,
+            &[Contatto {
+                id,
+                cliente: cliente.codice.clone(),
+                destinazione: None,
+                dati: dati.to_owned(),
+            }],
+        )?;
+    }
+    let evento = crate::outbox::accoda(&tx, "CF", numero, crate::outbox::Operazione::Crea, payload, adesso)?;
+    tx.commit()?;
+    Ok(ClienteSalvato {
+        codice: cliente.codice.clone(),
+        evento,
+    })
 }
 
 /// Righe che citano una chiave inesistente (`PRAGMA foreign_key_check`), al massimo 20.
@@ -554,8 +665,8 @@ mod tests {
         let mut conn = crate::apri_in_memoria().unwrap();
         let dati = anagrafiche();
         let (inserite, aggiornate, _, _) = conteggi(&aggiorna(&mut conn, &dati).unwrap());
-        assert_eq!((inserite, aggiornate), (19, 0));
-        assert_eq!(conteggi(&aggiorna(&mut conn, &dati).unwrap()), (0, 0, 19, 0));
+        assert_eq!((inserite, aggiornate), (20, 0));
+        assert_eq!(conteggi(&aggiorna(&mut conn, &dati).unwrap()), (0, 0, 20, 0));
     }
 
     #[test]

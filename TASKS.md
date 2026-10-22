@@ -212,6 +212,104 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
 
 - [x] 22/10/2026 **Task 5, frontend desktop** (`app/`: React 19 + TypeScript + Tailwind 4, shell Tauri v2 in
   `app/src-tauri`):
+  - **Rifatta sulla finestra di Arca** (richiesta del titolare: "stile iOS ma praticamente come era su Arca, se no un
+    operatore non sa più come muoversi"; riferimenti `docs/screenshot_arca/01_…` e `04_…` e la struttura di
+    `fedi_doc`, schermate 08-12): finestra "Gestione Documenti" con i comandi della barra di Arca (Salva `F10`,
+    Annulla | Salva e stampa `F12` | Nuovo `Ctrl+N`, Elimina per il Task 6 | primo, precedente, successivo, ultimo
+    `|◀ ◀ ▶ ▶|` con `Alt+Home/←/→/Fine` nell'ordine dell'elenco, contatore "n/N" nella barra di stato) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Tema chiaro
+    predefinito (priorità del titolare: le posizioni come in Arca, colori e forme liberi). Generale: testata in
+    una fila (Tipo BO, Cliente, Data GG-MM-AAAA, Numero, Valuta EUR, Cambio 1.000000, Destinazione se il cliente ne
+    ha) e sotto le schede, con il riquadro rosso di ragione sociale, indirizzo e codice destinatario alla loro destra;
+    le linee delle colonne della griglia arrivano fino in fondo come in Arca; schede Testa, Righe, Piede, Totali,
+    Info, Evasioni, Stampe (`Ctrl+PgSu/PgGiù`) con i riquadri dei contenitori di Arca (pagamento, dati contabili,
+    varie, stato; dati DDT con trasporto V, spedizione M, porto F, aspetto beni AV e pesi a zero come nei BO di
+    Arca). Testa, Piede e Totali ricalcano le schermate: titoli rossi di sezione, etichette a sinistra e
+    descrizioni dei codici in rosso; Testa con pagamento, dati contabili e riferimenti a sinistra e altri dati,
+    fatturare a, stato e listini a destra; Piede con spedizione, pesi con Σ (somma delle righe), griglia delle
+    spese, acconto/fisso/abbuono; Totali con "Valori in EUR" netto/lordo e sconti, abbuono, acconto, netto a
+    pagare, più il riepilogo IVA. Le celle numeriche battute, fuori dalla cella attiva, hanno i decimali di Arca. Righe: titolo rosso "DETTAGLIO DOCUMENTO", griglia, sotto "Evade" a
+    sinistra e "Importa pesate"/"Riferimento" a destra. Numeri e date nel formato di Arca: punto decimale e decimali
+    fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
+    Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
+  - **Home** (all'avvio, `Ctrl+0`) come quella di Arca (schermate 07 e le foto del menu del titolare): "La tua
+    Home" con il marchio grande, "Cerca comando" (batti, frecce, `Invio`), "Aggiorna"; a sinistra "Cosa vuoi
+    fare?" (un clic allarga il pannello sopra i widget, `×`/`Esc` chiude) con le sole voci che a Bottamedi
+    servono secondo l'uso vero di Arca: Documenti, Anagrafiche, Articoli, Listini, Scadenzario, DMS e, di ATLAS,
+    "Partita IVA online" e "Sincronizzazione Arca"; tolte Servizio, Beni Usati, Contabilità, Magazzini, Vendite
+    al Banco, potenziali clienti, commesse. Le voci che ATLAS non ha ancora sono spente con "[in Arca]" o il task
+    che le porta. Stella per i Favoriti e pulsante "Favoriti" in fondo. Widget nello stile del marchio
+    (etichette fra virgolette, strisce): per familiarità i numeri di Arca (bolle, fatture e note di accredito con
+    il Task 7, clienti con Italia/UE/Extra UE, fornitori: `GET /api/home/riepilogo`), poi:
+    - "Da chiamare oggi": solo i nomi dei clienti che nello stesso giorno della settimana hanno avuto un DDT in
+      almeno metà dei giorni lavorati delle ultime 12 settimane (e almeno 3 volte); un tocco li barra (per la
+      giornata, sulla postazione), i già serviti sono barrati da soli. `GET /api/home/clienti?data=`
+      (`atlas-server/src/home.rs`, 5 ms sul database reale);
+    - "Post-it": righe condivise fra le postazioni, `Invio` aggiunge, un tocco barra, `×` toglie. Tabella `note`
+      (migrazione 0005, solo ATLAS: niente replica in Arca), scritta dal worker, `GET/POST /api/note`,
+      `PUT/DELETE /api/note/{id}`, notifica WebSocket `note_cambiate`;
+    - "DDT di oggi" (numeri e clienti, apre il DDT) e "Numeri liberi" (prossimo e buchi con le date).
+    - Solo conteggi, orari e numeri di documento, nessun importo (§4.3: al banco nessun dato di fatturato).
+    - Manca il telefono dei clienti: non è fra i campi importati da Arca (serve il nome delle colonne in `CF`).
+  - **Palette** (il titolare: "hai copiato macOS e mischiato il rosso di Arca"): un solo colore guida, il blu
+    petrolio, in cinque toni definiti in `app/src/stile.css` (selezione, fuoco, pulsanti, titoli, fondi
+    leggeri) per chiaro e scuro; stati smeraldo (in Arca), ambra (attenzione), rosso (errore). Tema chiaro
+    predefinito.
+  - **Partita IVA online** (`atlas-server/src/partita_iva.rs`, `GET /api/partita-iva/{numero}`): cifra di
+    controllo italiana, poi i dati ufficiali dal servizio VIES della Commissione europea (ragione sociale,
+    indirizzo diviso in via, CAP, località, provincia; partita IVA attiva; codice ATLAS se è già in anagrafica).
+    Lo chiama il backend (`ATLAS_VIES_URL`, attesa massima 8 s); senza rete risponde "non raggiungibile". Finestra
+    "Partita IVA" dal menu Anagrafiche e "Verifica online" nelle Informazioni, che mette i dati dell'azienda
+    accanto a quelli ufficiali. Prove con un VIES finto sulla partita IVA di Bottamedi (la rete delle prove non
+    esce): **da provare in negozio con la rete vera**.
+  - **Dati dell'azienda nel programma** presi dall'intestazione dei DDT di Arca (modulo `xDDT`): sede Via S.
+    Antonio 7, magazzino Via Degasperi 47, Tel. 0461 602534, PEC, B.D.N.O.O. 0114924 (la direttiva §3.7 dava Via
+    Degasperi come sede). I moduli di stampa restano com'erano.
+  - **Marchio** (`app/src/componenti/Marchio.tsx`): logotipo "ATLAS" disegnato apposta, vettoriale (bastoni ad
+    alto contrasto, Λ senza traversa, S modulata come da pennino largo), con le strisce diagonali, le virgolette
+    e la firma "c/o BOTTAMEDI" alla Off-White; in barra la versione compatta, nelle Informazioni quella intera
+    con "MEZZOLOMBARDO — TN".
+  - **Anagrafiche complete, parte backend** (per le maschere Clienti e Articoli, vedi "Da fare" 5b): migrazione
+    0006 con la colonna JSON `extra` in `clienti_fornitori` e `articoli`; l'importazione legge da `CF` 70 colonne
+    in più e da `AR` 48 (`CF_EXTRA`, `AR_EXTRA` in `atlas-sync/src/anagrafiche.rs`: tipo figura, nazione IVA,
+    PEPPOL, zona, settore, porto/spedizione/vettore, sconti, giorni fissi, classi e gruppi, flag FE/split/reverse
+    charge, REA, ATECO, SDD, ABI/CAB; per gli articoli gruppi, classi, marca, modello, IVA acquisti, conti, scorte,
+    lotti, pesi e misure, costo e ricarico, origine). API: scheda cliente e articolo con `extra`, scheda articolo
+    con i prezzi validi oggi per listino (ultima revisione), `GET /api/clienti/prossimo-codice` (C###### + 1).
+    **Il database va riallineato** con `importa-anagrafiche` sul database di Arca (fino ad allora `extra` = `{}`).
+  - **Maschere Clienti e Articoli** (5b, il titolare: "snella ma con tutto completa"), verificate pagina per pagina
+    sulle maschere di Arca e sulle personalizzazioni (`docs/COPERTURA_ANAGRAFICHE.md`):
+    - Aree "Clienti" e "Articoli" nella barra, voci del menu Home (Anagrafiche › Clienti, Articoli › Gestione
+      Articoli) e "Elenco →" nel widget Anagrafiche. Ogni area (`anagrafiche/Area.tsx`) ha strumenti (Salva, Nuovo,
+      Aggiorna, |◀ ◀ ▶ ▶|), pagine Elenco e Scheda (`Ctrl+1/2`), `Alt+←/→` sull'ordine dell'elenco filtrato, `Esc`
+      dalla scheda all'elenco sulla stessa riga, `F5` rilegge.
+    - Elenchi con le colonne di Arca nel suo ordine (clienti: Telefono, Fax, Email dal contatto "Aziendale";
+      articoli: OB/AF e la legenda Fittizio/Obsoleto), filtri per colonna, layout salvato nella postazione.
+    - Scheda in una pagina sola a sezioni con l'indice a sinistra (`Alt+1…9`), campi con le decodifiche di
+      pagamenti, listini, agenti, aliquote, UM; i campi stanno in `anagrafiche/campi.ts` con i nomi di Arca.
+      Cliente: anche contatti, destinazioni con tutti i campi di `CFDest`, ultimi 30 DDT (si aprono nella Gestione
+      Documenti), Export (`xCd_Exp`), stabile organizzazione e rappresentante fiscale, Intra. Articolo: UM e fattori,
+      prezzi validi oggi, FE, produzione, eBusiness; avviso se manca l'IVA vendite (`xARIvaObb`).
+    - Importazione completata: `CF` e `AR` per intero (la prova `tutte_le_colonne_di_cf_e_ar_sono_importate`
+      confronta lo schema del negozio, le escluse hanno il motivo scritto), `CFDest` e `CFContatto` con `select *`
+      (migrazione 0007: `destinazioni.extra`, tabella `contatti`); `campi.test.ts` controlla che ogni colonna
+      importata abbia il suo campo nella scheda. Prima mancavano, fra gli altri, sede e rappresentante fiscale e
+      regime fiscale per la FE, codice export, codici articolo FE, scorta massima, giorni di riordino.
+    - **Cliente nuovo** (`Ctrl+N`): partita IVA → VIES → scheda precompilata con il codice successivo; `F10` salva
+      (`POST /api/clienti`, worker): `atlas-sync/src/clienti.rs` completa i campi obbligatori di `CF` letti sul
+      clone (TipoDitta, Cliente, TipoCF, Cd_VL, Id_Lingua 1040, Sconto/Provvigione vuoti, Fido 0, giorni fissi, Ue
+      dalla nazione, flag a 0), controlla partita IVA (cifra di controllo), codice fiscale, IBAN, codice
+      destinatario (7 caratteri o PEC), lunghezze delle colonne di `CF`, codifiche esistenti, codice libero; il
+      cliente è subito in ATLAS con il contatto "Aziendale" e un evento `CF` nell'outbox (migrazione 0007). La
+      replica lo scrive in `CF` e `CFContatto` in una transazione (nessun trigger sull'inserimento: si controlla
+      che siano quelli attesi), idempotente (stesso codice e ragione sociale = già scritto; altra ragione sociale =
+      coda ferma, "codice occupato" nel pannello Sincronizzazione). I contatti nati in ATLAS lasciano il posto a
+      quelli di Arca alla prima importazione.
+    - Prove: 6 vitest delle schede, 4 di `clienti.rs`, API del cliente nuovo con Arca finta, 3 scenari Playwright
+      (elenco e scheda clienti con documenti e frecce, cliente nuovo con errori e salvataggio, articoli).
+
+  - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
+    (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
+    (nessun ordine in ATLAS), Elimina (Task 6), DMS e stampa (Task 7).
   - Maschera DDT tutta da tastiera. Testata: Cliente (F3 ricerca) → `Invio` sulla prima riga; destinazione
     (predefinita del cliente, altre o nessuna), data, numero (vuoto = numerazione unica; F3 = buchi di Arca con le
     date ammesse e il prossimo numero). Griglia sulle 40 colonne di UserPref 1443 (ordine e larghezze esatte,
@@ -226,16 +324,25 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     netto, prezzo proposto (in grigio nella cella), totali e castelletto in tempo reale; prezzo battuto diverso dal
     listino in ambra chiaro; errori di riga sul codice articolo e nel piede. `F10` salva (numero, totale, avviso se
     numerato senza Arca) e prepara il DDT successivo con la stessa data.
-  - F3 sul prezzo: "PREZZO/COSTO ARTICOLO" con le tre sezioni della direttiva e le sue colonne fino a `Riporta`;
-    `↑/↓` e `Invio`/`Spazio` riportano il prezzo nella riga. Le voci "tipo Bolla" coincidono con "BOLLA VENDITA"
-    (in ATLAS l'unica bolla è il BO); provvigioni vuote (non gestite); ultimo acquisto assente.
+  - F3 sul prezzo: "PREZZO/COSTO ARTICOLO" come in Arca: barre grigie "Dati da documento" (articolo, doc. BO /
+    cliente del GG-MM-AAAA, prezzo della riga), "Prezzi da listino" (Listino 1 e Listino 2 sempre, a 0.000 se
+    l'articolo non c'è; "Prezzo Val Doc. Ivato" = prezzo del BO, che non è ivato) e "Ultimi prezzi da documenti"
+    (ultimo BOLLA VENDITA del cliente e assoluto con "(BO / C000387 del 22-10-2026)", le stesse voci "tipo Bolla",
+    Ultimo Acquisto; le voci senza documento in corsivo); stesse colonne fino a `Riporta`, spuntato sulle voci
+    riportabili. `↑/↓` e `Invio`/`Spazio` riportano il prezzo nella riga. Provvigioni vuote (non gestite); ultimo
+    acquisto vuoto finché ATLAS non ha documenti di acquisto.
   - Griglia personalizzabile e salvata nella postazione (`localStorage`): larghezza a trascinamento del bordo
-    (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, menu Colonne per
-    mostrare/nascondere (l'articolo resta), "Ripristina layout di fabbrica".
-  - Elenco documenti (`Ctrl+2`) con filtri dal/al, tipo (DDT; fatture e NC con il Task 7) e cliente, badge dello
-    stato in Arca, `Invio` apre la scheda; pannello Sincronizzazione (`Ctrl+3`) con coda, importazione e conflitti
-    con il pulsante "Rinumera"; semaforo nella barra (verde in Arca, blu in coda, rosso fermo o server
-    irraggiungibile) aggiornato dal WebSocket.
+    (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, clic destro sulle
+    intestazioni per mostrare/nascondere (l'articolo resta) e "Ripristina layout di fabbrica". Riga attiva blu
+    #007AFF con barra a sinistra, righe alterne #F9FAFB (piano architetturale).
+  - Pagina Elenco (`Ctrl+1`) con le colonne nell'ordine e con le intestazioni della schermata 08 (Identificativo,
+    Esercizio, Tipo Documento, Tipo, Numero, Data, Num Rif, Data Rif, Ragione Sociale, Cli/For, Destinaz., Cod. Con.
+    "D00 Bolle emesse", Tot. Doc. a tre decimali, Stato, agenti, Valuta, Cambio, Pag…), poi le altre di `fedi_doc`
+    e le due della personalizzazione Bottamedi; nella colonna Stato (vuota sui BO di Arca) lo stato in Arca.
+    Riga dei filtri per colonna sotto le intestazioni, legenda in fondo; filtri dal/al (GG-MM-AAAA) e tipo (DDT;
+    fatture e NC con il Task 7); frecce, PgSu/PgGiù, Home/Fine, `Invio` o doppio clic apre il DDT.
+    Sincronizzazione (coda, importazione, conflitti con "Rinumera") in una finestra che si apre dal semaforo nella
+    barra (verde in Arca, blu in coda, rosso fermo o server irraggiungibile), aggiornato dal WebSocket.
   - Design §3.6-3.7: chiaro e scuro (segue il sistema, cambiabile), finestre satinate, focus ring blu, cifre
     tabulari monospazio a destra; intestazione aziendale, firma e coordinate nella barra di stato, cartellino in
     Informazioni (`F1`), dove si imposta anche l'indirizzo del server.
@@ -245,10 +352,16 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   - Shell Tauri: CSP che permette solo il backend locale (`127.0.0.1`/`localhost`), capability `core:default`,
     nessun comando nativo. Il backend accetta le origini Tauri e Vite. Compilata in release su Linux (6 MB) e avviata:
     WebSocket e API raggiungibili.
-  - Prove: 14 vitest (tastiera, layout, numeri) e 7 scenari Playwright end-to-end sul database reale (copia) con il
-    backend vero: un DDT battuto solo da tastiera fino a F10 e riletto dalle API (GEN 11,8 kg × 1,50 + ZUC, totale
-    22,57), guardrail, F3 prezzi e riporta, ambra, Freccia Giù/Su, colonne (larghezza, nascondi, persistenza,
-    ripristino, riordino con la sequenza Invio invariata), F3 cliente/articolo/numeri liberi, elenco documenti.
+  - Backend per la maschera: scheda cliente con codice destinatario, descrizioni di listino e agente, IBAN e BIC;
+    elenco DDT con le colonne della griglia di Arca (destinazione, pagamento, listino, agente, righe, netto a pagare,
+    Id_DoTes); F3 con Listino 1 e 2 sempre presenti, descrizione della revisione, prezzo nella valuta del documento
+    e percentuale IVA degli ultimi prezzi. Corretta una prova instabile del conflitto di numero (la replica poteva
+    scrivere prima dell'iniezione del conflitto).
+  - Prove: 16 vitest (tastiera, layout, numeri, voci F3, date) e 7 scenari Playwright end-to-end sul database reale
+    (copia) con il backend vero: un DDT battuto solo da tastiera fino a F10 e riletto dalle API (GEN 11.8 kg × 1.50 +
+    ZUC, totale 22.57), guardrail, F3 prezzi con le voci di Arca e riporta, ambra, Freccia Giù/Su, scheda Totali,
+    riapertura dall'Elenco, colonne (larghezza, nascondi dal clic destro, persistenza, ripristino, riordino con la
+    sequenza Invio invariata), F3 cliente/articolo/numeri liberi; fotografie chiaro/scuro in `app/test-results/`.
   - **F12**: `TASKS.md` lo dava come "nuova riga", la direttiva (documento supremo) come "salva e stampa": seguita la
     direttiva. Finché non c'è il modulo stampe (Task 7) F12 salva e lo dice.
   - Fuori da questo task: F2 per sbloccare i prezzi in anagrafica (§3.2: le anagrafiche si modificano ancora in
@@ -327,8 +440,25 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Guardrail antierrore da tastiera: avviso per `Tara >= Lordo` o `Colli con decimali` (gestibili al 100% da tastiera: `Esc` correggi, `Invio` conferma).
    - Tasti funzione: `F3` (lookup prezzi), `F10` (salva documento), `Esc` (esci/annulla riga), `F12` (nuova riga).
 
+5b. **Maschere Clienti e Articoli** — fatte (vedi sopra e `docs/COPERTURA_ANAGRAFICHE.md`). Resta:
+   - **Da provare sul clone**: un cliente nuovo da ATLAS (F10) e la replica in `CF` + `CFContatto`; controllare in
+     Arca la scheda (Generale, Contabilità, contatto "Aziendale") e che `Id_CFContattoTipo` sia la colonna del tipo
+     del contatto. Poi `importa-anagrafiche` per avere in ATLAS tutti i campi, i contatti e le destinazioni complete.
+   - Contatto del cliente nuovo: oggi Telefono, Fax, Email. Per Cellulare, PEC, sito servono i nomi delle colonne di
+     `CFContatto` (dopo `importa-anagrafiche` sono nei dati dei contatti importati).
+   - Modifica ed eliminazione di clienti e articoli, articoli nuovi, destinazioni nuove, fornitori e agenti: per ora
+     in Arca. La modifica di `CF` passa dal trigger `CF_atrg_brd` (BEFORE UPDATE): va provata sul clone come per
+     `DOTes`.
+   - Pagina Documenti dell'articolo (righe di DDT), immagini (`ARImg`), dichiarazioni d'intento, ritenuta, cronologia
+     (`HistoryData`): vedi la copertura.
+
 6. **Gestione Cancellazioni Documenti e Riuso Numerazione**:
    - Hard Delete dal database operativo (zero colonne `is_deleted` nel DB ordinario).
+   - Come Arca: conferma dell'utente avanzato prima di eliminare un BO già evaso in fattura, rifiuto dei documenti
+     non modificabili (`fedi_doc_extracted.prg:10226-10245`); replica della cancellazione (oggi `replica.rs:189`
+     rifiuta tutto ciò che non è una creazione).
+   - **Modifica di un DDT salvato, con replica**: nel 2026 923 BO su 5.452 modificati dopo la creazione e 42
+     chiusi a mano. Manca l'API; `Operazione::Modifica` c'è in `atlas-db/src/outbox.rs:16`.
    - Recupero immediato del numero documento cancellato come buco disponibile nel progressivo.
    - Snapshot di emergenza locale isolato fuori dal DB (cifrato, accessibile solo da menu riservato con PIN).
 
@@ -337,6 +467,39 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Generazione automatica fattura differita con raggruppamento e righe di riferimento DDT.
    - Generazione file standard ministeriale XML FatturaPA 1.2.2 per invio a Sistema di Interscambio (SdI).
    - Modulo stampa DDT e fattura in formato PDF.
+   - Dai sorgenti (analisi del 22/10/2026), oltre a quanto sopra:
+     - **Fattura immediata FA**: 569 su 1.120 fatture nel 2026, vale anche come DDT e scarica il magazzino. Per
+       replicarla servono `SC`, `CGMovT`, `CGMovT_NumProt` e il modulo `xFatturaImmediata`. L'importazione legge
+       solo i BO: F3 "ultimi prezzi" e "Da chiamare oggi" non vedono le vendite fatte con FA.
+     - Stampa DDT (`xDDT`): dicitura D.P.R. 472/96, provenienza `AR.Cd_ARClasse1`, categoria dalla nota articolo
+       'CAT' (`oDoR.NoteAR('CAT')`: controllare che le note articolo si importino), note di riga, articolo e
+       documento.
+     - Fattura differita (`xFattura_before.prg`): una riga per DDT con l'imponibile per aliquota 4/5/10/22, non le
+       righe. Fatture: clausola Art. 62, "Durata merce: entro 60 giorni…", dicitura CONAI, `NoteAliquota`, fino a
+       6 scadenze, IBAN della banca sconto se RiBa, altrimenti della banca d'appoggio.
+     - Differita: spese d'incasso RiBa come righe spesa (`DORigSpesa`), BO evasi in Arca (`QtaEvadibile` e
+       `RigheMerceEvadibili` a 0), sezionale `001` in `numerazione::occupati`.
+     - SdI: canale di invio (decisione del titolare), firma, esiti RC/MC/NS e blocco delle modifiche secondo lo
+       stato (`fedi_doc_extracted.prg:10365-10389`, `:11865-11901`), PA con `CodiceIPA`/`EntePubblico`
+       (`:6437`, `:7119`) e scissione dei pagamenti (33 documenti), PDF/XML/esiti nel DMS e conservazione.
+     - Note di accredito (7 nel 2026, direttiva §4.4) con il riferimento alla fattura (`fedi_doc_extracted.prg:8773`).
+     - Da misurare: bollo virtuale sopra `Imp_DOEsente_Limite` (`:7933-7957`), controllo fido (`:5823-5997`).
+
+7b. **Lacune non ancora pianificate** (analisi dei sorgenti, in ordine di peso):
+   - **Scadenzario, incassi, RiBa**: 1.129 scadenze nel 2026, 291 documenti RiBa con spese d'incasso fra 2025 e
+     2026 ("Necessario" in `ANALISI_ARCA.md` §1). Scrittura di `SC`, registra pagato, portafoglio e distinta per
+     la banca.
+   - **Fatture passive**: 1.640 nel 2026 (`FTE_InBox`), scaricate da Arca dall'Hub Wolters Kluwer
+     (`FepaHubClient_clear.cs:1073`, `:1199`, `:1970-1977`). Senza Arca restano senza dati il CRM acquisti e
+     "Ultimo acquisto" in F3.
+   - **Contabilità ed export per il commercialista**: 1.122 registrazioni causale 01 e 7 causale 02 nel 2026
+     generate da Arca; manca il formato.
+   - **Listini in scrittura** (258 modifiche nel 2026) e F2 della direttiva §3.2 per sbloccare i prezzi.
+   - **Importa pesate** (`pers_bottamedi/fedi_doc_extracted.prg:769-869`, uso da confermare): file
+     `PERS\DoImportAscii\Data.txt` o il percorso di `NFile.ini` con `<COMPUTERNAME>`, formato
+     `Codice;Lordo;Tara;Colli;Lotto`, copia in `NFILE_BAK`, poi il file si cancella.
+   - Esclusi per uso nullo: export Conad/Gastropool/Hogast, listini per destinazione, cambio massivo listini,
+     `importdtv`, lotti predefiniti, codici alternativi, ordini; scontrini (38) a bassa priorità.
 
 
 8. **Connettività Distribuita SOTA (mTLS 1.3) & Resilienza Offline**:

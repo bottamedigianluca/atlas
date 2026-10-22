@@ -3,13 +3,43 @@
 /* Tema scuro con la classe `scuro` sulla radice (segue il sistema, l'operatore può cambiarlo). */
 @custom-variant dark (&:where(.scuro, .scuro *));
 
+/*
+ * Palette di ATLAS: un solo colore guida, il blu petrolio, più i grigi e i colori di stato.
+ * Niente blu di sistema di Apple né rosso di Arca: i titoli, la selezione, il fuoco e i pulsanti
+ * principali sono tutti dello stesso petrolio, in tonalità diverse.
+ * - primario: riga scelta, pulsante principale (testo bianco sopra);
+ * - primario-forte: barra a sinistra della riga scelta;
+ * - primario-testo: titoli di sezione, link, icone della barra;
+ * - primario-tenue: fondi leggeri (riquadro anagrafico, riga dei filtri, voce scelta delle ricerche);
+ * - anello: il fuoco, più acceso per vederlo con la coda dell'occhio.
+ * Stati: smeraldo = in Arca/fatto, petrolio = in coda, ambra = attenzione (prezzo cambiato,
+ * cliente in ritardo), rosso = errore. I valori cambiano col tema scuro qui sotto.
+ */
+:root {
+  --atlas-primario: #0b6e79;
+  --atlas-primario-forte: #064a52;
+  --atlas-primario-testo: #0a5f69;
+  --atlas-primario-tenue: #e6f3f4;
+  --atlas-anello: #14a3b1;
+}
+.scuro {
+  --atlas-primario: #17818c;
+  --atlas-primario-forte: #0b5560;
+  --atlas-primario-testo: #6cd3dc;
+  --atlas-primario-tenue: #0e2b2f;
+  --atlas-anello: #3cc6d3;
+}
+
 @theme {
   /* Nessun font scaricato: l'app lavora anche senza rete. SF su macOS, Segoe UI Variable su Windows. */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui,
     sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
-  --color-accento: #007aff;
-  --color-accento-scuro: #0a84ff;
+  --color-primario: var(--atlas-primario);
+  --color-primario-forte: var(--atlas-primario-forte);
+  --color-primario-testo: var(--atlas-primario-testo);
+  --color-primario-tenue: var(--atlas-primario-tenue);
+  --color-anello: var(--atlas-anello);
   --color-ambra-tenue: #fff4d6;
   --color-ambra-tenue-scuro: #3d2f0a;
 }
@@ -25,13 +55,10 @@
     font-feature-settings: "cv11", "ss01";
     overflow: hidden;
   }
-  /* Focus ring nitido stile Apple: si vede con la coda dell'occhio. */
+  /* Focus ring nitido: si vede con la coda dell'occhio. */
   :focus-visible {
-    outline: 2px solid var(--color-accento);
+    outline: 2px solid var(--atlas-anello);
     outline-offset: 1px;
-  }
-  .scuro :focus-visible {
-    outline-color: var(--color-accento-scuro);
   }
   input[type="date"]::-webkit-calendar-picker-indicator {
     opacity: 0.4;
@@ -44,8 +71,8 @@
   }
   .campo {
     @apply h-8 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm outline-none transition-colors
-      focus:border-accento focus:ring-2 focus:ring-accento/25
-      dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-accento-scuro dark:focus:ring-accento-scuro/30;
+      focus:border-anello focus:ring-2 focus:ring-anello/25
+      dark:border-zinc-700 dark:bg-zinc-900;
   }
   .etichetta {
     @apply text-[11px] font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400;
@@ -56,8 +83,8 @@
       dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800;
   }
   .pulsante-primario {
-    @apply inline-flex h-8 items-center gap-1.5 rounded-lg bg-accento px-3 text-sm font-semibold text-white
-      transition-colors hover:brightness-110 disabled:opacity-40 dark:bg-accento-scuro;
+    @apply inline-flex h-8 items-center gap-1.5 rounded-lg bg-primario px-3 text-sm font-semibold text-white
+      transition-colors hover:bg-primario-forte disabled:opacity-40;
   }
   .tasto {
     @apply inline-flex min-w-5 items-center justify-center rounded border border-zinc-300 bg-zinc-100 px-1 font-mono

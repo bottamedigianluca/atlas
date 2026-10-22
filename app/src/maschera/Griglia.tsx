@@ -1,12 +1,17 @@
-// Griglia righe del DDT: le colonne di UserPref 1443 nel layout dell'operatore. Le celle battute
-// sono campi di testo; il resto lo calcola il backend (quantità, totale, aliquota…) e si mostra.
+// Griglia righe del documento: le colonne di UserPref 1443 nel layout dell'operatore. Le celle
+// battute sono campi di testo; il resto lo calcola il backend (quantità, totale, aliquota…).
 // La tastiera la governa il riduttore (`righe.ts`); qui si traducono i tasti in azioni.
+//
+// Riga attiva piena nel colore guida, testo bianco e barra a sinistra (piano architetturale, griglia
+// documenti); clic destro sulle intestazioni per mostrare o nascondere le colonne, come in Arca.
 
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useState } from "react";
 import type { RigaCalcolata } from "../api/tipi";
-import { ALTEZZA_RIGA, type CampoRiga, type Colonna, PER_ID } from "../griglia/colonne";
-import { type Layout, alterna, layoutDiFabbrica, ridimensiona, sposta, visibili } from "../griglia/layout";
-import { prezzo as fPrezzo, quantita as fQuantita, importo, mostra } from "../griglia/numeri";
+import { ALTEZZA_RIGA, type CampoRiga, type Colonna, GRIGLIA_RIGHE, PER_ID } from "../griglia/colonne";
+import { Intestazione } from "../griglia/Intestazione";
+import { type Layout, visibili } from "../griglia/layout";
+import { MenuColonne } from "../griglia/MenuColonne";
+import { decimale, fattore, mostra, prezzo as fPrezzo, quantita as fQuantita, importo } from "../griglia/numeri";
 import { type Azione, type RigaUI, type StatoRighe, numeriErrati } from "./righe";
 
 interface Props {
@@ -14,6 +19,8 @@ interface Props {
   calcolate: readonly (RigaCalcolata | undefined)[];
   layout: Layout;
   attiva: boolean;
+  /** Documento salvato in consultazione: le celle si leggono e basta. */
+  solaLettura?: boolean;
   onLayout: (layout: Layout) => void;
   onAzione: (azione: Azione) => void;
   /** F3 sulla cella: ricerca articolo o prezzi. */
@@ -29,13 +36,13 @@ function visualizza(colonna: Colonna, indice: number, calcolata: RigaCalcolata |
     case "riga":
       return String(indice + 1);
     case "totale":
-      return importo(calcolata?.totale);
+      return importo(calcolata?.totale ?? "0");
     case "aliquota":
       return calcolata?.aliquota ?? "";
     case "fattore":
-      return calcolata?.fattore_um1 ? mostra(calcolata.fattore_um1, 0, 3) : "";
+      return fattore(calcolata?.fattore_um1 ?? "0");
     case "quantita_evadibile":
-      return fQuantita(calcolata?.quantita);
+      return fQuantita(calcolata?.quantita ?? "0");
     case "conto":
       return calcolata?.conto_ricavo ?? "";
     default:
@@ -43,18 +50,26 @@ function visualizza(colonna: Colonna, indice: number, calcolata: RigaCalcolata |
   }
 }
 
-/** Quello che il backend mette nella cella quando l'operatore non batte nulla. */
+/**
+ * Quello che il backend mette nella cella quando l'operatore non batte nulla; nelle colonne
+ * numeriche lo zero, come la riga vuota di Arca.
+ */
 function proposta(campo: CampoRiga, calcolata: RigaCalcolata | undefined): string {
-  if (!calcolata || calcolata.vuota) return "";
+  if (campo === "colli" || campo === "lordo" || campo === "tara") return "0.00";
+  if (!calcolata || calcolata.vuota) {
+    if (campo === "quantita") return "0.00";
+    if (campo === "prezzo") return "0.000";
+    return "";
+  }
   switch (campo) {
     case "descrizione":
       return calcolata.descrizione ?? "";
     case "unita_misura":
       return calcolata.unita_misura ?? "";
     case "quantita":
-      return fQuantita(calcolata.quantita);
+      return fQuantita(calcolata.quantita ?? "0");
     case "prezzo":
-      return fPrezzo(calcolata.prezzo);
+      return fPrezzo(calcolata.prezzo ?? "0");
     case "magazzino":
       return calcolata.magazzino ?? "";
     default:
@@ -62,22 +77,33 @@ function proposta(campo: CampoRiga, calcolata: RigaCalcolata | undefined): strin
   }
 }
 
-export function Griglia({ stato, calcolate, layout, attiva, onLayout, onAzione, onF3 }: Props) {
+/** Decimali fissi delle celle numeriche battute, come le mostra Arca fuori dalla cella attiva. */
+const DECIMALI: Partial<Record<CampoRiga, number>> = { colli: 2, lordo: 2, tara: 2, quantita: 2, prezzo: 3 };
+
+/** Il valore battuto, nel formato di Arca quando il cursore non è sulla cella ("12.4" → "12.40"). */
+function aVideo(campo: CampoRiga, testo: string, attiva: boolean): string {
+  const decimali = DECIMALI[campo];
+  if (attiva || decimali === undefined) return testo;
+  const d = decimale(testo);
+  return d ? mostra(d, decimali) : testo;
+}
+
+export function Griglia({ stato, calcolate, layout, attiva, solaLettura = false, onLayout, onAzione, onF3 }: Props) {
   const colonne = visibili(layout).map((id) => PER_ID.get(id)).filter((c): c is Colonna => !!c);
   const campiVisibili = colonne.flatMap((c) => (c.campo ? [c.campo] : []));
   const larghezzaTotale = colonne.reduce((s, c) => s + (layout.larghezze[c.id] ?? c.larghezza), 0);
-  const contenitore = useRef<HTMLDivElement>(null);
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 
   // Il fuoco segue il cursore.
   const riga = stato.righe[stato.cursore.riga];
   useEffect(() => {
-    if (!attiva || !riga) return;
+    if (!attiva || !riga || solaLettura) return;
     const campo = document.getElementById(idCella(riga.chiave, stato.cursore.campo)) as HTMLInputElement | null;
     if (campo && document.activeElement !== campo) {
       campo.focus({ preventScroll: false });
       campo.select();
     }
-  }, [attiva, riga, stato.cursore.campo]);
+  }, [attiva, riga, stato.cursore.campo, solaLettura]);
 
   const tasto = (e: KeyboardEvent<HTMLInputElement>, indice: number, campo: CampoRiga) => {
     const input = e.currentTarget;
@@ -122,92 +148,48 @@ export function Griglia({ stato, calcolate, layout, attiva, onLayout, onAzione, 
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div ref={contenitore} className="min-h-0 flex-1 overflow-auto" role="grid" aria-label="Righe del documento">
-        <div style={{ width: larghezzaTotale }} className="relative">
-          <Intestazione colonne={colonne} layout={layout} onLayout={onLayout} />
-          {stato.righe.map((r, i) => (
-            <RigaGriglia
-              key={r.chiave}
-              riga={r}
-              indice={i}
-              colonne={colonne}
-              layout={layout}
-              calcolata={calcolate[i]}
-              cursore={stato.cursore.riga === i ? stato.cursore.campo : null}
-              avviso={stato.avviso?.riga === i ? stato.avviso.codice : null}
-              onAzione={onAzione}
-              onTasto={tasto}
-            />
+    <div className="min-h-0 flex-1 overflow-auto bg-white dark:bg-zinc-950" role="grid" aria-label="Righe del documento">
+      <div style={{ width: larghezzaTotale }} className="relative flex min-h-full flex-col">
+        <Intestazione
+          griglia={GRIGLIA_RIGHE}
+          colonne={colonne}
+          layout={layout}
+          onLayout={onLayout}
+          onMenu={(x, y) => setMenu({ x, y })}
+        />
+        {stato.righe.map((r, i) => (
+          <RigaGriglia
+            key={r.chiave}
+            riga={r}
+            indice={i}
+            colonne={colonne}
+            layout={layout}
+            calcolata={calcolate[i]}
+            selezionata={stato.cursore.riga === i}
+            cursore={stato.cursore.riga === i ? stato.cursore.campo : null}
+            avviso={stato.avviso?.riga === i ? stato.avviso.codice : null}
+            solaLettura={solaLettura}
+            onAzione={onAzione}
+            onTasto={tasto}
+          />
+        ))}
+        {/* Sotto le righe le linee delle colonne continuano fino in fondo, come nella griglia di Arca. */}
+        <div aria-hidden className="flex flex-1">
+          {colonne.map((c) => (
+            <div key={c.id} style={{ width: layout.larghezze[c.id] ?? c.larghezza }} className="shrink-0 border-r border-zinc-200/70 last:border-r-0 dark:border-zinc-800" />
           ))}
         </div>
       </div>
-    </div>
-  );
-}
-
-function Intestazione({ colonne, layout, onLayout }: { colonne: Colonna[]; layout: Layout; onLayout: (l: Layout) => void }) {
-  const [trascinata, setTrascinata] = useState<string | null>(null);
-  const fabbrica = layoutDiFabbrica();
-
-  const inizioRidimensiona = (e: React.PointerEvent<HTMLSpanElement>, colonna: Colonna) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const partenza = e.clientX;
-    const larghezza = layout.larghezze[colonna.id] ?? colonna.larghezza;
-    const maniglia = e.currentTarget;
-    maniglia.setPointerCapture(e.pointerId);
-    let attuale = layout;
-    const muovi = (ev: PointerEvent) => {
-      attuale = ridimensiona(layout, colonna.id, larghezza + ev.clientX - partenza);
-      onLayout(attuale);
-    };
-    const fine = () => {
-      maniglia.removeEventListener("pointermove", muovi);
-      maniglia.removeEventListener("pointerup", fine);
-      maniglia.removeEventListener("pointercancel", fine);
-    };
-    maniglia.addEventListener("pointermove", muovi);
-    maniglia.addEventListener("pointerup", fine);
-    maniglia.addEventListener("pointercancel", fine);
-  };
-
-  return (
-    <div
-      role="row"
-      className="sticky top-0 z-10 flex border-b border-zinc-200 bg-zinc-100/90 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/90"
-    >
-      {colonne.map((c) => (
-        <div
-          key={c.id}
-          role="columnheader"
-          draggable
-          title={`${c.etichetta} (${c.id}) — trascina per spostare, bordo destro per allargare`}
-          onDragStart={(e) => {
-            setTrascinata(c.id);
-            e.dataTransfer.effectAllowed = "move";
-          }}
-          onDragOver={(e) => trascinata && e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (trascinata) onLayout(sposta(layout, trascinata, c.id));
-            setTrascinata(null);
-          }}
-          onDragEnd={() => setTrascinata(null)}
-          style={{ width: layout.larghezze[c.id] ?? c.larghezza }}
-          className={`relative flex h-[26px] shrink-0 cursor-grab select-none items-center border-r border-zinc-200 px-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-zinc-500 last:border-r-0 dark:border-zinc-800 dark:text-zinc-400 ${
-            c.numerica ? "justify-end" : ""
-          } ${trascinata === c.id ? "opacity-40" : ""}`}
-        >
-          <span className="truncate">{c.etichetta}</span>
-          <span
-            aria-hidden
-            onPointerDown={(e) => inizioRidimensiona(e, c)}
-            onDoubleClick={() => onLayout(ridimensiona(layout, c.id, fabbrica.larghezze[c.id] ?? c.larghezza))}
-            className="absolute -right-1 top-0 z-10 h-full w-2 cursor-col-resize hover:bg-sky-500/30"
-          />
-        </div>
-      ))}
+      {menu && (
+        <MenuColonne
+          griglia={GRIGLIA_RIGHE}
+          layout={layout}
+          x={menu.x}
+          y={menu.y}
+          onLayout={onLayout}
+          onChiudi={() => setMenu(null)}
+        />
+      )}
     </div>
   );
 }
@@ -218,40 +200,49 @@ interface PropsRiga {
   colonne: Colonna[];
   layout: Layout;
   calcolata: RigaCalcolata | undefined;
+  selezionata: boolean;
   cursore: CampoRiga | null;
   avviso: string | null;
+  solaLettura: boolean;
   onAzione: (azione: Azione) => void;
   onTasto: (e: KeyboardEvent<HTMLInputElement>, indice: number, campo: CampoRiga) => void;
 }
 
-function RigaGriglia({ riga, indice, colonne, layout, calcolata, cursore, avviso, onAzione, onTasto }: PropsRiga) {
+function RigaGriglia({ riga, indice, colonne, layout, calcolata, selezionata, cursore, avviso, solaLettura, onAzione, onTasto }: PropsRiga) {
   const errati = numeriErrati(riga);
   const conErrori = !!calcolata?.errori.length;
   const titoloErrori = calcolata?.errori.join("\n");
+  const sfondo = selezionata
+    ? "bg-primario text-white shadow-[inset_4px_0_0_var(--atlas-primario-forte)]"
+    : indice % 2
+      ? "bg-[#f9fafb] dark:bg-white/[0.025]"
+      : "bg-white dark:bg-transparent";
   return (
     <div
       role="row"
       aria-rowindex={indice + 1}
-      className={`flex border-b border-zinc-100 dark:border-zinc-900 ${
-        cursore ? "bg-sky-50/70 dark:bg-sky-500/[0.06]" : indice % 2 ? "bg-zinc-50/60 dark:bg-white/[0.015]" : ""
-      }`}
+      aria-selected={selezionata}
+      onMouseDown={() => solaLettura && onAzione({ tipo: "vai", cursore: { riga: indice, campo: "articolo" } })}
+      className={`flex border-b border-zinc-200/70 dark:border-zinc-800 ${sfondo}`}
       style={{ height: ALTEZZA_RIGA }}
     >
       {colonne.map((c) => {
         const larghezza = layout.larghezze[c.id] ?? c.larghezza;
-        const allineamento = c.numerica ? "text-right" : "";
-        if (!c.campo) {
-          const testo = visualizza(c, indice, calcolata);
+        const separatore = selezionata ? "border-white/25" : "border-zinc-200/70 dark:border-zinc-800";
+        if (!c.campo || solaLettura) {
+          const testo = c.campo ? (c.campo === "descrizione" || c.campo === "unita_misura" || c.campo === "quantita" || c.campo === "prezzo" || c.campo === "magazzino"
+            ? riga[c.campo] || proposta(c.campo, calcolata)
+            : riga[c.campo]) : visualizza(c, indice, calcolata);
           return (
             <div
               key={c.id}
               role="gridcell"
               style={{ width: larghezza }}
               title={c.calcolato === "riga" && conErrori ? titoloErrori : undefined}
-              className={`flex shrink-0 items-center overflow-hidden border-r border-zinc-100 px-1.5 text-[12px] last:border-r-0 dark:border-zinc-900 ${
-                c.numerica ? "cifre justify-end" : ""
-              } ${c.calcolato === "totale" ? "font-semibold" : "text-zinc-500 dark:text-zinc-400"} ${
-                c.calcolato === "riga" && conErrori ? "text-rose-600 dark:text-rose-400" : ""
+              className={`flex shrink-0 items-center overflow-hidden border-r last:border-r-0 ${separatore} ${
+                c.numerica ? "cifre justify-end px-1 text-[11px]" : "px-1.5 text-[12px]"
+              } ${c.calcolato === "totale" || c.campo === "articolo" ? "font-semibold" : ""} ${
+                !selezionata && !c.campo && c.calcolato !== "totale" ? "text-zinc-500 dark:text-zinc-400" : ""
               }`}
             >
               {c.calcolato === "riga" && (conErrori || calcolata?.avvisi.length) ? (
@@ -268,8 +259,15 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, cursore, avviso
         const modificato = campo === "prezzo" && calcolata?.prezzo_modificato;
         const errato = errati.includes(campo) || (campo === "articolo" && conErrori);
         const inAvviso = avviso && cursore === campo;
+        const coloreCella = inAvviso
+          ? "bg-amber-200 text-zinc-900"
+          : modificato
+            ? "bg-ambra-tenue text-zinc-900 dark:bg-ambra-tenue-scuro dark:text-amber-100"
+            : selezionata
+              ? "text-white placeholder:text-white/70"
+              : "placeholder:text-zinc-400 dark:placeholder:text-zinc-500";
         return (
-          <div key={c.id} role="gridcell" style={{ width: larghezza }} className="shrink-0 border-r border-zinc-100 last:border-r-0 dark:border-zinc-900">
+          <div key={c.id} role="gridcell" style={{ width: larghezza }} className={`shrink-0 border-r last:border-r-0 ${separatore}`}>
             <input
               id={idCella(riga.chiave, campo)}
               data-campo={campo}
@@ -279,7 +277,7 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, cursore, avviso
               title={campo === "articolo" && conErrori ? titoloErrori : undefined}
               autoComplete="off"
               spellCheck={false}
-              value={riga[campo]}
+              value={aVideo(campo, riga[campo], cursore === campo)}
               placeholder={proposta(campo, calcolata)}
               onFocus={() => {
                 if (cursore !== campo) onAzione({ tipo: "vai", cursore: { riga: indice, campo } });
@@ -289,61 +287,15 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, cursore, avviso
                 onAzione({ tipo: "scrivi", riga: indice, campo, valore });
               }}
               onKeyDown={(e) => onTasto(e, indice, campo)}
-              className={`h-full w-full bg-transparent px-1.5 text-[12px] outline-none placeholder:text-zinc-400 focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--color-accento)] dark:placeholder:text-zinc-500 dark:focus:bg-zinc-900 dark:focus:shadow-[inset_0_0_0_2px_var(--color-accento-scuro)] ${allineamento} ${
-                c.numerica ? "cifre" : ""
-              } ${modificato ? "bg-ambra-tenue dark:bg-ambra-tenue-scuro" : ""} ${
-                errato ? "text-rose-600 underline decoration-rose-500 decoration-wavy dark:text-rose-400" : ""
-              } ${inAvviso ? "bg-amber-100 dark:bg-amber-500/20" : ""} ${campo === "articolo" ? "font-semibold uppercase" : ""}`}
+              className={`block h-full w-full bg-transparent outline-none focus:bg-white focus:text-zinc-900 focus:placeholder:text-zinc-400 focus:shadow-[inset_0_0_0_2px_var(--atlas-anello)] dark:focus:bg-zinc-900 dark:focus:text-zinc-100 ${
+                c.numerica ? "cifre px-1 text-right text-[11px]" : "px-1.5 text-[12px]"
+              } ${coloreCella} ${errato ? "underline decoration-rose-500 decoration-wavy" : ""} ${
+                campo === "articolo" ? "font-semibold uppercase" : ""
+              }`}
             />
           </div>
         );
       })}
-    </div>
-  );
-}
-
-/** Menu delle colonne: mostra/nascondi e ripristino del layout di fabbrica (direttiva §3.8). */
-export function MenuColonne({ layout, onLayout, onRipristina, onChiudi }: {
-  layout: Layout;
-  onLayout: (l: Layout) => void;
-  onRipristina: () => void;
-  onChiudi: () => void;
-}) {
-  return (
-    <div
-      role="menu"
-      aria-label="Colonne della griglia"
-      onKeyDown={(e) => e.key === "Escape" && onChiudi()}
-      className="absolute right-0 top-9 z-30 w-64 overflow-hidden rounded-xl border border-zinc-200/80 bg-white/85 shadow-xl backdrop-blur-md dark:border-zinc-700/70 dark:bg-zinc-900/85"
-    >
-      <div className="max-h-80 overflow-auto p-1.5">
-        {layout.ordine.map((id) => {
-          const c = PER_ID.get(id);
-          if (!c) return null;
-          const visibile = !layout.nascoste.includes(id);
-          return (
-            <label
-              key={id}
-              className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            >
-              <input
-                type="checkbox"
-                checked={visibile}
-                disabled={id === "ColCd_AR"}
-                onChange={() => onLayout(alterna(layout, id))}
-                className="accent-[var(--color-accento)]"
-              />
-              <span className="flex-1 truncate">{c.etichetta}</span>
-              <span className="font-mono text-[10px] text-zinc-400">{c.id}</span>
-            </label>
-          );
-        })}
-      </div>
-      <div className="border-t border-zinc-200/80 p-1.5 dark:border-zinc-800">
-        <button type="button" className="pulsante w-full justify-center" onClick={onRipristina}>
-          Ripristina layout di fabbrica
-        </button>
-      </div>
     </div>
   );
 }

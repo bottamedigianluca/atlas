@@ -13,6 +13,8 @@
 //!   (Magazzino Centrale, quello della causale 003 dei BO: l'anagrafica ne ha 10, se ne usa uno).
 //! - `ATLAS_LISTINO`: listino del prezzo proposto quando il cliente non ne ha uno (370 clienti su
 //!   387), predefinito `0000001`. Non entra nel documento: `listino_cliente` resta del cliente.
+//! - `ATLAS_VIES_URL`: servizio VIES per i dati dell'azienda dalla partita IVA, predefinito quello
+//!   della Commissione europea (si cambia per le prove).
 
 use std::net::SocketAddr;
 use std::path::PathBuf;
@@ -24,6 +26,7 @@ pub struct Config {
     pub indirizzo: SocketAddr,
     pub lettori: usize,
     pub predefiniti: Predefiniti,
+    pub vies_url: String,
 }
 
 /// Valori che la maschera usa quando l'operatore non li batte.
@@ -54,6 +57,7 @@ impl std::fmt::Debug for Config {
             .field("indirizzo", &self.indirizzo)
             .field("lettori", &self.lettori)
             .field("predefiniti", &self.predefiniti)
+            .field("vies_url", &self.vies_url)
             .finish()
     }
 }
@@ -81,6 +85,7 @@ impl Config {
             indirizzo: SocketAddr::from(([127, 0, 0, 1], 7878)),
             lettori: LETTORI_PREDEFINITI,
             predefiniti: Predefiniti::default(),
+            vies_url: crate::partita_iva::VIES_PREDEFINITO.to_owned(),
         }
     }
 
@@ -111,6 +116,7 @@ impl Config {
                 magazzino: variabile("ATLAS_MAGAZZINO").unwrap_or_else(|| MAGAZZINO_PREDEFINITO.to_owned()),
                 listino: variabile("ATLAS_LISTINO").unwrap_or_else(|| LISTINO_PREDEFINITO.to_owned()),
             },
+            vies_url: variabile("ATLAS_VIES_URL").unwrap_or_else(|| crate::partita_iva::VIES_PREDEFINITO.to_owned()),
         })
     }
 }
