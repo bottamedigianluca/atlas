@@ -1,11 +1,11 @@
 /target
-/dati
 *.db
 *.db-wal
 *.db-shm
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
+!dati/atlas.sqlite
 .env
 .env.*
 .claude
