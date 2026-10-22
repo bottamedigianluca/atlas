@@ -6,14 +6,14 @@ import type { Semaforo } from "../sincronizzazione/contesto";
 
 const COLORI = {
   verde: "bg-emerald-500/12 text-emerald-700 ring-emerald-500/30 dark:text-emerald-300",
-  blu: "bg-sky-500/12 text-sky-700 ring-sky-500/30 dark:text-sky-300",
+  blu: "bg-primario-tenue text-primario-testo ring-primario/30",
   rosso: "bg-rose-500/12 text-rose-700 ring-rose-500/30 dark:text-rose-300",
   grigio: "bg-zinc-500/10 text-zinc-600 ring-zinc-500/25 dark:text-zinc-300",
 };
 
 const PUNTI = {
   verde: "bg-emerald-500",
-  blu: "bg-sky-500",
+  blu: "bg-primario",
   rosso: "bg-rose-500",
   grigio: "bg-zinc-400",
 };

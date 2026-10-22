@@ -1,6 +1,6 @@
 // Testata del documento come nella maschera di Arca (`docs/screenshot_arca/01_…`): una fila con
 // Tipo, Cliente, Data, Numero, Valuta, Cambio, sotto le schede (Testa, Righe, Piede…) e, a destra
-// di entrambe, il riquadro con ragione sociale, indirizzo e codice destinatario in rosso. La
+// di entrambe, il riquadro con ragione sociale, indirizzo e codice destinatario. La
 // destinazione (`txtCFDest`) compare quando il cliente ne ha.
 //
 // Nel DDT nuovo si battono Cliente (F3 ricerca), Data, Numero (F3 numeri liberi; vuoto = il
@@ -91,8 +91,8 @@ export function Testata({ vista, campi, conDestinazioni = false, onCampo, onTast
         </div>
         {schede}
       </div>
-      {/* Riquadro anagrafico in rosso, come in Arca. */}
-      <div className="mb-1.5 min-w-0 flex-1 rounded-md border border-zinc-300 px-2 py-1 text-[11.5px] leading-tight text-[#c0161e] dark:border-zinc-700 dark:text-[#ff6b6b]">
+      {/* Riquadro anagrafico al posto di quello di Arca, nel colore guida di ATLAS. */}
+      <div className="mb-1.5 min-w-0 flex-1 rounded-md border border-primario/25 bg-primario-tenue px-2 py-1 text-[11.5px] leading-tight text-primario-testo">
         <div className="truncate font-semibold" data-prova="ragione-sociale">
           {vista.ragioneSociale || " "}
         </div>

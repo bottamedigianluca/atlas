@@ -6,8 +6,8 @@ import { type InputHTMLAttributes, type ReactNode, forwardRef } from "react";
 
 const BASE =
   "h-[22px] rounded-md border px-1.5 text-[12px] outline-none transition-colors " +
-  "border-zinc-300 bg-white focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/25 " +
-  "dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-[#0a84ff] " +
+  "border-zinc-300 bg-white focus:border-anello focus:ring-2 focus:ring-anello/25 " +
+  "dark:border-zinc-700 dark:bg-zinc-900 " +
   "read-only:border-zinc-200 read-only:bg-zinc-50 read-only:text-zinc-700 read-only:focus:ring-0 " +
   "dark:read-only:border-zinc-800 dark:read-only:bg-zinc-900/60 dark:read-only:text-zinc-300";
 
@@ -69,7 +69,7 @@ export const CampoCodice = forwardRef<
 export function Spunta({ etichetta, attiva }: { etichetta: string; attiva: boolean }) {
   return (
     <label className="flex items-center gap-1.5 text-[12px]">
-      <input type="checkbox" checked={attiva} readOnly tabIndex={-1} className="pointer-events-none accent-[#007aff]" />
+      <input type="checkbox" checked={attiva} readOnly tabIndex={-1} className="pointer-events-none accent-primario" />
       {etichetta}
     </label>
   );
@@ -88,7 +88,7 @@ export function Riquadro({ titolo, children, className }: { titolo: string; chil
 
 /**
  * Campo delle schede Testa e Piede di Arca: etichetta a sinistra a larghezza fissa, il campo e,
- * accanto, la descrizione decodificata in rosso ("R060 Ric.Banc. 60 gg DF FM", "V Vendita").
+ * accanto, la descrizione decodificata in evidenza ("R060 Ric.Banc. 60 gg DF FM", "V Vendita").
  */
 export function Voce({
   etichetta,
@@ -124,16 +124,16 @@ export function Voce({
         className={`${BASE} h-[20px] shrink-0 ${numerico ? "cifre text-right" : ""}`}
       />
       {dopo}
-      {descrizione && <span className="truncate text-[#c0161e] dark:text-[#ff6b6b]">{descrizione}</span>}
+      {descrizione && <span className="truncate text-primario-testo">{descrizione}</span>}
     </div>
   );
 }
 
-/** Titolo rosso di sezione delle schede di Arca ("CONDIZIONI DI PAGAMENTO", "DATI PER LA SPEDIZIONE"). */
+/** Titolo di sezione delle schede di Arca ("CONDIZIONI DI PAGAMENTO", "DATI PER LA SPEDIZIONE"). */
 export function Sezione({ titolo, children, className }: { titolo: string; children?: ReactNode; className?: string }) {
   return (
     <section aria-label={titolo} className={className}>
-      <h3 className="mb-1 text-[12px] font-bold uppercase tracking-wide text-[#c0161e] dark:text-[#ff6b6b]">{titolo}</h3>
+      <h3 className="mb-1 text-[12px] font-bold uppercase tracking-wide text-primario-testo">{titolo}</h3>
       <div className="flex min-h-0 flex-1 flex-col gap-1">{children}</div>
     </section>
   );

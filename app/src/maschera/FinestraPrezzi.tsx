@@ -1,6 +1,6 @@
 // Tasto F3 sul prezzo: la maschera "PREZZO/COSTO ARTICOLO" (`fastsrcform_arprezzo` di Arca,
 // direttiva §3.1), ricalcata su `docs/screenshot_arca/04_…`: stesse colonne, stesse sezioni a
-// barra grigia ("Dati da documento", "Prezzi da listino", "Ultimi prezzi da documenti"), stesse
+// barra ("Dati da documento", "Prezzi da listino", "Ultimi prezzi da documenti"), stesse
 // voci nello stesso ordine. `Freccia Su/Giù` scorrono le voci, `Invio` o `Spazio` riportano il
 // prezzo nella riga del DDT.
 //
@@ -286,15 +286,15 @@ export function FinestraPrezzi({ richiesta, onRiporta, onChiudi }: {
               const attiva = i === scelta && v.riporta !== null;
               const riportabile = v.riporta !== null;
               const colore = attiva
-                ? "bg-[#007aff] text-white dark:bg-[#0a84ff]"
+                ? "bg-primario text-white"
                 : v.sezione === "documento"
-                  ? "text-[#1d4ed8] italic dark:text-sky-300"
+                  ? "text-primario-testo italic"
                   : v.sezione === "listino" && i % 2
                     ? "bg-zinc-100/80 dark:bg-white/[0.04]"
                     : "";
               return [
                 titolo && (
-                  <tr key={`${v.sezione}-titolo`} className="bg-zinc-400 text-white dark:bg-zinc-600">
+                  <tr key={`${v.sezione}-titolo`} className="bg-primario-tenue text-primario-testo">
                     <td colSpan={COLONNE.length} className="px-1.5 py-0.5 text-[12.5px] font-semibold">
                       {TITOLI_SEZIONE[v.sezione]}
                     </td>
@@ -337,7 +337,7 @@ export function FinestraPrezzi({ richiesta, onRiporta, onChiudi }: {
                         checked
                         aria-label={`Riporta ${v.descrizione}`}
                         onClick={() => riporta(i)}
-                        className="size-3 align-middle accent-[#007aff]"
+                        className="size-3 align-middle accent-primario"
                       />
                     )}
                   </td>

@@ -10,7 +10,7 @@ interface Props {
   onChiudi: () => void;
   children: ReactNode;
   piede?: ReactNode;
-  /** Titolo rosso a destra, come le maschere di ricerca di Arca. */
+  /** Titolo a destra, in evidenza, come le maschere di ricerca di Arca. */
   titoloArca?: boolean;
 }
 
@@ -63,7 +63,7 @@ export function Modale({ titolo, sottotitolo, larghezza = "max-w-3xl", onChiudi,
             <span className="text-[11px] text-zinc-400">
               <kbd className="tasto">Esc</kbd> chiude
             </span>
-            <h2 className="text-[17px] font-bold tracking-wide text-[#c0161e] dark:text-[#ff6b6b]">{titolo}</h2>
+            <h2 className="text-[17px] font-bold tracking-wide text-primario-testo">{titolo}</h2>
           </header>
         ) : (
           <header className="flex items-baseline justify-between gap-4 border-b border-zinc-200/80 px-5 py-3 dark:border-zinc-800">

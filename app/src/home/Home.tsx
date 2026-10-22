@@ -113,7 +113,7 @@ export function Home({ attivo, onNuovoPer, onNuovo, onApri, onElenco }: {
                 const ritardo = c.ora_tipica !== null && adesso > minuti(c.ora_tipica) + TOLLERANZA;
                 return (
                   <li key={c.cliente} className="flex items-center gap-3 py-2">
-                    <span className={`size-2.5 shrink-0 rounded-full ${ritardo ? "bg-rose-500" : "bg-amber-400"}`} aria-hidden />
+                    <span className={`size-2.5 shrink-0 rounded-full ${ritardo ? "bg-amber-500" : "bg-primario"}`} aria-hidden />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
                         <span className="truncate text-[13.5px] font-semibold">{c.ragione_sociale}</span>
@@ -125,7 +125,7 @@ export function Home({ attivo, onNuovoPer, onNuovo, onApri, onElenco }: {
                           {c.volte} {clienti?.giorno} su {c.su}
                         </span>
                         {c.ora_tipica && (
-                          <span className={ritardo ? "font-semibold text-rose-600 dark:text-rose-400" : ""}>
+                          <span className={ritardo ? "font-semibold text-amber-700 dark:text-amber-400" : ""}>
                             di solito alle {c.ora_tipica}
                             {ritardo && " · in ritardo"}
                           </span>
@@ -134,7 +134,7 @@ export function Home({ attivo, onNuovoPer, onNuovo, onApri, onElenco }: {
                     </div>
                     <button
                       type="button"
-                      className="pulsante h-7 shrink-0 px-2.5 text-[12px] text-[#007aff]"
+                      className="pulsante h-7 shrink-0 px-2.5 text-[12px] text-primario-testo"
                       onClick={() => onNuovoPer(c.cliente)}
                       aria-label={`Nuovo DDT per ${c.ragione_sociale}`}
                     >
@@ -152,7 +152,7 @@ export function Home({ attivo, onNuovoPer, onNuovo, onApri, onElenco }: {
                     <li key={c.cliente} className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
                       <span className="text-emerald-600">✓</span>
                       <span className="min-w-0 flex-1 truncate">{c.ragione_sociale}</span>
-                      <button type="button" className="font-mono text-[#007aff] hover:underline" onClick={() => c.servito && onApri(c.servito.id)}>
+                      <button type="button" className="font-mono text-primario-testo hover:underline" onClick={() => c.servito && onApri(c.servito.id)}>
                         DDT {c.servito?.numero}
                       </button>
                     </li>
@@ -184,7 +184,7 @@ export function Home({ attivo, onNuovoPer, onNuovo, onApri, onElenco }: {
                 ))}
               </ul>
               {ddtOggi.length > 8 && (
-                <button type="button" className="mt-1 text-[12px] text-[#007aff] hover:underline" onClick={onElenco}>
+                <button type="button" className="mt-1 text-[12px] text-primario-testo hover:underline" onClick={onElenco}>
                   Tutti nell'elenco ({ddtOggi.length})
                 </button>
               )}

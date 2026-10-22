@@ -229,7 +229,7 @@ export function Elenco({ attivo, selezionato, onApri, onDocumenti, onSelezione }
           <div className="sticky top-0 z-10">
             <Intestazione griglia={GRIGLIA_ELENCO} colonne={colonne} layout={layout} altezza={20} onLayout={setLayout} onMenu={(x, y) => setMenu({ x, y })} />
             {/* Riga dei filtri sotto le intestazioni, come in Arca. */}
-            <div role="row" aria-label="Filtri per colonna" className="flex border-b border-zinc-300 bg-sky-50/80 dark:border-zinc-700 dark:bg-sky-950/30" style={{ height: ALTEZZA + 2 }}>
+            <div role="row" aria-label="Filtri per colonna" className="flex border-b border-zinc-300 bg-primario-tenue/70 dark:border-zinc-700" style={{ height: ALTEZZA + 2 }}>
               {colonne.map((c) => (
                 <input
                   key={c.id}
@@ -250,7 +250,7 @@ export function Elenco({ attivo, selezionato, onApri, onDocumenti, onSelezione }
                   spellCheck={false}
                   autoComplete="off"
                   style={{ width: layout.larghezze[c.id] ?? c.larghezza }}
-                  className={`h-full shrink-0 border-r border-zinc-200 bg-transparent px-1 text-[11px] outline-none focus:bg-white focus:shadow-[inset_0_0_0_2px_#007aff] dark:border-zinc-800 dark:focus:bg-zinc-900 ${
+                  className={`h-full shrink-0 border-r border-zinc-200 bg-transparent px-1 text-[11px] outline-none focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--atlas-anello)] dark:border-zinc-800 dark:focus:bg-zinc-900 ${
                     c.numerica ? "text-right tabular-nums" : ""
                   }`}
                 />
@@ -272,7 +272,7 @@ export function Elenco({ attivo, selezionato, onApri, onDocumenti, onSelezione }
                 style={{ height: ALTEZZA }}
                 className={`flex border-b border-zinc-100 text-[11px] dark:border-zinc-900 ${
                   selezionata
-                    ? "bg-[#007aff] text-white shadow-[inset_4px_0_0_#00347a] dark:bg-[#0a84ff]"
+                    ? "bg-primario text-white shadow-[inset_4px_0_0_var(--atlas-primario-forte)]"
                     : i % 2
                       ? "bg-[#f9fafb] dark:bg-white/[0.025]"
                       : ""

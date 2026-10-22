@@ -73,7 +73,7 @@ function Lista<T>({ titolo, iniziale, cerca, chiave, riga, onScegli, onChiudi }:
             aria-selected={i === scelta}
             onMouseDown={() => onScegli(v)}
             className={`flex cursor-pointer items-baseline gap-3 px-4 py-1.5 text-sm ${
-              i === scelta ? "bg-sky-500/15 dark:bg-sky-400/15" : "hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
+              i === scelta ? "bg-primario-tenue" : "hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
             }`}
           >
             {riga(v)}
@@ -185,7 +185,7 @@ export function NumeriLiberiF3({ esercizio, onScegli, onChiudi }: {
             role="option"
             aria-selected={i === scelta}
             onMouseDown={() => onScegli(v.numero)}
-            className={`flex cursor-pointer justify-between px-4 py-1.5 text-sm ${i === scelta ? "bg-sky-500/15" : ""}`}
+            className={`flex cursor-pointer justify-between px-4 py-1.5 text-sm ${i === scelta ? "bg-primario-tenue" : ""}`}
           >
             <span className="cifre">{v.testo}</span>
             <span className="text-xs text-zinc-500">{v.date}</span>
@@ -228,7 +228,7 @@ export function RicercaDestinazioni({ destinazioni, onScegli, onChiudi }: {
             role="option"
             aria-selected={i === scelta}
             onMouseDown={() => onScegli(d.codice)}
-            className={`flex cursor-pointer items-baseline gap-3 px-4 py-1.5 text-sm ${i === scelta ? "bg-sky-500/15" : ""}`}
+            className={`flex cursor-pointer items-baseline gap-3 px-4 py-1.5 text-sm ${i === scelta ? "bg-primario-tenue" : ""}`}
           >
             <span className="w-14 shrink-0 font-mono text-xs font-semibold">{d.codice}</span>
             <span className="flex-1 truncate">{d.descrizione}</span>

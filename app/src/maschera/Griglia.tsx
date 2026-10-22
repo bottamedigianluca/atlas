@@ -2,7 +2,7 @@
 // battute sono campi di testo; il resto lo calcola il backend (quantità, totale, aliquota…).
 // La tastiera la governa il riduttore (`righe.ts`); qui si traducono i tasti in azioni.
 //
-// Riga attiva in blu pieno con testo bianco e barra a sinistra (piano architetturale, griglia
+// Riga attiva piena nel colore guida, testo bianco e barra a sinistra (piano architetturale, griglia
 // documenti); clic destro sulle intestazioni per mostrare o nascondere le colonne, come in Arca.
 
 import { type KeyboardEvent, useEffect, useState } from "react";
@@ -213,7 +213,7 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, selezionata, cu
   const conErrori = !!calcolata?.errori.length;
   const titoloErrori = calcolata?.errori.join("\n");
   const sfondo = selezionata
-    ? "bg-[#007aff] text-white shadow-[inset_4px_0_0_#00347a] dark:bg-[#0a84ff]"
+    ? "bg-primario text-white shadow-[inset_4px_0_0_var(--atlas-primario-forte)]"
     : indice % 2
       ? "bg-[#f9fafb] dark:bg-white/[0.025]"
       : "bg-white dark:bg-transparent";
@@ -287,7 +287,7 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, selezionata, cu
                 onAzione({ tipo: "scrivi", riga: indice, campo, valore });
               }}
               onKeyDown={(e) => onTasto(e, indice, campo)}
-              className={`block h-full w-full bg-transparent outline-none focus:bg-white focus:text-zinc-900 focus:placeholder:text-zinc-400 focus:shadow-[inset_0_0_0_2px_#00347a] dark:focus:bg-zinc-900 dark:focus:text-zinc-100 ${
+              className={`block h-full w-full bg-transparent outline-none focus:bg-white focus:text-zinc-900 focus:placeholder:text-zinc-400 focus:shadow-[inset_0_0_0_2px_var(--atlas-anello)] dark:focus:bg-zinc-900 dark:focus:text-zinc-100 ${
                 c.numerica ? "cifre px-1 text-right text-[11px]" : "px-1.5 text-[12px]"
               } ${coloreCella} ${errato ? "underline decoration-rose-500 decoration-wavy" : ""} ${
                 campo === "articolo" ? "font-semibold uppercase" : ""

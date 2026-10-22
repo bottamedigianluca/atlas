@@ -55,7 +55,7 @@ export function MenuColonne({ griglia, layout, x, y, onLayout, onChiudi }: Props
                 checked={visibile}
                 disabled={griglia.fisse.includes(id)}
                 onChange={() => onLayout(alterna(griglia, layout, id))}
-                className="accent-[var(--color-accento)]"
+                className="accent-primario"
               />
               <span className="flex-1 truncate">{etichette.get(id) ?? id}</span>
             </label>

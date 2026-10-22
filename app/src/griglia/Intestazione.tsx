@@ -77,7 +77,7 @@ export function Intestazione<C extends ColonnaBase & { numerica?: boolean; sugge
             aria-hidden
             onPointerDown={(e) => inizioRidimensiona(e, c)}
             onDoubleClick={() => onLayout(ridimensiona(layout, c.id, fabbrica.larghezze[c.id] ?? c.larghezza))}
-            className="absolute -right-1 top-0 z-10 h-full w-2 cursor-col-resize hover:bg-sky-500/30"
+            className="absolute -right-1 top-0 z-10 h-full w-2 cursor-col-resize hover:bg-anello/30"
           />
         </div>
       ))}

@@ -269,7 +269,7 @@ function Guscio() {
             onClick={() => setPagina(p.pagina)}
             className={`-mb-px border-b-2 px-2.5 pb-1 text-[12.5px] font-semibold ${
               pagina === p.pagina
-                ? "border-[#c0161e] text-[#c0161e] dark:border-[#ff6b6b] dark:text-[#ff6b6b]"
+                ? "border-primario-testo text-primario-testo"
                 : "border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
             }`}
           >
@@ -384,7 +384,7 @@ function Strumento({ icona, nome, solaIcona = false, tasto, disabled, title, onC
         viewBox="0 0 16 16"
         aria-hidden
         className={`size-4 shrink-0 stroke-[1.4] [stroke-linecap:round] [stroke-linejoin:round] ${
-          freccia ? "size-3.5 fill-zinc-800 stroke-zinc-800 dark:fill-zinc-100 dark:stroke-zinc-100" : "fill-none stroke-[#007aff] dark:stroke-[#0a84ff]"
+          freccia ? "size-3.5 fill-zinc-800 stroke-zinc-800 dark:fill-zinc-100 dark:stroke-zinc-100" : "fill-none stroke-primario-testo"
         }`}
       >
         {ICONE[icona]}

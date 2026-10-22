@@ -307,7 +307,7 @@ export const NuovoDocumento = forwardRef<ComandiDocumento, Props>(function Nuovo
       <div className="flex min-h-0 flex-1 flex-col bg-white dark:bg-zinc-950">
         {schedaAttiva === "Righe" && (
           <>
-            <h3 className="px-3 pb-0.5 pt-1 text-[11px] font-bold uppercase tracking-wide text-[#c0161e] dark:text-[#ff6b6b]">
+            <h3 className="px-3 pb-0.5 pt-1 text-[11px] font-bold uppercase tracking-wide text-primario-testo">
               Dettaglio documento
             </h3>
             <Griglia
@@ -338,7 +338,7 @@ export const NuovoDocumento = forwardRef<ComandiDocumento, Props>(function Nuovo
             {/* Sotto la griglia come in Arca: Evade a sinistra, Importa pesate e Riferimento a destra. */}
             <div className="flex items-center gap-3 border-t border-zinc-200 px-3 py-1 text-[12px] dark:border-zinc-800">
               <label className="flex items-center gap-1.5 text-zinc-500" title="Evasione di un documento a monte: nessun ordine in ATLAS">
-                <input type="checkbox" disabled className="accent-[#c0161e]" /> Evade
+                <input type="checkbox" disabled className="accent-primario" /> Evade
               </label>
               <ul className="min-w-0 flex-1 truncate text-rose-600 dark:text-rose-400" aria-label="Errori">
                 {errori.slice(0, 2).map((e) => (
@@ -349,7 +349,7 @@ export const NuovoDocumento = forwardRef<ComandiDocumento, Props>(function Nuovo
               </ul>
               <button
                 type="button"
-                className="pulsante h-7 text-xs text-[#007aff]"
+                className="pulsante h-7 text-xs text-primario-testo"
                 disabled
                 title="Importa pesate dal file della bilancia (Codice;Lordo;Tara;Colli;Lotto): da collegare"
               >

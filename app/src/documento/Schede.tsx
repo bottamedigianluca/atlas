@@ -237,13 +237,13 @@ export function SchedaTotali({ vista }: { vista: VistaDocumento }) {
   ];
   return (
     <div className="flex min-h-0 flex-1 gap-2 overflow-auto px-3 py-2">
-      <span className="self-center text-[12px] font-bold tracking-widest text-[#c0161e] [writing-mode:vertical-rl] rotate-180 dark:text-[#ff6b6b]">TOTALI</span>
+      <span className="self-center text-[12px] font-bold tracking-widest text-primario-testo [writing-mode:vertical-rl] rotate-180">TOTALI</span>
       <section aria-label="Totali" className="flex-1 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
         <div className="flex gap-10 text-[12px]">
           <table className="cifre">
             <thead>
               <tr className="text-[11px] italic text-zinc-500">
-                <th className="pr-6 text-left font-sans font-semibold not-italic text-[#c0161e] dark:text-[#ff6b6b]">Valori in EUR</th>
+                <th className="pr-6 text-left font-sans font-semibold not-italic text-primario-testo">Valori in EUR</th>
                 <th className="w-20 text-right font-normal">Netto</th>
                 <th className="w-24 text-right font-normal">Lordo</th>
               </tr>
