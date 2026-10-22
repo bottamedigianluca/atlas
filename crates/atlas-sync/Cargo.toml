@@ -1,0 +1,25 @@
+[package]
+name = "atlas-sync"
+description = "Sincronizzazione tra ATLAS e Arca: import delle anagrafiche, replica dei documenti"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+atlas-arca.workspace = true
+atlas-core.workspace = true
+atlas-db.workspace = true
+rust_decimal.workspace = true
+chrono = { workspace = true, features = ["clock"] }
+thiserror.workspace = true
+tiberius = { version = "0.12", default-features = false, features = ["tds73", "native-tls", "rust_decimal", "chrono", "winauth"] }
+tokio = { version = "1", features = ["rt", "macros", "net", "time"] }
+
+
+[dev-dependencies]
+atlas-db = { workspace = true, features = ["prova"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,246 @@
+{
+ "fonte": "ADB_BOTTAMEDI.UserPref Id 1443 (PCARCA-2023\\Bottamedi), aggiornata 2026-10-20",
+ "altezza_riga_px": 19,
+ "colonne": [
+  {
+   "ordine": 1,
+   "arca": "ColRiga",
+   "etichetta": "Riga",
+   "larghezza_px": 39
+  },
+  {
+   "ordine": 2,
+   "arca": "ColCd_AR",
+   "etichetta": "Articolo",
+   "larghezza_px": 162
+  },
+  {
+   "ordine": 3,
+   "arca": "ColDescrizione",
+   "etichetta": "Descrizione",
+   "larghezza_px": 421
+  },
+  {
+   "ordine": 4,
+   "arca": "ColCd_ARMisura",
+   "etichetta": "UM",
+   "larghezza_px": 78
+  },
+  {
+   "ordine": 5,
+   "arca": "xColColli",
+   "etichetta": "Colli/Qta",
+   "larghezza_px": 113
+  },
+  {
+   "ordine": 6,
+   "arca": "xColLordo",
+   "etichetta": "Lordo",
+   "larghezza_px": 169
+  },
+  {
+   "ordine": 7,
+   "arca": "xColTara",
+   "etichetta": "Tara",
+   "larghezza_px": 104
+  },
+  {
+   "ordine": 8,
+   "arca": "COLQTA",
+   "etichetta": "Q.ta/Netto",
+   "larghezza_px": 124
+  },
+  {
+   "ordine": 9,
+   "arca": "COLPREZZOUNITARIOV",
+   "etichetta": "Prezzo Un.",
+   "larghezza_px": 109
+  },
+  {
+   "ordine": 10,
+   "arca": "COLPREZZOTOTALEV",
+   "etichetta": "Totale",
+   "larghezza_px": 147
+  },
+  {
+   "ordine": 11,
+   "arca": "ColCd_Aliquota",
+   "etichetta": "IVA",
+   "larghezza_px": 53
+  },
+  {
+   "ordine": 12,
+   "arca": "ColFattoreToUM1",
+   "etichetta": "Fattore",
+   "larghezza_px": 58
+  },
+  {
+   "ordine": 13,
+   "arca": "COLDISTINTA",
+   "etichetta": null,
+   "larghezza_px": 22
+  },
+  {
+   "ordine": 14,
+   "arca": "ColDettagli",
+   "etichetta": null,
+   "larghezza_px": 19
+  },
+  {
+   "ordine": 15,
+   "arca": "ColTipoPC",
+   "etichetta": null,
+   "larghezza_px": 16
+  },
+  {
+   "ordine": 16,
+   "arca": "colNote",
+   "etichetta": "Note",
+   "larghezza_px": 32
+  },
+  {
+   "ordine": 17,
+   "arca": "COLQTAEVADIBILE",
+   "etichetta": "Qta Evadibile",
+   "larghezza_px": 74
+  },
+  {
+   "ordine": 18,
+   "arca": "ColCd_MG_P",
+   "etichetta": "Mag. P.",
+   "larghezza_px": 42
+  },
+  {
+   "ordine": 19,
+   "arca": "ColCd_MGUbicazione_P",
+   "etichetta": null,
+   "larghezza_px": 73
+  },
+  {
+   "ordine": 20,
+   "arca": "ColCd_MG_A",
+   "etichetta": null,
+   "larghezza_px": 80
+  },
+  {
+   "ordine": 21,
+   "arca": "ColCd_MGUbicazione_A",
+   "etichetta": null,
+   "larghezza_px": 130
+  },
+  {
+   "ordine": 22,
+   "arca": "ColCd_DOSottoCommessa",
+   "etichetta": null,
+   "larghezza_px": 84
+  },
+  {
+   "ordine": 23,
+   "arca": "ColScontoRiga",
+   "etichetta": "Sconto",
+   "larghezza_px": 49
+  },
+  {
+   "ordine": 24,
+   "arca": "ColDoIntento",
+   "etichetta": null,
+   "larghezza_px": 28
+  },
+  {
+   "ordine": 25,
+   "arca": "ColCd_CGConto",
+   "etichetta": null,
+   "larghezza_px": 70
+  },
+  {
+   "ordine": 26,
+   "arca": "COLCD_REVERSECHARGE",
+   "etichetta": null,
+   "larghezza_px": 18
+  },
+  {
+   "ordine": 27,
+   "arca": "ColProvvigioneRiga_1",
+   "etichetta": null,
+   "larghezza_px": 46
+  },
+  {
+   "ordine": 28,
+   "arca": "ColProvvigioneRiga_2",
+   "etichetta": null,
+   "larghezza_px": 46
+  },
+  {
+   "ordine": 29,
+   "arca": "ColDataConsegna",
+   "etichetta": null,
+   "larghezza_px": 57
+  },
+  {
+   "ordine": 30,
+   "arca": "ColCd_ARLotto",
+   "etichetta": null,
+   "larghezza_px": 31
+  },
+  {
+   "ordine": 31,
+   "arca": "ColCd_CAVda",
+   "etichetta": null,
+   "larghezza_px": 81
+  },
+  {
+   "ordine": 32,
+   "arca": "ColCd_CACda",
+   "etichetta": null,
+   "larghezza_px": 90
+  },
+  {
+   "ordine": 33,
+   "arca": "ColCd_CAFormula",
+   "etichetta": null,
+   "larghezza_px": 98
+  },
+  {
+   "ordine": 34,
+   "arca": "COLCAPARTENZA",
+   "etichetta": null,
+   "larghezza_px": 75
+  },
+  {
+   "ordine": 35,
+   "arca": "COLCADURATA",
+   "etichetta": null,
+   "larghezza_px": 75
+  },
+  {
+   "ordine": 36,
+   "arca": "ColRR_DataInizio",
+   "etichetta": null,
+   "larghezza_px": 60
+  },
+  {
+   "ordine": 37,
+   "arca": "ColRR_DataFine",
+   "etichetta": null,
+   "larghezza_px": 60
+  },
+  {
+   "ordine": 38,
+   "arca": "ColRR_Cd_CGConto",
+   "etichetta": null,
+   "larghezza_px": 96
+  },
+  {
+   "ordine": 39,
+   "arca": "colMatricole",
+   "etichetta": null,
+   "larghezza_px": 52
+  },
+  {
+   "ordine": 40,
+   "arca": "ColId_MGMov_Carico",
+   "etichetta": null,
+   "larghezza_px": 120
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+Per l'installazione
+
+1. Copiare la cartella PROGS in 
+	<CLIENT ARCA>\Pers\<DITTA>\Progs 
+2. Creare un voce di menù di tipo Program ed inserire la seguente dicitura
+	do oApp.PersDir + "\Progs\ImportDTV.prg"
+
+
+Il file di configurazione è ImportDTV.ini

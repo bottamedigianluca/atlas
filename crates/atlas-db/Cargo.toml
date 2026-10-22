@@ -1,0 +1,28 @@
+[package]
+name = "atlas-db"
+description = "Database primario di ATLAS (SQLite WAL): anagrafiche, documenti, outbox di replica"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+atlas-core.workspace = true
+rust_decimal.workspace = true
+chrono.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+rusqlite = { version = "0.37", features = ["bundled", "chrono"] }
+serde_json = "1"
+rust_decimal_macros = { workspace = true, optional = true }
+
+[features]
+# Dati di prova (`atlas_db::prova`) per i test degli altri crate.
+prova = ["dep:rust_decimal_macros"]
+
+[dev-dependencies]
+rust_decimal_macros.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,20 @@
+[package]
+name = "atlas-verify"
+description = "Verifica del motore ATLAS contro lo storico di Arca Evolution (sola lettura)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+atlas-core.workspace = true
+rust_decimal.workspace = true
+chrono = { workspace = true, features = ["clock"] }
+thiserror.workspace = true
+tiberius = { version = "0.12", default-features = false, features = ["tds73", "native-tls", "rust_decimal", "chrono", "winauth"] }
+tokio = { version = "1", features = ["rt", "macros", "net"] }
+tokio-util = { version = "0.7", features = ["compat"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,385 @@
+&&
+&& Importazione documenti web (DDT tentata vendita) tramite CreateDocuments
+&& Release 1.00 : 	28.11.2016	Gianotti Fabrizio 
+&& - Import note di testa in NoteXML come "Note di consegna"
+&& - Import codice di pagamento, import lotti (con controllo esistenza)
+&& - Import sconto generale, segnalazione UM mancante o incompleta
+&& - Import note gestione IDNotaXML per l'inserimento nelle note XML o in quelle generali
+&& - Import lotti subordinato a parametro xUsaLotti valorizzato in ImportDTV.ini
+&& - Validazione campi TipoDoc, Pagamento, Sconto per gestire l'eventuale scritta 'null'
+&& - Validazione campo Pagamento per forzare il codice pagamento '-' come .NULL.
+&& - Gestione descrizione articolo derivata da eventuali promozioni
+&& Release 1.02g: 	07.12.2016	Gianotti Fabrizio  
+&& 					Gestione campi (Colli, Peso, Tara per documenti a peso) nelle righe documento
+&&					Gestione campo numero documento nella testata
+&&  
+
+&& Valori di defaults
+PUBLIC xDocDefault 
+PUBLIC xIDNota 
+PUBLIC xUsaLotti
+
+GetDocDefault() && Leggo il dato dal file ini ImportDTV.ini
+lHasErrors = .F.
+
+&& Creo le strutture di base delle tabelle da importare con degli script che non restituiscono valori (Where 1=0)
+&& Teste
+IF xIDNota <> '' THEN 
+	xSqlExec("Select Id_DoTes As Id_DoTes_New, Id_DoTes, Cd_DO, NumeroDoc, DataDoc, Cd_CF, Cd_CFDest, Cd_PG, ScontoCassa, NoteXML From DoTes Where 1=0", 'DoTesT')
+	ELSE
+	xSqlExec("Select Id_DoTes As Id_DoTes_New, Id_DoTes, Cd_DO, NumeroDoc, DataDoc, Cd_CF, Cd_CFDest, Cd_PG, ScontoCassa, NotePiede From DoTes Where 1=0", 'DoTesT')
+ENDIF 
+	
+&& Righe
+IF xUsaLotti = '1' THEN 
+	xSqlExec("Select Id_DoTes, Cd_AR, Descrizione, Qta, xColli, xLordo, xTara, PrezzoUnitarioV, ScontoRiga, ProvvigioneRiga_1, DataConsegna, Cd_ARLotto, NoteRiga   From DoRig Where 1=0", 'DoRigL')
+	ELSE
+	xSqlExec("Select Id_DoTes, Cd_AR, Descrizione, Qta, xColli, xLordo, xTara, PrezzoUnitarioV, ScontoRiga, ProvvigioneRiga_1, DataConsegna, NoteRiga   From DoRig Where 1=0", 'DoRigL')
+ENDIF
+&& Spese
+xSqlExec("Select Id_DoTes, ImportoV From DoRigSpesa Where 1=0", 'DoSpeL')
+
+NumDocs = 0
+&& Seleziono i documenti temporanei non ancora importati
+myStmt = "SELECT * " + ;
+		  ", CONVERT(CHAR(10), DataDoc, 103) AS myDataDoc " + ;	
+		  ", CONVERT(CHAR(10), DataCons, 103) AS myDataCons " + ;
+		  "FROM xTesteWeb WHERE (IMPORTATO = 0 OR IMPORTATO IS NULL) " + ;
+		  " AND CodiceCF Like 'C%' "
+xSqlExec(myStmt, 'DocImport')
+&& Controllo correttezza dei dati
+SELECT DocImport
+SCAN
+	xID       = DocImport.ID
+    xTipoDoc  = xDocDefault && NVL(DocImport.TipoDoc, xDocDefault) && Provvisorio finchè non è impostabile sul tablet
+    xCodiceCF = UPPER(DocImport.CodiceCF)
+	myInfoTesta = GetDefaultsTesta(xTipoDoc, xCodiceCF, DATE())
+	xSqlExec("SELECT * FROM xRigheWebPT WHERE ID_Testa = " + ALLTRIM(STR(xID, 10, 0)), 'RigheImport')
+	SELECT RigheImport
+	SCAN
+			&& Lettura righe inviate da gestione ordini e sistemazione dati
+			xCodiceArti 	= ALLTRIM(RigheImport.CodiceArti)
+			if xCodiceArti = "" THEN 
+			   xCodiceArti	= .NULL.			
+			ENDIF
+			xQta 			= RigheImport.Quantita
+			&& Estrazione dei valori di default che Arca proporrebbe in fase di input
+			&& In questa fase potrebbero mancare riferimenti (UM ecc.) per cui li
+			&& verifico prima dell'import effettivo.
+			myInfoRiga = GetDefaultsRiga(myInfoTesta, xCodiceArti, xQta)	
+			IF VARTYPE(myInfoRiga) != 'O' THEN 
+			   lHasErrors = .T.
+			ENDIF
+		 ENDSCAN	
+ENDSCAN
+
+&& Import dati
+IF lHasErrors = .F. THEN 
+	SELECT DocImport
+	SCAN
+	     xID       = DocImport.ID
+	     xTipoDoc  = NVL(DocImport.TipoDoc, xDocDefault)
+	     IF UPPER(xTipoDoc) = 'NULL' THEN 
+	        xTipoDoc = xDocDefault
+	     ENDIF
+	     xINumDoc    = DocImport.NumDoc
+	     xNumeroDoc  = PADL(STR(xINumDoc,6, 0), 6, ' ')
+	     xCodiceCF 	 = UPPER(DocImport.CodiceCF)
+	     xDestDiv  	 = TRIM(DocImport.DestDiv) && xCleanCode
+	     if xDestDiv = "" THEN 
+	        xDestDiv  = .NULL.
+	     ENDIF
+	     xCd_PG    = xCleanCode(TRIM(DocImport.Pagamento))
+	     IF ISNULL(xCd_PG) THEN 
+	     	TEXT TO cStmt TEXTMERGE
+	     	   SELECT Cd_PG FROM CF 
+	     	   WHERE Cd_CF = <<Format4Spt(ALLTRIM(xCodiceCF))>>
+	     	ENDTEXT
+	     	oCF = xSqlExec2Obj(cStmt)
+	     	xCd_PG = oCF.Cd_PG
+	     ENDIF
+	     xScontoCassa  = NVL(DocImport.Sconto, "") && Sconto Cassa (esiste il caso che viene impostato per default (es.da pagamento ecc.)?)
+	     IF UPPER(xScontoCassa) = 'NULL' THEN 
+	        xScontoCassa = ""
+	     ENDIF
+	     xNote    = TRIM(DocImport.Note)
+	     if xNote = "" THEN 
+	        xNote  = .NULL.
+	        ELSE
+	        IF xIDNota <> "" THEN 
+	        	xNote = '<rows><row nota="' + xIDNota + '">' + xNote + '</row></rows>'
+			ENDIF	        	
+	     ENDIF
+		 if ISNULL(DocImport.myDataDoc) THEN 
+		     xDataDoc  = DATE()		 
+			 ELSE
+		     xDataDoc  = CTOD(DocImport.myDataDoc)
+		 ENDIF
+		 if ISNULL(DocImport.myDataCons) THEN 
+		     xDataCons  = DATE()		 
+			 ELSE
+		     xDataCons  = CTOD(DocImport.myDataCons)
+		 ENDIF
+		 myInfoTesta = GetDefaultsTesta(xTipoDoc, xCodiceCF, DATE())
+		 IF xIDNota <> '' THEN 
+	        Insert Into DoTesT (Id_DoTes, Cd_DO, Cd_CF, NumeroDoc, DataDoc, Cd_PG, ScontoCassa, Cd_CFDest, NoteXML) Values (xID, xTipoDoc, xCodiceCF, xNumeroDoc, xDataDoc, xCd_PG, xScontoCassa, xDestDiv, xNote)
+	        ELSE
+	        Insert Into DoTesT (Id_DoTes, Cd_DO, Cd_CF, NumeroDoc, DataDoc, Cd_PG, ScontoCassa, Cd_CFDest, NotePiede) Values (xID, xTipoDoc, xCodiceCF, xNumeroDoc, xDataDoc, xCd_PG, xScontoCassa, xDestDiv, xNote)
+	     ENDIF
+		 && Righe
+		 xSqlExec("SELECT * FROM xRigheWebPT WHERE ID_Testa = " + ALLTRIM(STR(xID, 10, 0)), 'RigheImport')
+	     SELECT RigheImport
+		 SCAN
+			&& Lettura righe inviate da gestione ordini e sistemazione dati
+			xCodiceArti 	= ALLTRIM(RigheImport.CodiceArti)
+			if xCodiceArti = "" THEN 
+			   xCodiceArti	= .NULL.			
+			ENDIF
+			xDescrizione   = .NULL.		
+			xTemp = xDescPromo(xCodiceArti, xCodiceCF, xDataDoc)
+			IF !IsEmpty(xTemp) THEN 
+				xDescrizione   = xTemp
+			ENDIF
+			&& xQta 	= RigheImport.Quantita
+			xmyColli		= NVL(RigheImport.Quantita,0)
+			xmyTara		    = NVL(RigheImport.Tara,0)
+			xmyLordo		= NVL(RigheImport.Peso,0)
+			xNoteRiga 		= ALLTRIM(RigheImport.Note)
+			xQta = xQtaReale(xMyColli, xMyLordo, xMyTara)
+			&& Estrazione dei valori di default che Arca proporrebbe in fase di input
+			myInfoRiga = GetDefaultsRiga(myInfoTesta, xCodiceArti, xQta)	
+			&& Impostazione dei valori di default per i campi Prezzo, sconti, provvigioni
+			xProvv = myInfoRiga.Provvigione_1
+			xPrezzoUn = myInfoRiga.Prezzo
+			xSconti = myInfoRiga.Sconto		
+
+			&& Assegnazione valori imputati manualmente dall' utente nella gestione ordini
+			&& Sovrascrivo i valori di default solo se l'utente ha "forzato" Prezzi, sconti, provvigioni
+			IF !ISNULL(RigheImport.Sconti) AND !EMPTY(RigheImport.Sconti) THEN 
+				xMySconti		= RigheImport.Sconti
+				ELSE
+				xMySconti		= ""
+			ENDIF
+			
+			&& Provvigioni
+			if !ISNULL(RigheImport.Provvigione) AND !Empty(RigheImport.Provvigione) THEN
+				xProvv = STR(RigheImport.Provvigione, 5, 2)
+			endif
+			
+			&& Prezzo unitario
+			&& Se l'utente inserisce manualmente un prezzo unitario, valorizzo anche gli sconti 
+			&& perchè considero l'inserimento prezzo/sconto come un unico blocco
+			&& N.B. Lo sconto può essere valorizzato anche da solo
+			if !ISNULL(RigheImport.Prezzo) AND !Empty(RigheImport.Prezzo) THEN
+				xPrezzoUn 	= RigheImport.Prezzo
+				xSconti 	= xMySconti
+			endif
+			
+			&& Sconto di riga
+			if !Empty(xMySconti) THEN
+				xSconti = xMySconti
+			endif		
+			IF xUsaLotti = '1' THEN 
+				xARLotto = ALLTRIM(RigheImport.Lotto)
+				IF (xARLotto = "") OR (xCodiceArti = "") THEN 
+				   xARLotto 	= .NULL.
+				ENDIF			 
+				= AutoCreate_Lotto(xCodiceArti, xARLotto)
+			ENDIF
+			&& Creo il record di dettaglio (riga)
+			IF xUsaLotti = '1' THEN 			
+			   Insert Into DoRigL (Id_DoTes, Cd_AR, Cd_ARLotto, Descrizione, Qta, xColli, xLordo, xTara, PrezzoUnitarioV, ScontoRiga, ProvvigioneRiga_1, DataConsegna, NoteRiga) Values (xID, xCodiceArti, xARLotto, xDescrizione, xQta, xMyColli, xMyLordo, xMyTara, xPrezzoUn, xSconti, xProvv, xDataCons, xNoteRiga)
+			   ELSE
+			   Insert Into DoRigL (Id_DoTes, Cd_AR, Descrizione, Qta, xColli, xLordo, xTara, PrezzoUnitarioV, ScontoRiga, ProvvigioneRiga_1, DataConsegna, NoteRiga) Values (xID, xCodiceArti, xDescrizione, xQta, xMyColli, xMyLordo, xMyTara, xPrezzoUn, xSconti, xProvv, xDataCons, xNoteRiga)
+			ENDIF			   
+		 ENDSCAN
+	     NumDocs = NumDocs + 1
+	     && Imposto il flag di importato = 1 (True)
+	     xSqlExec("Update xTesteWeb SET Importato = 1 WHERE ID = " + STR(xID, 10, 0) )
+	     SELECT DocImport
+	ENDSCAN
+ENDIF
+
+IF lHasErrors THEN 
+   xMessageBox("Importazione non effettuate a causa degli errori")
+   ELSE
+   IF NumDocs > 0 
+		If CreateDocuments('DoTesT', 'DoRigL', 'DoSpeL', 15) <> 1
+		   xMessageBox("Errore nella creazione dei documenti")
+		&& Else
+		   && xMessageBox("Creazione documenti OK")
+		ENDIF 
+	  ELSE 
+		xMessageBox("Non ci sono documenti da importare")
+   ENDIF 
+ENDIF
+
+FUNCTION GetDefaultsTesta
+Parameters cCd_DO, cCd_CF, dDataDoc
+
+      oInfoTesta 	= DoTes_Defaults_2Obj(cCd_DO, cCd_CF, dDataDoc)		
+	  RETURN oInfoTesta 
+	  
+ENDFUNC
+
+FUNCTION GetDefaultsRiga
+Parameters oInfoTesta, cCd_AR, nQta
+
+	  && Note
+	  WITH oInfoTesta
+	       TEXT TO cStmt TEXTMERGE
+	       		SELECT Cd_ArMisura FROM ARARMisura 
+	       		WHERE Cd_AR = <<Format4Spt(ALLTRIM(cCd_AR))>> 
+	       		AND DefaultMisura = 1
+	       ENDTEXT	       
+	       oInfoUM      = xSqlExec2Obj(cStmt)
+	       IF VARTYPE(oInfoUM) = 'O' THEN 
+	          oInfoRiga	= DoRig_Defaults_2Obj(.Cd_DO, .Cd_CF, DATE(), DATE(), .Cd_CFDest, .Cd_Agente_1, .Cd_Agente_2, .Cd_PG, .Cd_LS_1, .Cd_LS_2, .Cd_VL, .Cambio, cCD_AR, nQta, oInfoUM.Cd_ArMisura, 1, NULL)	       
+	          ELSE
+	          xMessageBox("Attenzione: controllare l'unità di misura dell'articolo " + cCd_AR)
+	       ENDIF
+	  ENDWITH
+	  IF VARTYPE(oInfoRiga)= 'O' THEN 
+	  	  RETURN oInfoRiga 
+	  	  ELSE 
+	  	  RETURN .F.
+	  ENDIF
+	  
+ENDFUNC
+
+PROCEDURE GetDocDefault
+LOCAL cDocDefault
+LOCAL cIDNota
+LOCAL cUsaLotti
+LOCAL cValue
+LOCAL cPath
+
+	cDocDefault = "DTV"
+	cIDNota     = ""
+	cUsaNota    = "0"
+	cUsaLotti   = "0"
+	cPath = oApp.PersDir + '\Progs\' 
+	IF FILE(cPath + 'ImportDTV.Ini') 
+		** ImportOW.Ini: impostazioni per l'import 
+		cValue = UPPER(ALLTRIM(xReadIniValue(cPath + 'ImportDTV.Ini', 'Documenti', 'DefaultDoc')))
+		IF !EMPTY(cValue) THEN 
+		   cDocDefault = cValue
+		ENDIF	
+		cValue = UPPER(ALLTRIM(xReadIniValue(cPath + 'ImportDTV.Ini', 'Documenti', 'IDNotaXML')))
+		IF !EMPTY(cValue) THEN 
+		   cIDNota = cValue
+		   IF cIDNota = "0" THEN 
+		      cIDNota = ""
+		   ENDIF
+		ENDIF	
+		cValue = UPPER(ALLTRIM(xReadIniValue(cPath + 'ImportDTV.Ini', 'Documenti', 'UsaLotti')))
+		IF !EMPTY(cValue) THEN 
+		   cUsaLotti = cValue
+		   IF cUsaLotti <> "1" THEN 
+		      cUsaLotti = "0"
+		   ENDIF
+		ENDIF	
+	ENDIF	
+	** RETURN cDocDefault
+	xDocDefault = cDocDefault
+	xIDNota 	= cIDNota
+	xUsaLotti	= cUsaLotti
+
+ENDFUNC
+
+FUNCTION xReadIniValue
+PARAMETERS cIniFile, cSection, cEntry 
+
+LOCAL ret_val
+
+    DECLARE INTEGER GetPrivateProfileString IN Win32API  AS GetPrivStr ;
+                                           String cSection, String cKey, String cDefault, String @cBuffer, ;
+                                           Integer nBufferSize, String cINIFile
+
+    ret_val = SPACE(1024)
+    GetPrivStr(cSection, cEntry,"",@ret_val,1024,cIniFile)
+
+	RETURN STRTRAN(ALLTRIM(ret_val), CHR(0), "")
+ENDFUNC
+
+FUNCTION AutoCreate_Lotto
+Parameters cCd_AR, cCd_ARLotto
+LOCAL cStmt
+
+      && Se il codice articolo ed il codice lotto sono valorizzati
+      IF !ISNULL(cCd_AR) AND !ISNULL(cCd_ARLotto)
+	      && Verifico se il lotto esiste
+          TEXT TO cStmt TEXTMERGE
+	       	  SELECT COUNT(*) AS Num 
+	       	  FROM ARLotto 
+	       	  WHERE Cd_AR = <<Format4Spt(ALLTRIM(cCd_AR))>> 
+	       	  AND Cd_ARLotto = <<Format4Spt(ALLTRIM(cCd_ARLotto))>>
+          ENDTEXT	 
+	      oInfoLotto = xSqlExec2Obj(cStmt)
+	      IF oInfoLotto.Num = 0 THEN 
+	      	 && Se il lotto non esiste lo creo automaticamente 
+	         TEXT TO cStmt TEXTMERGE
+	         	  Insert Into ARLotto (Cd_AR,  Cd_ARLotto, Descrizione) 
+	         	  Values (<<Format4Spt(cCd_AR)>>, <<Format4Spt(cCd_ARLotto)>>, 'Lotto ' + << Format4Spt(ALLTRIM(cCd_ARLotto)) >> + ' (autom.)')
+	         ENDTEXT	 
+	         = xSqlExec(cStmt)
+	      ENDIF
+	  ENDIF
+	  RETURN .T.
+	  
+ENDFUNC
+
+FUNCTION xCleanCode
+PARAMETERS cInCode
+LOCAL cOutCode
+		&& Validazione codice (Pagamento ...)
+	    if cInCode = "" OR cInCode = "-" OR UPPER(cInCode) = 'NULL' OR ISNULL(cInCode) THEN 
+	       cOutCode = .NULL.
+	       ELSE
+	       cOutCode = UPPER(cInCode)
+	    ENDIF     
+		RETURN cOutCode
+		
+ENDFUNC
+
+FUNCTION xDescPromo
+PARAMETERS cCd_AR, cCd_CF, dDataDoc
+LOCAL cDesc
+
+	cDesc = ''
+
+	IF !IsEmpty(cCd_AR) THEN 
+
+		TEXT TO cStmt TEXTMERGE PRETEXT 7
+			SELECT CAST(Note AS Varchar(80)) AS Descrizione from lsscarcfgruppo
+			WHERE DaData <= <<Format4Spt(dDataDoc)>>
+			AND AData >= <<Format4Spt(dDataDoc)>>
+			AND Cd_AR = <<Format4Spt(cCd_AR)>>
+			AND Cd_CF = <<Format4Spt(cCd_CF)>>
+		ENDTEXT
+		
+		xSqlExec(cStmt, 'xCurPromo')
+		IF !IsEmpty(xCurPromo.Descrizione) THEN
+			cDesc = NVL(xCurPromo.Descrizione, '')
+		ENDIF
+			    
+	ENDIF
+	
+	RETURN cDesc
+	
+ENDFUNC
+
+FUNCTION xQtaReale
+LPARAMETERS nColli, nLordo, nTara
+LOCAL nPesoNetto
+	&& Calcola il Peso netto/Quantità in base a Colli,Tara e Lordo		
+	
+	IF !EMPTY(nLordo) THEN 	
+	   	nPesoNetto = nLordo - (nColli * nTara)
+	   	ELSE
+	   	nPesoNetto = nColli
+	ENDIF
+	
+    RETURN nPesoNetto
+    
+ENDFUNC

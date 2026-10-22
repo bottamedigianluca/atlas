@@ -1,0 +1,12 @@
+[
+  {
+    "TriggerName": "DORig_atrg_brd",
+    "TableName": "DORig",
+    "TriggerDefinition": null
+  },
+  {
+    "TriggerName": "DOTes_atrg_brd",
+    "TableName": "DOTes",
+    "TriggerDefinition": null
+  }
+]

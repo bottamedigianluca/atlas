@@ -1,0 +1,6158 @@
+{
+  "DOTes": [
+    {
+      "COLUMN_NAME": "Id_DoTes",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DoTes",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Do",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Do",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDocumento",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDocumento",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DoBitMask",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DoBitMask",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt_R",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt_R",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CliFor",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CliFor",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_E",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_E",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFDest",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFDest",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFSede",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFSede",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CN",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CN",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ue",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ue",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SegnoDocumento",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SegnoDocumento",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Contabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Contabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoFattura",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoFattura",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ImportiIvati",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ImportiIvati",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSospesa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSospesa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Esecutivo",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Esecutivo",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Prelevabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Prelevabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Modificabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Modificabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ModificabilePdf",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ModificabilePdf",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDoc",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDoc",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDocI",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDocI",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDoc",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDoc",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGEsercizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGEsercizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsAnno",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsAnno",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iban",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 34,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iban",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 34,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Abicab",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Abicab",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "BicCode",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 11,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "BicCode",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 11,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Banca",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Banca",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDocRif",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDocRif",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDocRif",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDocRif",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Decimali",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Decimali",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DecimaliPrzUn",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DecimaliPrzUn",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cambio",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cambio",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGCausale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGCausale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MagPFlag",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MagPFlag",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MagAFlag",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MagAFlag",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_C",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_C",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_PG",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_PG",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataPag",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataPag",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFZona",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFZona",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoSottoCommessa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoSottoCommessa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoCassa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoCassa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoTrasporto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoTrasporto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoSped",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoSped",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoPorto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoPorto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoAspBene",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoAspBene",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoVettore_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoVettore_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoVettore_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoVettore_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Vettore1DataOra",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Vettore1DataOra",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Vettore2DataOra",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Vettore2DataOra",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TrasportoDataora",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TrasportoDataora",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoCaricatore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoCaricatore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoCommittente",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoCommittente",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoProprietarioMerce",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoProprietarioMerce",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Colli",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Colli",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoLordo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoLordo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoNetto",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoNetto",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "VolumeTotale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "VolumeTotale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NotePiede",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NotePiede",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AbbuonoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AbbuonoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheMerce",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheMerce",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheSpesa",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheSpesa",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Righe",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Righe",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheMerceEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheMerceEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheSpesaEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheSpesaEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RigheEvadibili",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoPerc",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoPerc",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoFissoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoFissoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SdTAltro",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SdTAltro",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoLuogoCarico",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoLuogoCarico",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoLuogoScarico",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DoLuogoScarico",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CGCorrispondenzaIvaMerce",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CGCorrispondenzaIvaMerce",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Status",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Status",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Xml",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Xml",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CD_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CD_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Attributi",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Attributi",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ud_FTE",
+      "DATA_TYPE": "uniqueidentifier",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ud_FTE",
+      "DATA_TYPE": "uniqueidentifier",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_Dotes_P_Fatt",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_Dotes_P_Fatt",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Auto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Auto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_FactoringProject",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_FactoringProject",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FactoringEvent",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FactoringEvent",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ParcT",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ParcT",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TotRitenutaV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TotRitenutaV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoRit",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoRit",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ForzaCalcRit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ForzaCalcRit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "DORig": [
+    {
+      "COLUMN_NAME": "Id_DORig",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DORig",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DOTes",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DOTes",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Contabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Contabile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDoc",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroDoc",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDoc",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataDoc",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGEsercizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGEsercizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DO",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DO",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDocumento",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDocumento",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_C",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_C",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cambio",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cambio",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Decimali",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Decimali",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DecimaliPrzUn",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DecimaliPrzUn",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Riga",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Riga",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGCausale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGCausale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoPC",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoPC",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MG_P",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MG_P",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGUbicazione_P",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGUbicazione_P",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MG_A",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MG_A",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGUbicazione_A",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_MGUbicazione_A",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DoDB",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DoDB",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARMisura",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARMisura",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_E",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_E",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_R",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_R",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOSottoCommessa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOSottoCommessa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARLotto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARLotto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoRigaRif",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoRigaRif",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Qta",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Qta",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreToUM1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreToUM1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "QtaEvadibile",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "QtaEvadibile",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DORig_Evade",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DORig_Evade",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "QtaEvasa",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "QtaEvasa",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoUnitarioV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoUnitarioV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoRiga",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoRiga",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoAddizionaleV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoAddizionaleV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleMovFree",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleMovFree",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleMovE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleMovE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Omaggio",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Omaggio",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProvvigioneRiga_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProvvigioneRiga_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProvvigioneRiga_2",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProvvigioneRiga_2",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna_R",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataConsegna_R",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteRiga",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteRiga",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Evasa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Evasa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Evadibile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Evadibile",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Esecutivo",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Esecutivo",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PackListRef",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PackListRef",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAFormula",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAFormula",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CAPartenza",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CAPartenza",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CADurata",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CADurata",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CACda",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CACda",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoAddizionale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoAddizionale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoRiga",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoRiga",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoAddizionale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoAddizionale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoTotale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreScontoTotale",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreProvv_1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreProvv_1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreProvv_2",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FattoreProvv_2",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoTotale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 41,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScontoTotale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 41,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_LSArticolo",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_LSArticolo",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_LSScaglione",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_LSScaglione",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_DataInizio",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_DataInizio",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_DataFine",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_DataFine",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_Cd_CGConto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RR_Cd_CGConto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Matricole",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Matricole",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ImportiIvati",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ImportiIvati",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Xml",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Xml",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DoIntentoFix",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DoIntentoFix",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoPresent",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoPresent",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoResiduoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoResiduoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoResiduoE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoResiduoE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoTotaleE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoUnitarioScontatoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrezzoUnitarioScontatoV",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ValProvvigione_1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ValProvvigione_1",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ValProvvigione_2",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ValProvvigione_2",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xColli",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xColli",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xLordo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xLordo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xTara",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xTara",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_MGMov_Carico",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_MGMov_Carico",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_TipoRitenutaCassa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_TipoRitenutaCassa",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Perc_RitenutaCassa",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Perc_RitenutaCassa",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Perc_Imponibile",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Perc_Imponibile",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoRiv",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfoRiv",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IsChangedRivRit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IsChangedRivRit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "CF": [
+    {
+      "COLUMN_NAME": "Id_CF",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_CF",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Indirizzo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Indirizzo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Localita",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Localita",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cap",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cap",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_NazioneProvincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_NazioneProvincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PartitaIva",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 17,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PartitaIva",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 17,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceFiscale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceFiscale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 16,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceIPA",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceIPA",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceFPR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 100,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CodiceFPR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 100,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDitta",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDitta",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cliente",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cliente",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Fornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Fornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProspectCliente",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProspectCliente",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProspectFornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProspectFornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoCF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoCF",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoCF_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoCF_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFClasse3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFGruppo3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_PG",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_PG",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Mastro",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Mastro",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Banca",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Banca",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Merce",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Merce",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFStato",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFStato",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFZona",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFZona",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFSettore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CFSettore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOPorto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOPorto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOSped",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOSped",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOVettore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_DOVettore",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_SL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_SL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Agente_2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_Lingua",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_Lingua",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Sconto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Sconto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provvigione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provvigione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SpeseIncasso",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SpeseIncasso",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SpeseBolli",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SpeseBolli",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Fido",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Fido",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_CF",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_CF",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso1",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso1",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso2",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso2",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso3",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScGiornoFisso3",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRAConsegna",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRAConsegna",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRATrasporto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRATrasporto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRATransazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_INTRATransazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Destinazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Destinazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia_Destinazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia_Destinazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Provenienza",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Provenienza",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdAbilita",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdAbilita",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdPriorita",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdPriorita",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdInt4ClienteFatturazione",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdInt4ClienteFatturazione",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4DocumentoPrelevato",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4DocumentoPrelevato",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4ClienteFornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4ClienteFornitore",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Pagamento",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Pagamento",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Agente_1",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Agente_1",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Agente_2",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Agente_2",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Zona",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4Zona",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4SedeAmministrativa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4SedeAmministrativa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4DestinazioneDiversa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PdBrk4DestinazioneDiversa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ue",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ue",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Intra",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Intra",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ritenuta",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ritenuta",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSospesa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSospesa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProceduraConcorsuale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ProceduraConcorsuale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ConsumatoreFinale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ConsumatoreFinale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EntePubblico",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EntePubblico",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Obsoleto",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Obsoleto",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Condominio",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Condominio",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Elenchi",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Elenchi",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CACda",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CACda",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_Fatt",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iban",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 34,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iban",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 34,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "BicCode",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 11,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "BicCode",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 11,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Abicab",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Abicab",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ContoCorrente",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ContoCorrente",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Tipofattura",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Tipofattura",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ricarica",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 15,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ricarica",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 15,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Attributi",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Attributi",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EvtnInfo",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EvtnInfo",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "HistoryData",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "HistoryData",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoOver3000",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoOver3000",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoSpesometro",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoSpesometro",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoBlackList",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoBlackList",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NRea",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NRea",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_F24Comune",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_F24Comune",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AE_NaturaGiuridica",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AE_NaturaGiuridica",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AE_Atecofin",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AE_Atecofin",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SDD_IdMandato",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 35,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SDD_IdMandato",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 35,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SDD_DtMandato",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SDD_DtMandato",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CD_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CD_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Peppol_Endpoint",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 22,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Peppol_Endpoint",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 22,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Indirizzo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Indirizzo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_NumeroCivico",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 8,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_NumeroCivico",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 8,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cap",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cap",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Localita",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Localita",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cd_Provincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cd_Provincia",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SO_Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_PartitaIva",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 28,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_PartitaIva",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 28,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_RagioneSociale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_RagioneSociale",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Nome",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Nome",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Cognome",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Cognome",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DF_Escluso",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DF_Escluso",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xCd_Exp",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 30,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xCd_Exp",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 30,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FE_AddASW",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FE_AddASW",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FE_Ignore_CodiceFPR",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FE_Ignore_CodiceFPR",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RF_Cd_Nazione",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_NazioneIva",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_NazioneIva",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_AutoTipo",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_AutoTipo",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_RegimeFiscale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_RegimeFiscale",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Cd_CN",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_Cd_CN",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ParcT",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ParcT",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_BPoint",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CF_BPoint",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Reserved_1",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplitLog",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplitLog",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "AR": [
+    {
+      "COLUMN_NAME": "Id_AR",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_AR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DescrizioneBreve",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 40,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "VBDescrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 30,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_AR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARGruppo1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARGruppo2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARGruppo3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARClasse1",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARClasse2",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARClasse3",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VbReparto",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_A",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_V",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_VI",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_VE",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_AI",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_AE",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda_VI",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda_VE",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda_AI",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CAVda_AE",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARStato",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARMarca",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARNomenclatura",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 8,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARPrdClasse",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 5,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_ARCategoria",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_IntraServizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IntraTipo",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Modello",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Sconto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provvigione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ricarica",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 15,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScortaMinima",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ScortaMassima",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "LottoMinimo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "LottoRiordino",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARMisura",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoLordo",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoNetto",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoFattore",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoLordoMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PesoNettoMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Altezza",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Lunghezza",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Larghezza",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DimensioniFattore",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AltezzaMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "LunghezzaMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "LarghezzaMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "CostoStandard",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ClasseAbc",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoValorizzazione",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Fittizio",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Obsoleto",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DBKit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoInventario",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoGiornale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DBFantasma",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MG_LottoObbligatorio",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MG_MatricolaObbligatoria",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MG_GiacenzaNonNegativa",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoGestComm",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpGiorniRiordino",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpProduzioneMassima",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpIncludi",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpGiorniCopertura",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpResa",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpLottoRiordino",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpLottoMinimo",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpPuntoRiordino",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpIgnoraDistinta",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebB2CPubblica",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebB2BPubblica",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebDescrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebNote_AR",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebInfoLink",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 128,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "WebGiacenza",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AmsManaged",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteOfferta",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Attributi",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NoteXML",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_CodiceTipo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 35,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTE_CodiceValore",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 35,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARClasse12",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARClasse123",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 9,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARGruppo12",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 6,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ARGruppo123",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 9,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Nazione_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xCosto",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xRicarico",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "xCd_ARLottoP",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ExtraInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Provincia_Origine",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpAggiornaCostoDistinta",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MrpForzaExpDistinta",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "MRPConsideraDaAcquistare",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "VolumeMks",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "DOTes_FTEInfo": [
+    {
+      "COLUMN_NAME": "Id_DOTes",
+      "DATA_TYPE": "sql_variant",
+      "CHARACTER_MAXIMUM_LENGTH": 0,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Id_DmsDocument",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EntityTable",
+      "DATA_TYPE": "nvarchar",
+      "CHARACTER_MAXIMUM_LENGTH": 128,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EntityID",
+      "DATA_TYPE": "sql_variant",
+      "CHARACTER_MAXIMUM_LENGTH": 0,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Tag",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Tipo",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 2,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IdentificativoSdI",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 36,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IdentificativoSdI_UserInsert",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataRegistrazione",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Destinazione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "InviataIl",
+      "DATA_TYPE": "datetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ReInviata",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataRicezione",
+      "DATA_TYPE": "datetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provenienza",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "RicevutaIl",
+      "DATA_TYPE": "datetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DenominazioneCedente",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 80,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PartitaIvaCedente",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 30,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroFatture",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoDocumento",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DataFattura",
+      "DATA_TYPE": "datetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroFattura",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "FTEInfo",
+      "DATA_TYPE": "xml",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "Aliquota": [
+    {
+      "COLUMN_NAME": "Id_Aliquota",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_TipoIva",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Aliquota_CC",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGLiq",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 50,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DescBreve",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Aliquota",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoBeneServizio",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 1,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ventilazione",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Indetraibilita",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DaVentilare",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Plafond",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "OroArgento",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Liquidazione",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Elenchi",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoSpesometro",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "EsclusoBlackList",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Annuale",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_Aliquota",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_NonImponibilita",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserFlag1",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserFlag2",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DestinatoRivendita",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "SpeseBolli",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaMoss",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "IvaSplit",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_Natura",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ReverseCharge",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Intento",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DF_Escluso",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iva_Split_Sep",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_ASW_CodiceIva",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione_Ex",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 50,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "DescBreve_Ex",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 20,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Iva_Split_Log",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "PG": [
+    {
+      "COLUMN_NAME": "Id_PG",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_PG",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 4,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_CGConto_Banca",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 12,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 60,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_PG",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Sconto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provvigione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Partenza",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "PrimaRata",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "NumeroRate",
+      "DATA_TYPE": "smallint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Blocco",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoFissoE",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "AccontoPerc",
+      "DATA_TYPE": "numeric",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "ApplicaNC",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "LS": [
+    {
+      "COLUMN_NAME": "Id_LS",
+      "DATA_TYPE": "int",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_LS",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 7,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Descrizione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 50,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Cd_VL",
+      "DATA_TYPE": "char",
+      "CHARACTER_MAXIMUM_LENGTH": 3,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ivato",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TipoLS",
+      "DATA_TYPE": "tinyint",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Sconto",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Provvigione",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 10,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Avanzato",
+      "DATA_TYPE": "bit",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserIns",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "UserUpd",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": 48,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeIns",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "TimeUpd",
+      "DATA_TYPE": "smalldatetime",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "NO",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Ts",
+      "DATA_TYPE": "timestamp",
+      "CHARACTER_MAXIMUM_LENGTH": null,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    },
+    {
+      "COLUMN_NAME": "Note_LS",
+      "DATA_TYPE": "varchar",
+      "CHARACTER_MAXIMUM_LENGTH": -1,
+      "IS_NULLABLE": "YES",
+      "COLUMN_DEFAULT": null
+    }
+  ],
+  "LSRig": []
+}
