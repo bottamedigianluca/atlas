@@ -206,6 +206,57 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     1 e coda 0, nessun conflitto; il giro di importazione successivo ritrova il BO invariato (nessun aggiornato).
     `prova-ddt confronta` sul BO scritto e poi cancellarlo dal clone come per il 5459 della prova 3c.
 
+- [x] 22/10/2026 **Prova del Task 4 sul clone** (titolare): BO 5459 numerato con Arca (nessun `senza_arca`), replicato
+  subito (`Id_DoTes 121370`), coda vuota e nessun conflitto; DDT di prova tolto dal clone. `misura-latenze` sul PC di
+  Arca: F3 su GEN 0,093 ms p50, calcolo di 14 righe 0,32 ms.
+
+- [x] 22/10/2026 **Task 5, frontend desktop** (`app/`: React 19 + TypeScript + Tailwind 4, shell Tauri v2 in
+  `app/src-tauri`):
+  - Maschera DDT tutta da tastiera. Testata: Cliente (F3 ricerca) → `Invio` sulla prima riga; destinazione
+    (predefinita del cliente, altre o nessuna), data, numero (vuoto = numerazione unica; F3 = buchi di Arca con le
+    date ammesse e il prossimo numero). Griglia sulle 40 colonne di UserPref 1443 (ordine e larghezze esatte,
+    riga 19 px), le colonne che ATLAS non usa restano vuote.
+  - Regole (`app/src/maschera/righe.ts`, funzioni pure con test): `Invio` segue Articolo → UM → Colli → Lordo →
+    Tara → Prezzo → nuova riga sulle colonne visibili, qualunque sia l'ordine scelto; `Freccia Giù` scende sulla
+    stessa colonna o crea la riga e va sull'articolo (mai da una riga vuota in fondo: nessuna fila di righe vuote);
+    `Esc` annulla la modifica della cella, poi toglie la riga vuota; `Ctrl+Canc` elimina la riga. Guardrail senza
+    popup, anche uscendo con le frecce: colli con i decimali e tara × colli ≥ lordo fermano il cursore con una barra
+    (`Invio` conferma per quei valori, `Esc` torna a correggere).
+  - Ogni modifica ricalcola la bozza sul backend (`POST /api/ddt/calcola`, la richiesta precedente si annulla):
+    netto, prezzo proposto (in grigio nella cella), totali e castelletto in tempo reale; prezzo battuto diverso dal
+    listino in ambra chiaro; errori di riga sul codice articolo e nel piede. `F10` salva (numero, totale, avviso se
+    numerato senza Arca) e prepara il DDT successivo con la stessa data.
+  - F3 sul prezzo: "PREZZO/COSTO ARTICOLO" con le tre sezioni della direttiva e le sue colonne fino a `Riporta`;
+    `↑/↓` e `Invio`/`Spazio` riportano il prezzo nella riga. Le voci "tipo Bolla" coincidono con "BOLLA VENDITA"
+    (in ATLAS l'unica bolla è il BO); provvigioni vuote (non gestite); ultimo acquisto assente.
+  - Griglia personalizzabile e salvata nella postazione (`localStorage`): larghezza a trascinamento del bordo
+    (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, menu Colonne per
+    mostrare/nascondere (l'articolo resta), "Ripristina layout di fabbrica".
+  - Elenco documenti (`Ctrl+2`) con filtri dal/al, tipo (DDT; fatture e NC con il Task 7) e cliente, badge dello
+    stato in Arca, `Invio` apre la scheda; pannello Sincronizzazione (`Ctrl+3`) con coda, importazione e conflitti
+    con il pulsante "Rinumera"; semaforo nella barra (verde in Arca, blu in coda, rosso fermo o server
+    irraggiungibile) aggiornato dal WebSocket.
+  - Design §3.6-3.7: chiaro e scuro (segue il sistema, cambiabile), finestre satinate, focus ring blu, cifre
+    tabulari monospazio a destra; intestazione aziendale, firma e coordinate nella barra di stato, cartellino in
+    Informazioni (`F1`), dove si imposta anche l'indirizzo del server.
+  - Backend: la riga calcolata porta magazzino e conto; ricerche clienti e articoli con il codice uguale e poi i
+    codici che iniziano con il testo in cima (chi batte "ZUC" trova ZUC prima di FIOR "fiori di zucchina");
+    `cargo run -p atlas-server -- DB` avvia il server (`default-run`: con due binari il comando del README falliva).
+  - Shell Tauri: CSP che permette solo il backend locale (`127.0.0.1`/`localhost`), capability `core:default`,
+    nessun comando nativo. Il backend accetta le origini Tauri e Vite. Compilata in release su Linux (6 MB) e avviata:
+    WebSocket e API raggiungibili.
+  - Prove: 14 vitest (tastiera, layout, numeri) e 7 scenari Playwright end-to-end sul database reale (copia) con il
+    backend vero: un DDT battuto solo da tastiera fino a F10 e riletto dalle API (GEN 11,8 kg × 1,50 + ZUC, totale
+    22,57), guardrail, F3 prezzi e riporta, ambra, Freccia Giù/Su, colonne (larghezza, nascondi, persistenza,
+    ripristino, riordino con la sequenza Invio invariata), F3 cliente/articolo/numeri liberi, elenco documenti.
+  - **F12**: `TASKS.md` lo dava come "nuova riga", la direttiva (documento supremo) come "salva e stampa": seguita la
+    direttiva. Finché non c'è il modulo stampe (Task 7) F12 salva e lo dice.
+  - Fuori da questo task: F2 per sbloccare i prezzi in anagrafica (§3.2: le anagrafiche si modificano ancora in
+    Arca, il backend non ha API di scrittura) e l'area riservata con PIN (§4.2-4.3, Task 6). La postazione banco non
+    mostra dati aggregati di fatturato (§4.3).
+  - **Da provare in Windows**: `cd app`, `npm ci`, `npm run tauri build`, installare e verificare F10/F12/F3 in
+    WebView2 (in sviluppo F12 potrebbe aprire anche gli strumenti di sviluppo).
+
 ## Decisioni prese (titolare)
 - 22/10/2026 **Sincronizzazione nei due sensi, numerazione unica**: un documento fatto in Arca entra nel database
   ATLAS; uno fatto in ATLAS entra in Arca come se lo avesse scritto Arca, che ne tiene conto nella numerazione.
@@ -257,7 +308,7 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    ogni salvataggio invece del controllo ogni secondo dei binari. FA/FT/NC si importeranno quando il database ATLAS
    avrà le fatture.
 
-4. **Server Backend ATLAS (Rust / Axum)** — fatto (vedi sopra), resta la prova sul clone. Previsto in origine:
+4. **Server Backend ATLAS (Rust / Axum)** — fatto e provato sul clone (vedi sopra). Previsto in origine:
    - Salvataggio DDT con `numerazione::crea` sul thread del worker; mostrare `Creato::senza_arca` e i conflitti
      (`ultimo_errore` dell'evento fermo, `Giro::fermo` dell'importazione) con l'azione "rinumera"; buchi da
      `numerazione::liberi` per il numero scelto a mano (Task 6).
@@ -266,7 +317,7 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    - Endpoint per lookup prezzi contestuale (`F3`): listino base, ultimo prezzo cliente, prezzo massimo odierno, ultimo prezzo assoluto.
    - Tool JSON Schema per integrazione con assistente e workflow automatici.
 
-5. **Frontend Desktop (Tauri v2 + React / TypeScript + Tailwind CSS)**:
+5. **Frontend Desktop (Tauri v2 + React / TypeScript + Tailwind CSS)** — fatto (vedi sopra), resta la prova in Windows:
    - Elenco documenti rapido con filtri per data, tipo documento (DDT, Fattura, NC) e cliente.
    - Maschera inserimento DDT keyboard-first conforme a UserPref 1443 (40 colonne, ordine e larghezze esatte).
    - Sequenza tastiera fluida: `Articolo -> UM -> Colli -> Lordo -> Tara -> Prezzo`.

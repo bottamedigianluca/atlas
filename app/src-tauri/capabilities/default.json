@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Finestra principale: solo le funzioni di base, nessun accesso a file o comandi di sistema.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

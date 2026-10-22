@@ -19,18 +19,29 @@ fn limite(richiesto: Option<u32>) -> u32 {
     richiesto.unwrap_or(LIMITE_PREDEFINITO).clamp(1, LIMITE_MASSIMO)
 }
 
-/// `%testo%` per `LIKE`, con i caratteri speciali presi alla lettera.
-fn contiene(testo: &str) -> String {
+/// Il testo con i caratteri speciali di `LIKE` presi alla lettera.
+fn letterale(testo: &str) -> String {
     let mut modello = String::with_capacity(testo.len() + 2);
-    modello.push('%');
     for c in testo.trim().chars() {
         if matches!(c, '%' | '_' | '\\') {
             modello.push('\\');
         }
         modello.push(c);
     }
-    modello.push('%');
     modello
+}
+
+/// `%testo%` per `LIKE`.
+fn contiene(testo: &str) -> String {
+    format!("%{}%", letterale(testo))
+}
+
+/// Parametri dell'ordinamento per pertinenza: prima il codice uguale al testo, poi i codici che
+/// cominciano con il testo, poi il resto (descrizioni) in ordine di codice. Chi batte un codice
+/// lo trova in cima.
+fn pertinenza(cerca: Option<&str>) -> (String, String) {
+    let testo = cerca.unwrap_or_default().trim();
+    (testo.to_owned(), format!("{}%", letterale(testo)))
 }
 
 /// Ricerca in un'anagrafica: per codice o per descrizione.
@@ -62,10 +73,11 @@ pub fn cerca_clienti(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Cliente
         "SELECT codice, ragione_sociale, localita, partita_iva, obsoleto FROM clienti_fornitori \
          WHERE cliente = 1 AND (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR ragione_sociale LIKE ?2 ESCAPE '\\') \
-         ORDER BY codice LIMIT ?3",
+         ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
     )?;
-    let modello = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty()).map(contiene);
-    let righe = stmt.query_map(params![ricerca.obsoleti, modello, limite(ricerca.limite)], |r| {
+    let cerca = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty());
+    let (uguale, inizia) = pertinenza(cerca);
+    let righe = stmt.query_map(params![ricerca.obsoleti, cerca.map(contiene), limite(ricerca.limite), uguale, inizia], |r| {
         Ok(ClienteBreve {
             codice: r.get(0)?,
             ragione_sociale: r.get::<_, String>(1)?.trim_end().to_owned(),
@@ -169,10 +181,11 @@ pub fn cerca_articoli(conn: &Connection, ricerca: &Ricerca) -> Result<Vec<Artico
         "SELECT codice, descrizione, unita_misura, aliquota_vendita, obsoleto FROM articoli \
          WHERE (?1 OR obsoleto = 0) \
          AND (?2 IS NULL OR codice LIKE ?2 ESCAPE '\\' OR descrizione LIKE ?2 ESCAPE '\\') \
-         ORDER BY codice LIMIT ?3",
+         ORDER BY codice <> ?4, NOT codice LIKE ?5 ESCAPE '\\', codice LIMIT ?3",
     )?;
-    let modello = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty()).map(contiene);
-    let righe = stmt.query_map(params![ricerca.obsoleti, modello, limite(ricerca.limite)], |r| {
+    let cerca = ricerca.cerca.as_deref().filter(|c| !c.trim().is_empty());
+    let (uguale, inizia) = pertinenza(cerca);
+    let righe = stmt.query_map(params![ricerca.obsoleti, cerca.map(contiene), limite(ricerca.limite), uguale, inizia], |r| {
         Ok(ArticoloBreve {
             codice: r.get(0)?,
             descrizione: r.get::<_, String>(1)?.trim_end().to_owned(),
@@ -576,6 +589,14 @@ mod tests {
             ..Ricerca::default()
         };
         assert_eq!(cerca_articoli(&conn, &ricerca).unwrap()[0].codice, "PIST");
+        // "BAN" è nella descrizione di PIST (finta) e uguale al codice BAN: BAN viene prima.
+        conn.execute("UPDATE articoli SET descrizione = 'PISTACCHI BANCO' WHERE codice = 'PIST'", []).unwrap();
+        let ricerca = Ricerca {
+            cerca: Some("ban".into()),
+            ..Ricerca::default()
+        };
+        let trovati: Vec<String> = cerca_articoli(&conn, &ricerca).unwrap().into_iter().map(|a| a.codice).collect();
+        assert_eq!(trovati, ["BAN", "PIST"]);
         let ricerca = Ricerca {
             cerca: Some("%".into()),
             ..Ricerca::default()

@@ -111,6 +111,9 @@ pub struct RigaCalcolata {
     pub unita_misura: Option<String>,
     pub fattore_um1: Option<Decimal>,
     pub aliquota: Option<String>,
+    pub conto_ricavo: Option<String>,
+    /// Magazzino di scarico, anche quando è il predefinito.
+    pub magazzino: Option<String>,
     pub quantita: Option<Decimal>,
     pub prezzo: Option<Decimal>,
     pub origine_prezzo: Option<OriginePrezzo>,
@@ -449,6 +452,8 @@ fn vuota(riga: &BozzaRiga) -> RigaCalcolata {
         unita_misura: None,
         fattore_um1: None,
         aliquota: None,
+        conto_ricavo: None,
+        magazzino: None,
         quantita: None,
         prezzo: None,
         origine_prezzo: None,
@@ -515,6 +520,7 @@ fn calcola_riga(conn: &Connection, riga: &BozzaRiga, ctx: &Contesto<'_>) -> Resu
     };
     let aliquota = CodiceAliquota::nuovo(&aliquota);
     esito.aliquota = Some(aliquota.as_str().to_owned());
+    esito.conto_ricavo = Some(conto_ricavo.clone());
     let percentuale = match ctx.aliquote.percentuale(&aliquota) {
         Ok(p) => p,
         Err(e) => {
@@ -568,7 +574,10 @@ fn calcola_riga(conn: &Connection, riga: &BozzaRiga, ctx: &Contesto<'_>) -> Resu
         Err(e) => esito.errori.push(e.to_string()),
     }
     let magazzino = match magazzino(conn, riga.magazzino.as_deref(), ctx.magazzino)? {
-        Ok(m) => Some(m),
+        Ok(m) => {
+            esito.magazzino = Some(m.clone());
+            Some(m)
+        }
         Err(e) => {
             esito.errori.push(e);
             None
@@ -633,6 +642,7 @@ mod tests {
         assert_eq!((banane.quantita, banane.prezzo, banane.totale), (Some(dec!(5.16)), Some(dec!(1.80)), Some(dec!(9.29))));
         assert_eq!((banane.origine_prezzo, banane.prezzo_modificato), (Some(OriginePrezzo::Listino), false));
         assert_eq!(calcolo.righe[1].aliquota.as_deref(), Some("10"));
+        assert_eq!(calcolo.righe[1].magazzino.as_deref(), Some("00001"), "il predefinito, scritto");
         assert_eq!(calcolo.castelletto.totale_documento, dec!(9.29) + dec!(0.37) + dec!(11.20) + dec!(1.12));
 
         let ddt = calcolo.in_ddt().unwrap();
