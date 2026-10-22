@@ -416,6 +416,20 @@ export interface CampiNota {
   fatta?: boolean;
 }
 
+/** Dati ufficiali dell'azienda dalla partita IVA (servizio VIES), nei campi dell'anagrafica. */
+export interface DatiAzienda {
+  nazione: string;
+  partita_iva: string;
+  attiva: boolean;
+  ragione_sociale: string | null;
+  indirizzo: string | null;
+  cap: string | null;
+  localita: string | null;
+  provincia: string | null;
+  indirizzo_vies: string | null;
+  gia_presente: string | null;
+}
+
 export interface PerArea {
   totale: number;
   italia: number;

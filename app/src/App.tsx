@@ -17,6 +17,7 @@ import { Marchio, MarchioEsteso } from "./componenti/Marchio";
 import { Modale } from "./componenti/Modale";
 import { Consultazione } from "./documento/Consultazione";
 import { type ComandiDocumento, type Esito, NuovoDocumento } from "./documento/NuovoDocumento";
+import { PartitaIva } from "./anagrafiche/PartitaIva";
 import { Elenco } from "./elenco/Elenco";
 import { Home } from "./home/Home";
 import { importo } from "./griglia/numeri";
@@ -296,6 +297,7 @@ function Guscio() {
               setPagina("Generale");
             }}
             onElenco={() => setPagina("Elenco")}
+            onSincronizzazione={() => setSincronizzazione(true)}
           />
         </div>
         <div className={inDocumenti && pagina === "Elenco" ? "h-full" : "hidden"}>
@@ -443,6 +445,7 @@ function BarraStato({ esito, totali, posizione }: { esito: Esito | null; totali:
 function Informazioni({ onChiudi }: { onChiudi: () => void }) {
   const { stato } = useSincronizzazione();
   const [server, setServer] = useState(indirizzoServer());
+  const [verifica, setVerifica] = useState(false);
   return (
     <Modale titolo="Informazioni di sistema" larghezza="max-w-xl" onChiudi={onChiudi}>
       <div className="space-y-5 p-6">
@@ -470,8 +473,13 @@ function Informazioni({ onChiudi }: { onChiudi: () => void }) {
           <dt className="text-zinc-400">PEC</dt>
           <dd>{AZIENDA.pec}</dd>
           <dt className="text-zinc-400">P.IVA / C.F.</dt>
-          <dd className="font-mono">
-            {AZIENDA.partitaIva} / {AZIENDA.codiceFiscale}
+          <dd className="flex items-center gap-3">
+            <span className="font-mono">
+              {AZIENDA.partitaIva} / {AZIENDA.codiceFiscale}
+            </span>
+            <button type="button" className="text-primario-testo hover:underline" onClick={() => setVerifica(true)}>
+              Verifica online
+            </button>
           </dd>
           <dt className="text-zinc-400">BDN</dt>
           <dd>{AZIENDA.bdn}</dd>
@@ -496,6 +504,13 @@ function Informazioni({ onChiudi }: { onChiudi: () => void }) {
           </button>
         </form>
       </div>
+      {verifica && (
+        <PartitaIva
+          iniziale={AZIENDA.partitaIva}
+          confronto={{ ragione_sociale: AZIENDA.nome, indirizzo: "Via S. Antonio, 7", cap: "38017", localita: "Mezzolombardo", provincia: "TN" }}
+          onChiudi={() => setVerifica(false)}
+        />
+      )}
     </Modale>
   );
 }

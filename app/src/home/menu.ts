@@ -1,15 +1,19 @@
-// Il menu "Cosa vuoi fare?" della Home di Arca, voce per voce come nelle schermate
-// (`docs/screenshot_arca/07_…`, 13-16). In ATLAS si aprono i comandi che ci sono già; gli altri
-// restano al loro posto, spenti, finché non arrivano i moduli (fino ad allora si usano in Arca).
+// Il menu "Cosa vuoi fare?" della Home: la forma di quello di Arca (`docs/screenshot_arca/07_…`),
+// ma solo con le voci che a Bottamedi servono, secondo l'uso vero di Arca (`docs/ANALISI_ARCA.md`).
+// Tolte: Servizio, Beni Usati, Contabilità (la prima nota si fa fuori da Arca), Magazzini (giacenza
+// non significativa), Vendite al Banco (38 scontrini in tutto), potenziali clienti e fornitori,
+// commesse e tabelle vuote. Aggiunte quelle di ATLAS: partita IVA online, sincronizzazione con Arca,
+// fatturazione differita. Le voci che ATLAS non ha ancora restano visibili e spente, con il task che
+// le porta o "in Arca" (fino ad allora si fanno lì).
 
 /** Comandi che ATLAS sa eseguire dalla Home. */
-export type Comando = "elenco" | "nuovo";
+export type Comando = "elenco" | "nuovo" | "partitaIva" | "sincronizzazione";
 
 export interface Voce {
   nome: string;
   comando?: Comando;
-  /** Ha un altro livello (la freccia ›). */
-  sottomenu?: boolean;
+  /** Senza comando: dove si fa per ora ("in Arca") o il task che la porta ("Task 7"). */
+  nota?: string;
 }
 
 export interface Gruppo {
@@ -17,84 +21,42 @@ export interface Gruppo {
   voci: Voce[];
 }
 
+const ARCA = "in Arca";
+
 export const MENU: Gruppo[] = [
-  { nome: "DMS", voci: [] },
-  {
-    nome: "Anagrafiche",
-    voci: [
-      { nome: "Clienti", sottomenu: true },
-      { nome: "Fornitori", sottomenu: true },
-      { nome: "Potenziali Clienti", sottomenu: true },
-      { nome: "Potenziali Fornitori", sottomenu: true },
-      { nome: "Operatori", sottomenu: true },
-      { nome: "Tabelle", sottomenu: true },
-      { nome: "AADAI" },
-    ],
-  },
-  {
-    nome: "Contabilità",
-    voci: [
-      { nome: "Ricevi Fatture Elettroniche" },
-      { nome: "Piano dei Conti", sottomenu: true },
-      { nome: "Tabelle", sottomenu: true },
-      { nome: "Banche", sottomenu: true },
-      { nome: "Collegamento B.Point", sottomenu: true },
-    ],
-  },
-  {
-    nome: "Scadenzario",
-    voci: [
-      { nome: "Portafoglio Effetti", sottomenu: true },
-      { nome: "Distinte Effetti", sottomenu: true },
-      { nome: "Scadenze" },
-      { nome: "Stampa" },
-      { nome: "Registra Pagato" },
-      { nome: "Vista Accorpamenti" },
-      { nome: "Gestione" },
-      { nome: "Note" },
-    ],
-  },
-  {
-    nome: "Agenti",
-    voci: [
-      { nome: "Agenti" },
-      { nome: "Controllo/Selezione" },
-      { nome: "Elenco Provvigioni" },
-      { nome: "Stampe" },
-      { nome: "Liquidazione" },
-      { nome: "Note" },
-      { nome: "Attributi" },
-      { nome: "Manutenz. Attributi" },
-    ],
-  },
-  { nome: "Beni Usati", voci: [] },
   {
     nome: "Documenti",
     voci: [
       { nome: "Gestione", comando: "elenco" },
-      { nome: "Ricevi Fatture Elettroniche" },
-      { nome: "Situazione Articolo" },
       { nome: "Nuovo Documento", comando: "nuovo" },
-      { nome: "Evasione" },
-      { nome: "Ristampa Documenti" },
-      { nome: "Stampe di Controllo" },
-      { nome: "Imposta Stato" },
-      { nome: "Controllo/Selezione" },
-      { nome: "Interrogazione" },
-      { nome: "Eliminazione" },
-      { nome: "Documenti Elettronici", sottomenu: true },
-      { nome: "Configurazione" },
-      { nome: "Moduli di Stampa" },
-      { nome: "Commesse", sottomenu: true },
-      { nome: "Tabelle", sottomenu: true },
-      { nome: "Tutorial" },
+      { nome: "Fatturazione differita", nota: "Task 7" },
+      { nome: "Ristampa Documenti", nota: "Task 7" },
+      { nome: "Fatture elettroniche (SdI)", nota: "Task 7" },
+      { nome: "Eliminazione", nota: "Task 6" },
     ],
   },
-  { nome: "Vendite al Banco", voci: [] },
-  { nome: "Articoli", voci: [] },
-  { nome: "Listini", voci: [] },
-  { nome: "Magazzini", voci: [] },
-  { nome: "Servizio", voci: [] },
+  {
+    nome: "Anagrafiche",
+    voci: [
+      { nome: "Partita IVA online", comando: "partitaIva" },
+      { nome: "Clienti", nota: ARCA },
+      { nome: "Fornitori", nota: ARCA },
+      { nome: "Agenti", nota: ARCA },
+    ],
+  },
+  { nome: "Articoli", voci: [{ nome: "Gestione Articoli", nota: ARCA }] },
+  { nome: "Listini", voci: [{ nome: "Gestione Listini", nota: ARCA }] },
+  {
+    nome: "Scadenzario",
+    voci: [
+      { nome: "Scadenze", nota: ARCA },
+      { nome: "Registra Pagato", nota: ARCA },
+      { nome: "Portafoglio Effetti (RiBa)", nota: ARCA },
+      { nome: "Distinte Effetti", nota: ARCA },
+    ],
+  },
+  { nome: "DMS", voci: [{ nome: "PDF e XML dei documenti", nota: "Task 7" }] },
+  { nome: "Sincronizzazione Arca", voci: [{ nome: "Stato, coda e conflitti", comando: "sincronizzazione" }] },
 ];
 
 /** I comandi che si possono eseguire, con il percorso: per "Cerca comando" e i Favoriti. */

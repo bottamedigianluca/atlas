@@ -195,6 +195,10 @@ impl Drop for Banco {
 }
 
 fn banco(nome: &str, arca: Option<Finta>) -> Banco {
+    banco_con(nome, arca, |file| Config::nuova(file))
+}
+
+fn banco_con(nome: &str, arca: Option<Finta>, config: impl FnOnce(&std::path::Path) -> Config) -> Banco {
     let cartella = std::env::temp_dir().join(format!("atlas-server-{nome}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&cartella);
     std::fs::create_dir_all(&cartella).unwrap();
@@ -207,7 +211,7 @@ fn banco(nome: &str, arca: Option<Finta>) -> Banco {
         importazione: arca.clone(),
         replica: arca,
     };
-    let (servizio, maniglia) = atlas_server::prepara(&Config::nuova(&file), sorgenti).unwrap();
+    let (servizio, maniglia) = atlas_server::prepara(&config(&file), sorgenti).unwrap();
     Banco {
         router: atlas_server::rotte::router(servizio.clone()),
         servizio,
@@ -503,4 +507,46 @@ async fn home_post_it_e_clienti_del_giorno() {
     let (stato, riepilogo) = chiama(&b.router, "GET", "/api/home/riepilogo", None).await;
     assert_eq!(stato, StatusCode::OK, "{riepilogo}");
     assert!(riepilogo["clienti"]["totale"].as_u64().unwrap() > 0);
+}
+
+/// VIES finto: risponde per la partita IVA di Bottamedi, dice "non disponibile" per le altre.
+async fn vies_finto() -> String {
+    let app = Router::new().route(
+        "/check-vat-number",
+        axum::routing::post(|axum::Json(c): axum::Json<Value>| async move {
+            if c["vatNumber"] == "02273530226" {
+                axum::Json(json!({
+                    "countryCode": "IT", "vatNumber": "02273530226", "valid": true,
+                    "name": "BOTTAMEDI PIERLUIGI", "address": "VIA S. ANTONIO 7 \n38017 MEZZOLOMBARDO TN\n"
+                }))
+            } else {
+                axum::Json(json!({ "userError": "MS_UNAVAILABLE" }))
+            }
+        }),
+    );
+    let ascolto = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let indirizzo = ascolto.local_addr().unwrap();
+    tokio::spawn(async move { axum::serve(ascolto, app).await.unwrap() });
+    format!("http://{indirizzo}/check-vat-number")
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn partita_iva_dai_dati_ufficiali() {
+    let vies = vies_finto().await;
+    let b = banco_con("piva", None, |file| Config { vies_url: vies, ..Config::nuova(file) });
+    let (stato, dati) = chiama(&b.router, "GET", "/api/partita-iva/IT02273530226", None).await;
+    assert_eq!(stato, StatusCode::OK, "{dati}");
+    assert_eq!(dati["ragione_sociale"], "BOTTAMEDI PIERLUIGI");
+    assert_eq!((dati["indirizzo"].as_str(), dati["cap"].as_str()), (Some("VIA S. ANTONIO 7"), Some("38017")));
+    assert_eq!((dati["localita"].as_str(), dati["provincia"].as_str()), (Some("MEZZOLOMBARDO"), Some("TN")));
+    assert_eq!(dati["attiva"], true);
+    assert_eq!(dati["gia_presente"], Value::Null);
+
+    // Cifra di controllo sbagliata: non si chiede nemmeno a VIES.
+    let (stato, errore) = chiama(&b.router, "GET", "/api/partita-iva/02273530227", None).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY, "{errore}");
+    // VIES che non risponde: si scrive a mano.
+    let (stato, errore) = chiama(&b.router, "GET", "/api/partita-iva/01484340227", None).await;
+    assert_eq!(stato, StatusCode::SERVICE_UNAVAILABLE, "{errore}");
+    assert!(errore["messaggio"].as_str().unwrap().contains("MS_UNAVAILABLE"));
 }

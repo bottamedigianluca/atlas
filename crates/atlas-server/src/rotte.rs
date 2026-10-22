@@ -10,6 +10,7 @@
 //!   `POST /ddt/{id}/rinumera`, `GET /numerazione/{esercizio}/liberi` (`F3` sul numero)
 //! - `GET  /home/riepilogo` (quanti DDT e anagrafiche), `GET /home/clienti?data=` (clienti che di
 //!   solito ordinano in quel giorno della settimana)
+//! - `GET  /partita-iva/{numero}?nazione=` (dati dell'azienda dal servizio VIES)
 //! - `GET  /note`, `POST /note`, `PUT /note/{id}`, `DELETE /note/{id}` (post-it della Home)
 //! - `GET  /strumenti`, `POST /strumenti/{nome}`
 //!
@@ -68,6 +69,7 @@ pub fn router(servizio: Servizio) -> Router {
         .route("/ddt/{id}", get(ddt))
         .route("/ddt/{id}/rinumera", post(rinumera))
         .route("/numerazione/{esercizio}/liberi", get(liberi))
+        .route("/partita-iva/{numero}", get(partita_iva))
         .route("/home/riepilogo", get(riepilogo))
         .route("/home/clienti", get(clienti_del_giorno))
         .route("/note", get(note).post(crea_nota))
@@ -199,6 +201,14 @@ async fn rinumera(State(s): State<Servizio>, Path(id): Path<i64>) -> Esito<crate
 
 async fn liberi(State(s): State<Servizio>, Path(esercizio): Path<i32>) -> Esito<crate::worker::NumeriLiberi> {
     Ok(Json(s.liberi(esercizio).await?))
+}
+
+async fn partita_iva(
+    State(s): State<Servizio>,
+    Path(numero): Path<String>,
+    q: Result<Query<crate::partita_iva::RichiestaPartitaIva>, QueryRejection>,
+) -> Esito<crate::partita_iva::DatiAzienda> {
+    Ok(Json(s.partita_iva(numero, query(q)?).await?))
 }
 
 async fn riepilogo(State(s): State<Servizio>) -> Esito<crate::home::Riepilogo> {

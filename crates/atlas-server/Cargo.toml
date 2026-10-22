@@ -22,6 +22,7 @@ axum = { version = "0.8", features = ["ws"] }
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "net", "time", "sync", "signal"] }
 tower = { version = "0.5", features = ["util"] }
 schemars = { version = "1", features = ["chrono04", "rust_decimal1"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls"] }
 
 [dev-dependencies]
 atlas-arca.workspace = true

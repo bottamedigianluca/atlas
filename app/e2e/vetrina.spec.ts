@@ -55,4 +55,10 @@ test("elenco documenti e informazioni, chiaro", async ({ page }) => {
   await page.keyboard.press("F1");
   await expect(page.getByRole("dialog", { name: "Informazioni di sistema" })).toContainText("ATLAS OPERATING SYSTEM");
   await page.screenshot({ path: "test-results/vetrina-informazioni-chiaro.png" });
+  // I dati dell'azienda confrontati con quelli ufficiali della nostra partita IVA.
+  await page.getByRole("button", { name: "Verifica online" }).click();
+  const verifica = page.getByRole("dialog", { name: "Partita IVA" });
+  await expect(verifica.getByRole("table", { name: "Dati dell'azienda" })).toContainText("Via S. Antonio, 7 ✓");
+  await expect(verifica).not.toContainText("≠");
+  await page.screenshot({ path: "test-results/vetrina-partita-iva-chiaro.png" });
 });

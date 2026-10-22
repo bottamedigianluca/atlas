@@ -232,11 +232,14 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
     Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
   - **Home** (all'avvio, `Ctrl+0`) come quella di Arca (schermate 07 e le foto del menu del titolare): "La tua
-    Home", "Cerca comando" (batti, frecce, `Invio`), "Aggiorna"; a sinistra "Cosa vuoi fare?" con le voci e i
-    sottomenu di Arca (un clic allarga il pannello sopra i widget, `×`/`Esc` chiude; in ATLAS si aprono
-    Documenti › Gestione e Nuovo Documento, il resto è spento finché non arrivano i moduli), stella per i
-    Favoriti e pulsante "Favoriti" in fondo. Al posto dei riquadri di Arca (conteggi, anelli, tutorial: "inutili"
-    per il titolare) quattro widget piccoli:
+    Home" con il marchio grande, "Cerca comando" (batti, frecce, `Invio`), "Aggiorna"; a sinistra "Cosa vuoi
+    fare?" (un clic allarga il pannello sopra i widget, `×`/`Esc` chiude) con le sole voci che a Bottamedi
+    servono secondo l'uso vero di Arca: Documenti, Anagrafiche, Articoli, Listini, Scadenzario, DMS e, di ATLAS,
+    "Partita IVA online" e "Sincronizzazione Arca"; tolte Servizio, Beni Usati, Contabilità, Magazzini, Vendite
+    al Banco, potenziali clienti, commesse. Le voci che ATLAS non ha ancora sono spente con "[in Arca]" o il task
+    che le porta. Stella per i Favoriti e pulsante "Favoriti" in fondo. Widget nello stile del marchio
+    (etichette fra virgolette, strisce): per familiarità i numeri di Arca (bolle, fatture e note di accredito con
+    il Task 7, clienti con Italia/UE/Extra UE, fornitori: `GET /api/home/riepilogo`), poi:
     - "Da chiamare oggi": solo i nomi dei clienti che nello stesso giorno della settimana hanno avuto un DDT in
       almeno metà dei giorni lavorati delle ultime 12 settimane (e almeno 3 volte); un tocco li barra (per la
       giornata, sulla postazione), i già serviti sono barrati da soli. `GET /api/home/clienti?data=`
@@ -251,6 +254,16 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     petrolio, in cinque toni definiti in `app/src/stile.css` (selezione, fuoco, pulsanti, titoli, fondi
     leggeri) per chiaro e scuro; stati smeraldo (in Arca), ambra (attenzione), rosso (errore). Tema chiaro
     predefinito.
+  - **Partita IVA online** (`atlas-server/src/partita_iva.rs`, `GET /api/partita-iva/{numero}`): cifra di
+    controllo italiana, poi i dati ufficiali dal servizio VIES della Commissione europea (ragione sociale,
+    indirizzo diviso in via, CAP, località, provincia; partita IVA attiva; codice ATLAS se è già in anagrafica).
+    Lo chiama il backend (`ATLAS_VIES_URL`, attesa massima 8 s); senza rete risponde "non raggiungibile". Finestra
+    "Partita IVA" dal menu Anagrafiche e "Verifica online" nelle Informazioni, che mette i dati dell'azienda
+    accanto a quelli ufficiali. Prove con un VIES finto sulla partita IVA di Bottamedi (la rete delle prove non
+    esce): **da provare in negozio con la rete vera**.
+  - **Dati dell'azienda nel programma** presi dall'intestazione dei DDT di Arca (modulo `xDDT`): sede Via S.
+    Antonio 7, magazzino Via Degasperi 47, Tel. 0461 602534, PEC, B.D.N.O.O. 0114924 (la direttiva §3.7 dava Via
+    Degasperi come sede). I moduli di stampa restano com'erano.
   - **Marchio** (`app/src/componenti/Marchio.tsx`): logotipo "ATLAS" disegnato apposta, vettoriale (bastoni ad
     alto contrasto, Λ senza traversa, S modulata come da pennino largo), con le strisce diagonali, le virgolette
     e la firma "c/o BOTTAMEDI" alla Off-White; in barra la versione compatta, nelle Informazioni quella intera

@@ -17,14 +17,16 @@ import { MarchioEsteso } from "../componenti/Marchio";
 import { data as fData, oggi } from "../griglia/numeri";
 import { useSincronizzazione } from "../sincronizzazione/contesto";
 import { COMANDI, type Comando, type Gruppo, MENU } from "./menu";
+import { PartitaIva } from "../anagrafiche/PartitaIva";
 import { PostIt } from "./PostIt";
 import { Etichetta, Strisce } from "./stile";
 
-export function Home({ attivo, onNuovo, onElenco, onApri }: {
+export function Home({ attivo, onNuovo, onElenco, onApri, onSincronizzazione }: {
   attivo: boolean;
   onNuovo: () => void;
   onElenco: () => void;
   onApri: (id: number) => void;
+  onSincronizzazione: () => void;
 }) {
   const giorno = oggi();
   const { ultimaNotifica } = useSincronizzazione();
@@ -34,7 +36,13 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
   const [liberi, setLiberi] = useState<NumeriLiberi | null>(null);
   const [errore, setErrore] = useState<string | null>(null);
   const [giro, setGiro] = useState(0);
-  const esegui = (c: Comando) => (c === "nuovo" ? onNuovo() : onElenco());
+  const [partitaIva, setPartitaIva] = useState(false);
+  const esegui = (c: Comando) => {
+    if (c === "nuovo") onNuovo();
+    else if (c === "elenco") onElenco();
+    else if (c === "sincronizzazione") onSincronizzazione();
+    else setPartitaIva(true);
+  };
 
   // Si rilegge entrando nella Home, con "Aggiorna" e a ogni DDT salvato o importato.
   useEffect(() => {
@@ -92,6 +100,7 @@ export function Home({ attivo, onNuovo, onElenco, onApri }: {
           </div>
         </div>
       </div>
+      {partitaIva && <PartitaIva onChiudi={() => setPartitaIva(false)} />}
     </div>
   );
 }
@@ -273,13 +282,13 @@ function CosaVuoiFare({ onEsegui }: { onEsegui: (c: Comando) => void }) {
                     type="button"
                     disabled={!comando}
                     onClick={() => comando && esegui(comando)}
-                    title={comando ? undefined : "In ATLAS più avanti: per ora in Arca"}
+                    title={comando ? undefined : v.nota === "in Arca" ? "Per ora si fa in Arca" : `Arriva con il ${v.nota}`}
                     className={`flex min-w-0 flex-1 items-center justify-between px-2 py-2 text-left text-[13.5px] ${
                       comando ? "font-medium hover:bg-primario-tenue" : "text-zinc-400 dark:text-zinc-600"
                     }`}
                   >
                     {v.nome}
-                    {v.sottomenu && <span aria-hidden>›</span>}
+                    {v.nota && <span className="shrink-0 whitespace-nowrap font-mono text-[9.5px] uppercase tracking-widest text-zinc-400">[{v.nota}]</span>}
                   </button>
                   {comando && (
                     <button

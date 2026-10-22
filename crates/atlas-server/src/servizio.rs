@@ -13,6 +13,7 @@ use crate::consultazione::{self, Conflitto, Coda};
 use crate::errore::ErroreApi;
 use crate::home;
 use crate::lettori::Lettori;
+use crate::partita_iva;
 use crate::prezzi::{self, Prezzi, RichiestaPrezzi};
 use crate::worker::{Comando, DdtCreato, Notifica, NumeriLiberi, OperazioneNota, Rinumerato, StatoSync};
 
@@ -24,6 +25,7 @@ pub struct Servizio {
     pub(crate) stato: watch::Receiver<StatoSync>,
     pub(crate) notifiche: broadcast::Sender<Notifica>,
     pub(crate) predefiniti: Arc<Predefiniti>,
+    pub(crate) vies: partita_iva::Vies,
 }
 
 /// Stato complessivo della sincronizzazione con Arca, per il pannello e il badge.
@@ -44,6 +46,7 @@ impl Servizio {
         stato: watch::Receiver<StatoSync>,
         notifiche: broadcast::Sender<Notifica>,
         predefiniti: Predefiniti,
+        vies: partita_iva::Vies,
     ) -> Self {
         Self {
             lettori,
@@ -51,6 +54,7 @@ impl Servizio {
             stato,
             notifiche,
             predefiniti: Arc::new(predefiniti),
+            vies,
         }
     }
 
@@ -95,6 +99,15 @@ impl Servizio {
 
     pub async fn nota(&self, operazione: OperazioneNota) -> Result<Option<atlas_db::note::Nota>, ErroreApi> {
         self.al_worker(|risposta| Comando::Nota { operazione, risposta }).await?
+    }
+
+    /// Dati ufficiali dell'azienda dalla partita IVA (VIES) e il codice ATLAS se c'è già.
+    pub async fn partita_iva(&self, numero: String, richiesta: partita_iva::RichiestaPartitaIva) -> Result<partita_iva::DatiAzienda, ErroreApi> {
+        let (nazione, numero) = partita_iva::normalizza(richiesta.nazione.as_deref().unwrap_or("IT"), &numero)?;
+        let mut dati = self.vies.cerca(&nazione, &numero).await?;
+        let cercata = numero.clone();
+        dati.gia_presente = self.lettori.leggi(move |conn| partita_iva::gia_presente(conn, &cercata)).await?;
+        Ok(dati)
     }
 
     pub async fn riepilogo(&self) -> Result<home::Riepilogo, ErroreApi> {

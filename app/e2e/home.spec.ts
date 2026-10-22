@@ -37,8 +37,24 @@ test("Home come Arca: menu, cerca comando, nomi e post-it da barrare", async ({ 
   await menu.getByRole("button", { name: "Nuovo Documento", exact: true }).click();
   await expect(page.locator("#testata-cliente")).toBeFocused();
 
-  // Cerca comando: "gest" + Invio apre l'elenco.
+  // Partita IVA online dal menu Anagrafiche: i dati ufficiali nei campi dell'anagrafica.
   await page.keyboard.press("Control+0");
+  await menu.getByRole("button", { name: "Anagrafiche", exact: true }).click();
+  await menu.getByRole("button", { name: "Partita IVA online", exact: true }).click();
+  const finestra = page.getByRole("dialog", { name: "Partita IVA" });
+  await finestra.getByLabel("Partita IVA").fill("IT 02273530226");
+  await page.keyboard.press("Enter");
+  const dati = finestra.getByRole("table", { name: "Dati dell'azienda" });
+  await expect(dati).toContainText("BOTTAMEDI PIERLUIGI");
+  await expect(dati).toContainText("VIA S. ANTONIO 7");
+  await expect(dati).toContainText("MEZZOLOMBARDO");
+  await expect(finestra).toContainText("Partita IVA attiva");
+  await finestra.getByLabel("Partita IVA").fill("02273530227");
+  await page.keyboard.press("Enter");
+  await expect(finestra.getByRole("alert")).toContainText("cifra di controllo");
+  await page.keyboard.press("Escape");
+
+  // Cerca comando: "gest" + Invio apre l'elenco.
   await page.getByLabel("Cerca comando").fill("gest");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("grid", { name: "Documenti" })).toBeVisible();

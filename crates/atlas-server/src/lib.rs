@@ -6,6 +6,7 @@
 //! - [`bozza`]: il DDT battuto dall'operatore, completato e calcolato con `atlas-core`.
 //! - [`prezzi`]: la maschera prezzi del tasto `F3`.
 //! - [`consultazione`]: anagrafiche, elenco e dettaglio dei DDT, stato della replica.
+//! - [`partita_iva`]: cifra di controllo e dati dell'azienda dal servizio VIES.
 //! - [`home`]: la Home della postazione (clienti del giorno); i post-it sono in `atlas_db::note`.
 //! - [`strumenti`]: le funzioni come strumenti JSON Schema per assistenti e workflow.
 //! - [`rotte`]: REST e WebSocket.
@@ -16,6 +17,7 @@ pub mod consultazione;
 pub mod errore;
 pub mod home;
 pub mod lettori;
+pub mod partita_iva;
 pub mod prezzi;
 pub mod rotte;
 pub mod servizio;
@@ -52,6 +54,7 @@ where
         maniglia.stato.clone(),
         notifiche,
         config.predefiniti.clone(),
+        partita_iva::Vies::nuovo(&config.vies_url)?,
     );
     Ok((servizio, maniglia))
 }

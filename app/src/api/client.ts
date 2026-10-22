@@ -8,6 +8,7 @@ import type {
   ClienteBreve,
   ClienteScheda,
   ClientiDelGiorno,
+  DatiAzienda,
   CorpoErrore,
   DdtBreve,
   DdtCreato,
@@ -116,6 +117,8 @@ export const api = {
     unita_misura?: string;
     quantita?: string;
   }) => chiama<Prezzi>("GET", `/prezzi${query(richiesta)}`),
+  partitaIva: (numero: string, nazione?: string) =>
+    chiama<DatiAzienda>("GET", `/partita-iva/${encodeURIComponent(numero)}${query({ nazione })}`),
   riepilogo: () => chiama<Riepilogo>("GET", "/home/riepilogo"),
   clientiDelGiorno: (data?: string) => chiama<ClientiDelGiorno>("GET", `/home/clienti${query({ data })}`),
   note: () => chiama<Nota[]>("GET", "/note"),
