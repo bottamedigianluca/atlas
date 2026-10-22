@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* Tema scuro con la classe `scuro` sulla radice (segue il sistema, l'operatore può cambiarlo). */
+@custom-variant dark (&:where(.scuro, .scuro *));
+
+@theme {
+  /* Nessun font scaricato: l'app lavora anche senza rete. SF su macOS, Segoe UI Variable su Windows. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+  --color-accento: #007aff;
+  --color-accento-scuro: #0a84ff;
+  --color-ambra-tenue: #fff4d6;
+  --color-ambra-tenue-scuro: #3d2f0a;
+}
+
+@layer base {
+  html,
+  body,
+  #radice {
+    height: 100%;
+  }
+  body {
+    @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+    font-feature-settings: "cv11", "ss01";
+    overflow: hidden;
+  }
+  /* Focus ring nitido stile Apple: si vede con la coda dell'occhio. */
+  :focus-visible {
+    outline: 2px solid var(--color-accento);
+    outline-offset: 1px;
+  }
+  .scuro :focus-visible {
+    outline-color: var(--color-accento-scuro);
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.4;
+  }
+}
+
+@layer components {
+  .cifre {
+    @apply font-mono tabular-nums;
+  }
+  .campo {
+    @apply h-8 rounded-lg border border-zinc-300 bg-white px-2.5 text-sm outline-none transition-colors
+      focus:border-accento focus:ring-2 focus:ring-accento/25
+      dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-accento-scuro dark:focus:ring-accento-scuro/30;
+  }
+  .etichetta {
+    @apply text-[11px] font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400;
+  }
+  .pulsante {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-medium
+      text-zinc-800 transition-colors hover:bg-zinc-100 disabled:opacity-40
+      dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800;
+  }
+  .pulsante-primario {
+    @apply inline-flex h-8 items-center gap-1.5 rounded-lg bg-accento px-3 text-sm font-semibold text-white
+      transition-colors hover:brightness-110 disabled:opacity-40 dark:bg-accento-scuro;
+  }
+  .tasto {
+    @apply inline-flex min-w-5 items-center justify-center rounded border border-zinc-300 bg-zinc-100 px-1 font-mono
+      text-[10px] font-semibold text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300;
+  }
+}

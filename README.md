@@ -9,6 +9,8 @@ crates/atlas-arca     replica dei DDT nelle tabelle di Arca (DOTes, DORig, MGMov
 crates/atlas-db       database primario ATLAS (SQLite WAL) con outbox di replica
 crates/atlas-sync     import anagrafiche e documenti da Arca, worker di replica dell'outbox, numerazione unica
 crates/atlas-server   backend Axum: API REST e WebSocket, worker unico scrittore (numerazione, replica, importazione)
+app/                  frontend desktop: React + TypeScript + Tailwind (maschera DDT, documenti, sincronizzazione)
+app/src-tauri         shell Tauri v2 (finestra nativa, installer NSIS/MSI); fuori dal workspace Cargo
 docs/ANALISI_ARCA.md  comportamento reale di Arca, misurato sui dati
 TASKS.md              stato del lavoro, decisioni aperte, vincoli
 ```
@@ -16,6 +18,7 @@ TASKS.md              stato del lavoro, decisioni aperte, vincoli
 ## Requisiti
 
 - Rust 1.87 (MSVC) con Visual Studio Build Tools 2022, carico di lavoro "Sviluppo di applicazioni desktop C++".
+- Per l'app desktop: Node.js 22 e WebView2 (già presente in Windows 10/11).
 
 ## Comandi
 
@@ -57,3 +60,17 @@ API del backend (dettagli in `crates/atlas-server/src/rotte.rs`): `POST /api/ddt
 reale), `POST /api/ddt` (salvataggio con numerazione unica), `GET /api/prezzi` (tasto F3), `GET /api/ddt`,
 `GET /api/ddt/{id}`, `GET /api/stato` (replica, importazione, conflitti), `POST /api/ddt/{id}/rinumera`,
 `GET /api/numerazione/{anno}/liberi`, anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).
+
+```powershell
+# app desktop (il backend deve essere avviato: indirizzo predefinito http://127.0.0.1:7878, modificabile con F1)
+cd app
+npm ci
+npm run tauri dev        # finestra nativa con ricarica a caldo
+npm run tauri build      # installer in app\src-tauri\target\release\bundle (NSIS e MSI)
+npm test                 # regole di tastiera e layout della griglia (vitest)
+npm run e2e              # prove end-to-end su una copia di dati\atlas.sqlite (Playwright; npx playwright install chromium la prima volta)
+```
+
+Tasti della maschera DDT: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto
+o nuova riga sull'articolo, `F3` ricerca cliente/articolo, prezzi (sul prezzo), numeri liberi (sul numero), `F10` salva,
+`F12` salva e stampa, `Esc` annulla, `Ctrl+Canc` elimina riga, `Ctrl+1/2/3` viste, `F1` informazioni.

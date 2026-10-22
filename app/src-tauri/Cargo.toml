@@ -1,0 +1,32 @@
+[package]
+name = "atlas-desktop"
+description = "ATLAS desktop: la maschera DDT e le altre viste in una finestra nativa (Tauri v2)"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.87"
+license = "LicenseRef-Proprietary"
+publish = false
+
+# Fuori dal workspace principale: richiede WebView2 (Windows) o WebKitGTK (Linux) per compilare,
+# il backend e le prove del workspace no.
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
