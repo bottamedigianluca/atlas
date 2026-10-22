@@ -21,7 +21,7 @@ mod valori;
 use atlas_core::ErroreCalcolo;
 use atlas_core::numerazione::NumeroNonValido;
 
-pub use connessione::{apri, apri_in_memoria};
+pub use connessione::{apri, apri_in_memoria, apri_lettura};
 pub use rusqlite::{Connection, TransactionBehavior};
 
 #[derive(Debug, thiserror::Error)]

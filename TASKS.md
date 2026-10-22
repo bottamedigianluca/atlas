@@ -160,6 +160,52 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     `D00`/`001` con le stesse regole (`lettura::controlla_numerazione`); altrimenti si fermano.
   - 86 test nel workspace (16 nuovi; Arca finta condivisa in `atlas-sync/src/finta.rs`), clippy pulito.
 
+- [x] 22/10/2026 **Task 4, backend ATLAS** (`crates/atlas-server`, binari `atlas-server [DB]` e `misura-latenze DB`):
+  - Un solo scrittore: il worker, su un thread suo con runtime `current_thread`, tiene l'unica connessione SQLite di
+    scrittura e tre connessioni ad Arca (numeri, importazione, replica) dalla stessa `ATLAS_ARCA_ADO`. Esegue i
+    comandi (salvataggio con `numerazione::crea`, numero scelto a mano verificato anche sui numeri di Arca,
+    `rinumera`, numeri liberi) e nel tempo che resta i giri: replica svegliata a ogni salvataggio e poi all'istante
+    della riprova del primo evento (`outbox::prossimo_tentativo`), importazione ogni secondo (200 BO per giro). Un
+    comando interrompe il giro in corso al punto di attesa della rete (mai dentro una transazione SQLite) e ne chiude
+    la connessione: un salvataggio non aspetta Arca oltre `ATTESA_ARCA` (provato con un'Arca appesa: < 500 ms).
+  - La replica ora rifiuta un database diverso da quello da cui il file importa (`replica::Arca::lega`); continua a
+    scrivere solo su `*_DEV`.
+  - Letture su 4 connessioni di sola lettura (`atlas_db::apri_lettura`, WAL). Migrazione `0004_prezzi_righe.sql`:
+    data e cliente della testata ripetuti in `ddt_righe` con indici `(articolo, data)` e `(articolo, cliente, data)`
+    per la maschera F3 (sul DB reale da 70 MB: 4,9 s una volta sola).
+  - Bozza → DDT (`bozza.rs`): testata dal cliente (pagamento, listino, IBAN, BIC, conto banca, agente, scissione),
+    destinazione predefinita, data trasporto = data documento, istanti al minuto; righe dall'articolo (descrizione,
+    unità predefinita e fattore, aliquota/conto o predefiniti), prezzo dal listino del cliente o, se non ne ha,
+    da `ATLAS_LISTINO` (0000001); magazzino sempre scritto (`ATLAS_MAGAZZINO`, 00001: senza, Arca metterebbe quello
+    della causale e il documento riletto sarebbe diverso). Calcolo tollerante per la maschera: per riga quantità,
+    totale, errori, avvisi (`tara_maggiore_lordo`, `colli_decimali`), `prezzo_modificato` (cella ambra).
+  - F3 (`prezzi.rs`): dati documento, listini di prezzi alla data (revisione valida più recente), ultimo prezzo al
+    cliente, ultimo a chiunque, massimo del giorno, ciascuno con `prezzo_riga` da riportare; ultimo acquisto assente
+    (nessun documento di acquisto in ATLAS).
+  - Stato (`GET /api/stato`): giri di replica e importazione, coda, conflitti con l'azione `rinumera` (evento fermo
+    della replica, o `Giro::conteso` dell'importazione → DDT ATLAS con quel numero non ancora in Arca).
+  - WebSocket `/api/ws`: le stesse operazioni come richieste `{"id","metodo","parametri"}` e notifiche (`stato`,
+    `ddt_creato`, `ddt_rinumerato`, `replica`, `importazione`). 14 strumenti con JSON Schema (`GET /api/strumenti`,
+    `POST /api/strumenti/{nome}`), con il flag `scrittura` su `crea_ddt` e `rinumera_ddt`.
+  - Sicurezza: ascolto su `127.0.0.1:7878`; richieste dei browser solo dalle origini Tauri e Vite (anche il
+    WebSocket, che il browser non sottopone a CORS). mTLS fra postazioni: Task 8.
+  - Latenze sul DB reale (49.772 DDT, 483.674 righe; release, 500 ripetizioni, dalle rotte senza rete): tutte le
+    letture p50 < 1 ms e p99 < 2 ms; F3 sull'articolo più venduto (GEN, 18.195 righe) p50 0,23 ms, p99 0,93;
+    calcolo di un DDT di 14 righe p50 0,41 ms; elenco 50 DDT p50 0,63 ms. Salvataggio senza Arca p50 5 ms (fsync,
+    `synchronous = FULL`); con Arca si aggiungono i 13-26 ms della lettura dei numeri.
+  - Prova sulla copia del DB reale: numeri liberi 2026 = buco 5447 (21/10) e prossimo 5459, come Arca sul clone.
+  - 107 test nel workspace (18 nuovi nel server, 7 end-to-end con un'Arca finta: numerazione dopo i numeri di Arca,
+    replica, conflitto risolto con `rinumera`, giro appeso interrotto, WebSocket, origini), clippy pulito sul nuovo
+    codice.
+  - **Da provare sul clone** (qui SQL Server non è raggiungibile), su una copia di `dati\atlas.sqlite`:
+    `copy dati\atlas.sqlite dati\prova-server.sqlite`, `$env:ATLAS_ARCA_ADO` sul clone,
+    `cargo run --release -p atlas-server -- dati\prova-server.sqlite`, poi
+    `Invoke-RestMethod -Method Post http://127.0.0.1:7878/api/ddt -ContentType application/json -Body
+    '{"cliente":"C000179","righe":[{"articolo":"GEN","colli":2,"lordo":"12.4","tara":"0.3"}]}'` e
+    `Invoke-RestMethod http://127.0.0.1:7878/api/stato`. Atteso: numero 5459, `senza_arca` vuoto, replica `scritti`
+    1 e coda 0, nessun conflitto; il giro di importazione successivo ritrova il BO invariato (nessun aggiornato).
+    `prova-ddt confronta` sul BO scritto e poi cancellarlo dal clone come per il 5459 della prova 3c.
+
 ## Decisioni prese (titolare)
 - 22/10/2026 **Sincronizzazione nei due sensi, numerazione unica**: un documento fatto in Arca entra nel database
   ATLAS; uno fatto in ATLAS entra in Arca come se lo avesse scritto Arca, che ne tiene conto nella numerazione.
@@ -171,6 +217,10 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   `NumeroDoc = ''`, `asp_NumDoc_Next` cifrata): nessun numero resta prenotato da una maschera aperta.
 
 ## Decisioni in sospeso (titolare)
+- **Prezzo proposto in riga**: oggi il listino del cliente, o `ATLAS_LISTINO` (0000001) per i 370 clienti su 387
+  che non ne hanno uno. Su 54.068 righe 2026 il prezzo battuto coincide con l'ultimo venduto a chiunque nell'81% dei
+  casi e con il listino 1 nel 24% (§4 di `ANALISI_ARCA.md`): se la maschera deve proporre l'ultimo prezzo, basta
+  cambiare la regola in `bozza.rs` (le letture ci sono già, F3). Da verificare anche `DO.Cd_LS_1` dei BO.
 - **Produzione**: la replica richiede un login con `ALTER` su `DOTes`/`DORig` e spegne per pochi millisecondi, in
   transazione, due trigger del fornitore. Sul clone è innocuo; in produzione è un intervento sugli oggetti di Arca
   (assistenza/contratto Tecnobit e aggiornamenti che rinominano i trigger: in quel caso la replica si ferma da sola).
@@ -197,6 +247,8 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   leggere anche la loro tabella e l'importazione seguire il sezionale `001` come fa con `D00`.
 - `numerazione::crea` va chiamata da chi possiede l'unica connessione di scrittura (il thread del worker nel
   backend); la connessione ad Arca va tenuta aperta, altrimenti ogni salvataggio paga anche il login.
+- `dati/atlas.sqlite` è versionato (storico 2018-2026, schema 3): il backend lo porterebbe alla versione 4 alla prima
+  apertura. Per le prove usare una copia; `misura-latenze` lavora già su una copia.
 
 ## Da fare, in ordine
 
@@ -205,7 +257,7 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
    ogni salvataggio invece del controllo ogni secondo dei binari. FA/FT/NC si importeranno quando il database ATLAS
    avrà le fatture.
 
-4. **Server Backend ATLAS (Rust / Axum)** — prossimo:
+4. **Server Backend ATLAS (Rust / Axum)** — fatto (vedi sopra), resta la prova sul clone. Previsto in origine:
    - Salvataggio DDT con `numerazione::crea` sul thread del worker; mostrare `Creato::senza_arca` e i conflitti
      (`ultimo_errore` dell'evento fermo, `Giro::fermo` dell'importazione) con l'azione "rinumera"; buchi da
      `numerazione::liberi` per il numero scelto a mano (Task 6).

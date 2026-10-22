@@ -67,6 +67,9 @@ pub struct Giro {
     /// Documento il cui numero è già di un altro DDT ATLAS: il giro si ferma lì (i precedenti
     /// sono importati) e ci riprova al giro dopo, finché il conflitto non viene risolto.
     pub fermo: Option<(i32, String)>,
+    /// Esercizio e numero contesi quando il giro è fermo: il DDT ATLAS che lo occupa è quello da
+    /// rinumerare, se non è ancora in Arca.
+    pub conteso: Option<(i32, u32)>,
 }
 
 impl Giro {
@@ -149,7 +152,8 @@ pub async fn giro(
                     Err(
                         e @ (ErroreDb::DocumentoNonValido(_) | ErroreDb::Calcolo(_) | ErroreDb::RiferimentiInesistenti(_)),
                     ) => Esito::Escluso(e.to_string()),
-                    Err(e @ ErroreDb::NumeroOccupato { .. }) => {
+                    Err(e @ ErroreDb::NumeroOccupato { esercizio, numero }) => {
+                        giro.conteso = Some((esercizio, numero));
                         giro.fermo = Some((m.id_testata, e.to_string()));
                         break;
                     }
@@ -438,6 +442,7 @@ mod tests {
             let giro = gira(&mut db, &mut arca, 10).await;
             let (id, errore) = giro.fermo.unwrap();
             assert_eq!((id, errore.as_str()), (101, "DDT 2/2026 già presente"));
+            assert_eq!(giro.conteso, Some((2026, 2)));
             assert_eq!(ultimo_ts(&db), 1001, "il punto resta prima del conteso");
         }
         assert_eq!(conta(&db, "SELECT count(*) FROM ddt"), 2);

@@ -118,12 +118,18 @@ struct Sessione {
 pub struct Arca {
     ado: String,
     sessione: Option<Sessione>,
+    /// Database di Arca a cui è legato il file ATLAS (quello da cui importa): la replica rifiuta
+    /// gli altri, dove gli stessi `Id_DoTes` indicherebbero documenti diversi.
+    legata: Option<String>,
 }
 
 impl std::fmt::Debug for Arca {
     // Senza la stringa di connessione, che può contenere la password.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Arca").field("connessa", &self.sessione.is_some()).finish()
+        f.debug_struct("Arca")
+            .field("connessa", &self.sessione.is_some())
+            .field("legata", &self.legata)
+            .finish()
     }
 }
 
@@ -132,7 +138,25 @@ impl Arca {
         Self {
             ado: ado.into(),
             sessione: None,
+            legata: None,
         }
+    }
+
+    /// Lega la replica al database di Arca da cui il file ATLAS importa (vedi
+    /// [`atlas_db::importazione::punto`]). Una connessione già aperta su un altro database si
+    /// chiude: il controllo si ripete alla riapertura.
+    pub fn lega(&mut self, database: impl Into<String>) {
+        let database = database.into();
+        if self.legata.as_ref() != Some(&database) {
+            self.sessione = None;
+            self.legata = Some(database);
+        }
+    }
+
+    /// Chiude la connessione: dopo una richiesta abbandonata (giro interrotto) lo stato è
+    /// incerto. Una transazione aperta in Arca viene annullata dal server alla chiusura.
+    pub fn scollega(&mut self) {
+        self.sessione = None;
     }
 
     async fn sessione(&mut self) -> Result<&mut Sessione, ErroreSync> {
@@ -145,6 +169,12 @@ impl Arca {
                 let database = scrittura::nome_database(&mut conn).await?;
                 if !database.to_ascii_uppercase().ends_with("_DEV") {
                     return Err(ErroreSync::NonClone(database));
+                }
+                if let Some(legata) = self.legata.as_ref().filter(|l| !l.eq_ignore_ascii_case(&database)) {
+                    return Err(ErroreSync::AltroDatabase {
+                        legato: legata.clone(),
+                        trovato: database,
+                    });
                 }
                 // Il numero dei documenti lo ha deciso ATLAS con la regola di Arca.
                 lettura::controlla_numerazione(&mut conn).await?;

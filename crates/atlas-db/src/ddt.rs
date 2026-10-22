@@ -155,8 +155,8 @@ fn inserisci_righe(conn: &Connection, id: i64, ddt: &Ddt, calcolate: &[RigaCalco
     let mut inserisci = conn.prepare_cached(
         "INSERT INTO ddt_righe (ddt, riga, articolo, descrizione, unita_misura, fattore_um1, conto_ricavo, aliquota, \
          id_listino_articolo, colli, lordo, tara_per_collo, quantita_forzata, quantita, prezzo_unitario, sconto_riga, \
-         sconto_addizionale, magazzino, totale) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, \
-         ?16, ?17, ?18, ?19)",
+         sconto_addizionale, magazzino, totale, data, cliente) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, \
+         ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21)",
     )?;
     for (numero, (r, c)) in (1_i64..).zip(ddt.righe.iter().zip(calcolate)) {
         inserisci
@@ -180,6 +180,8 @@ fn inserisci_righe(conn: &Connection, id: i64, ddt: &Ddt, calcolate: &[RigaCalco
                 r.sconto_addizionale,
                 r.magazzino,
                 Dec(c.totale),
+                ddt.data,
+                ddt.cliente,
             ])
             .map_err(|e| riferimenti(e, ddt))?;
     }
