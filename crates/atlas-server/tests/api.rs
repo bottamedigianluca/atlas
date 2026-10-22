@@ -471,9 +471,9 @@ async fn il_worker_si_ferma_quando_si_chiude_il_servizio() {
 async fn home_post_it_e_clienti_del_giorno() {
     let b = banco("home", None);
     let mut notifiche = b.servizio.notifiche();
-    let (stato, nota) = chiama(&b.router, "POST", "/api/note", Some(json!({"testo": "Cassette a Dinamos", "colore": "rosa"}))).await;
+    let (stato, nota) = chiama(&b.router, "POST", "/api/note", Some(json!({"testo": "Cassette a Dinamos"}))).await;
     assert_eq!(stato, StatusCode::CREATED, "{nota}");
-    assert_eq!((nota["testo"].as_str(), nota["colore"].as_str()), (Some("Cassette a Dinamos"), Some("rosa")));
+    assert_eq!((nota["testo"].as_str(), nota["fatta"].as_bool()), (Some("Cassette a Dinamos"), Some(false)));
     // Prima possono arrivare le notifiche di stato dell'avvio.
     loop {
         let notifica = tokio::time::timeout(std::time::Duration::from_secs(5), notifiche.recv()).await.unwrap().unwrap();
@@ -483,11 +483,13 @@ async fn home_post_it_e_clienti_del_giorno() {
     }
 
     let id = nota["id"].as_i64().unwrap();
-    let (stato, spostata) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"x": 0.4, "y": 0.6}))).await;
-    assert_eq!(stato, StatusCode::OK, "{spostata}");
-    assert_eq!((spostata["x"].as_f64(), spostata["testo"].as_str()), (Some(0.4), Some("Cassette a Dinamos")));
-    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"colore": "viola"}))).await;
+    let (stato, barrata) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"fatta": true}))).await;
+    assert_eq!(stato, StatusCode::OK, "{barrata}");
+    assert_eq!((barrata["fatta"].as_bool(), barrata["testo"].as_str()), (Some(true), Some("Cassette a Dinamos")));
+    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"testo": "  "}))).await;
     assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY);
+    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"x": 1}))).await;
+    assert_eq!(stato, StatusCode::BAD_REQUEST);
     let (_, elenco) = chiama(&b.router, "GET", "/api/note", None).await;
     assert_eq!(elenco.as_array().map(Vec::len), Some(1));
     let (stato, _) = chiama(&b.router, "DELETE", &format!("/api/note/{id}"), None).await;

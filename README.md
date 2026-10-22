@@ -74,7 +74,7 @@ npm run e2e              # prove end-to-end su una copia di dati\atlas.sqlite (P
 
 La finestra ricalca "Gestione Documenti" di Arca (pagine Elenco, Generale, DMS; schede Testa, Righe, Piede, Totali,
 Info, Evasioni, Stampe; F3 "PREZZO/COSTO ARTICOLO"), con numeri a punto decimale e date GG-MM-AAAA come in Arca.
-All'avvio c'è la Home (`Ctrl+0`): clienti da chiamare oggi, bacheca di post-it condivisi, DDT di oggi, numeri liberi.
+All'avvio c'è la Home (`Ctrl+0`), con il menu di Arca e i widget: clienti da chiamare oggi, post-it condiviso, DDT di oggi, numeri liberi.
 Tasti: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto o nuova riga
 sull'articolo, `F3` ricerca cliente/articolo/destinazione, prezzi (sul prezzo), numeri liberi (sul numero), `Ctrl+N`
 nuovo, `F10` salva, `F12` salva e stampa, `Alt+←/→` documento precedente/successivo (`Alt+Home/Fine` primo/ultimo), `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,

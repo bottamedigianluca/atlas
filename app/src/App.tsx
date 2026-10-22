@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, impostaServer, indirizzoServer } from "./api/client";
 import { BadgeSemaforo } from "./componenti/Badge";
+import { Marchio, MarchioEsteso } from "./componenti/Marchio";
 import { Modale } from "./componenti/Modale";
 import { Consultazione } from "./documento/Consultazione";
 import { type ComandiDocumento, type Esito, NuovoDocumento } from "./documento/NuovoDocumento";
@@ -103,15 +104,6 @@ function Guscio() {
     setEsito(null);
     documento.current?.nuovo();
   }, [setPagina]);
-  const nuovoPer = useCallback(
-    (cliente: string) => {
-      setAperto(null);
-      setPagina("Generale");
-      setEsito(null);
-      documento.current?.nuovoPer(cliente);
-    },
-    [setPagina],
-  );
   // Le frecce scorrono i documenti nell'ordine dell'elenco (filtri compresi, dal più recente), come
   // |◀ ◀ ▶ ▶| in Arca. Nell'Elenco spostano la riga scelta; nella pagina Generale aprono il
   // documento. Dal documento in battitura, ▶ apre il più recente.
@@ -196,7 +188,7 @@ function Guscio() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex h-9 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white/70 px-3 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/60">
-        <span className="font-mono text-[12px] font-bold tracking-[0.3em]">ATLAS</span>
+        <Marchio className="h-[13px] shrink-0" />
         <div role="tablist" aria-label="Aree" className="flex gap-0.5 rounded-lg bg-zinc-200/60 p-0.5 dark:bg-zinc-800">
           {(
             [
@@ -284,7 +276,6 @@ function Guscio() {
           <Home
             attivo={!inDocumenti && !finestra}
             onNuovo={nuovo}
-            onNuovoPer={nuovoPer}
             onApri={(id) => {
               setAperto(id);
               setCursore(id);
@@ -441,6 +432,7 @@ function Informazioni({ onChiudi }: { onChiudi: () => void }) {
   return (
     <Modale titolo="Informazioni di sistema" larghezza="max-w-xl" onChiudi={onChiudi}>
       <div className="space-y-5 p-6">
+        <MarchioEsteso className="mx-auto h-24 text-zinc-900 dark:text-zinc-50" />
         {/* Cartellino industriale (direttiva §3.7). */}
         <div className="relative border border-zinc-400/60 px-6 py-5 font-mono text-[11px] leading-relaxed tracking-[0.18em] text-zinc-600 dark:border-zinc-600 dark:text-zinc-300">
           <span className="absolute -left-px -top-px size-2 border-l-2 border-t-2 border-zinc-900 dark:border-zinc-100" />

@@ -37,8 +37,6 @@ export interface Esito {
 export interface ComandiDocumento {
   salva: (stampa: boolean) => void;
   nuovo: () => void;
-  /** Documento nuovo già intestato al cliente (dalla Home): cursore sulla destinazione o sulle righe. */
-  nuovoPer: (cliente: string) => void;
   /** Annulla il documento in battitura: la prima volta avvisa, la seconda svuota. */
   annulla: () => void;
 }
@@ -167,14 +165,6 @@ export const NuovoDocumento = forwardRef<ComandiDocumento, Props>(function Nuovo
   useImperativeHandle(ref, () => ({
     salva: (stampa) => void salva(stampa),
     nuovo: () => nuovo(),
-    nuovoPer: (cliente) => {
-      nuovo();
-      setCampi((c) => ({ ...c, cliente }));
-      void caricaCliente(cliente).then((s) => {
-        if (s?.destinazioni.some((d) => !d.obsoleto)) fuocoTestata("destinazione");
-        else vaiAllaGriglia();
-      });
-    },
     annulla: () => {
       const vuotoDoc = !campi.cliente && righe.righe.every(vuota);
       if (vuotoDoc || annullaArmato) {

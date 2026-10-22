@@ -231,18 +231,30 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     sinistra e "Importa pesate"/"Riferimento" a destra. Numeri e date nel formato di Arca: punto decimale e decimali
     fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
     Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
-  - **Home** (all'avvio, `Ctrl+0`; richiesta del titolare: "la home di Arca è penosa, servono widget utili"):
-    - "Da chiamare oggi": i clienti che nello stesso giorno della settimana hanno avuto un DDT in almeno metà dei
-      giorni lavorati delle ultime 12 settimane (e almeno 3 volte) e oggi non ce l'hanno ancora, in ordine di ora
-      solita (mediana dell'ora di registrazione dei loro DDT registrati in giornata), "in ritardo" in rosso 30
-      minuti dopo; "Nuovo DDT" apre la maschera già intestata (destinazione o righe). I già serviti in fondo con
-      il loro DDT. Backend: `GET /api/home/clienti?data=` (`atlas-server/src/home.rs`), 5 ms sul database reale.
-    - Bacheca di post-it condivisi fra le postazioni: si scrivono sulla nota, si trascinano, cinque colori,
-      autore e ora; nel database ATLAS (migrazione 0005, tabella `note`, solo ATLAS: niente replica in Arca),
-      scritti dal worker, `GET/POST /api/note`, `PUT/DELETE /api/note/{id}`, notifica WebSocket `note_cambiate`.
-    - DDT di oggi (numero, cliente, stato in Arca), numeri liberi da riempire, stato di Arca con "Sincronizza".
+  - **Home** (all'avvio, `Ctrl+0`) come quella di Arca (schermate 07 e le foto del menu del titolare): "La tua
+    Home", "Cerca comando" (batti, frecce, `Invio`), "Aggiorna"; a sinistra "Cosa vuoi fare?" con le voci e i
+    sottomenu di Arca (un clic allarga il pannello sopra i widget, `×`/`Esc` chiude; in ATLAS si aprono
+    Documenti › Gestione e Nuovo Documento, il resto è spento finché non arrivano i moduli), stella per i
+    Favoriti e pulsante "Favoriti" in fondo. Al posto dei riquadri di Arca (conteggi, anelli, tutorial: "inutili"
+    per il titolare) quattro widget piccoli:
+    - "Da chiamare oggi": solo i nomi dei clienti che nello stesso giorno della settimana hanno avuto un DDT in
+      almeno metà dei giorni lavorati delle ultime 12 settimane (e almeno 3 volte); un tocco li barra (per la
+      giornata, sulla postazione), i già serviti sono barrati da soli. `GET /api/home/clienti?data=`
+      (`atlas-server/src/home.rs`, 5 ms sul database reale);
+    - "Post-it": righe condivise fra le postazioni, `Invio` aggiunge, un tocco barra, `×` toglie. Tabella `note`
+      (migrazione 0005, solo ATLAS: niente replica in Arca), scritta dal worker, `GET/POST /api/note`,
+      `PUT/DELETE /api/note/{id}`, notifica WebSocket `note_cambiate`;
+    - "DDT di oggi" (numeri e clienti, apre il DDT) e "Numeri liberi" (prossimo e buchi con le date).
     - Solo conteggi, orari e numeri di documento, nessun importo (§4.3: al banco nessun dato di fatturato).
     - Manca il telefono dei clienti: non è fra i campi importati da Arca (serve il nome delle colonne in `CF`).
+  - **Palette** (il titolare: "hai copiato macOS e mischiato il rosso di Arca"): un solo colore guida, il blu
+    petrolio, in cinque toni definiti in `app/src/stile.css` (selezione, fuoco, pulsanti, titoli, fondi
+    leggeri) per chiaro e scuro; stati smeraldo (in Arca), ambra (attenzione), rosso (errore). Tema chiaro
+    predefinito.
+  - **Marchio** (`app/src/componenti/Marchio.tsx`): logotipo "ATLAS" disegnato apposta, vettoriale (bastoni ad
+    alto contrasto, Λ senza traversa, S modulata come da pennino largo), con le strisce diagonali, le virgolette
+    e la firma "c/o BOTTAMEDI" alla Off-White; in barra la versione compatta, nelle Informazioni quella intera
+    con "MEZZOLOMBARDO — TN".
   - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
     (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
     (nessun ordine in ATLAS), Elimina (Task 6), DMS e stampa (Task 7).

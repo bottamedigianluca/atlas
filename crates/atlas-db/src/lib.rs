@@ -5,7 +5,7 @@
 //! - [`ddt`]: salvataggio e lettura dei DDT; ogni scrittura accoda l'evento di replica, tranne
 //!   l'importazione dei documenti di Arca.
 //! - [`importazione`]: fin dove è arrivata l'importazione da Arca e cosa ha escluso.
-//! - [`note`]: post-it della Home, condivisi fra le postazioni.
+//! - [`note`]: post-it della Home, righe da barrare condivise fra le postazioni.
 //! - [`numerazione`]: numeri occupati per sezionale ed esercizio.
 //! - [`outbox`]: coda degli eventi da replicare in Arca.
 

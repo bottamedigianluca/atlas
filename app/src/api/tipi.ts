@@ -401,15 +401,11 @@ export type Notifica =
   | { evento: "note_cambiate" }
   | { evento: "ritardo"; dati: { perse: number } };
 
-export type ColoreNota = "giallo" | "rosa" | "verde" | "azzurro" | "arancio";
-
-/** Post-it della Home, condiviso fra le postazioni. Posizione in frazioni della bacheca. */
+/** Riga del post-it della Home, condivisa fra le postazioni; si barra quando è fatta. */
 export interface Nota {
   id: number;
   testo: string;
-  colore: ColoreNota;
-  x: number;
-  y: number;
+  fatta: boolean;
   autore: string;
   creata_il: Istante;
   aggiornata_il: Istante;
@@ -417,9 +413,7 @@ export interface Nota {
 
 export interface CampiNota {
   testo?: string;
-  colore?: ColoreNota;
-  x?: number;
-  y?: number;
+  fatta?: boolean;
 }
 
 export interface ClienteDelGiorno {

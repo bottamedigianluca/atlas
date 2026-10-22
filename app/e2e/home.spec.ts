@@ -1,39 +1,45 @@
 import { expect, test } from "@playwright/test";
 
-test("Home: clienti da chiamare, post-it condivisi, nuovo DDT intestato", async ({ page }) => {
+test("Home come Arca: menu, cerca comando, nomi e post-it da barrare", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
-  const daChiamare = page.getByRole("region", { name: "Da chiamare oggi" });
-  await expect(daChiamare).toBeVisible();
-  await expect(daChiamare).toContainText(/Clienti che il \S+ ordinano quasi sempre/);
-  await expect(page.getByRole("region", { name: "DDT di oggi" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Numeri liberi" })).toContainText("Prossimo numero");
+  for (const widget of ["Da chiamare oggi", "Post-it", "DDT di oggi", "Numeri liberi"]) {
+    await expect(page.getByRole("region", { name: widget })).toBeVisible();
+  }
+  await expect(page.getByRole("region", { name: "Numeri liberi" })).toContainText("Prossimo");
 
-  // Post-it: si scrive, resta dopo il riavvio (è nel database), si elimina.
-  await page.getByRole("button", { name: "+ Nuovo post-it" }).click();
-  const testo = page.getByLabel("Testo del post-it").last();
-  await expect(testo).toBeFocused();
-  await page.keyboard.type("Chiamare Dinamos per le cassette");
-  await page.getByRole("heading", { name: "Bacheca" }).click();
-  await expect(page.getByRole("article", { name: "Post-it: Chiamare Dinamos per le cassette" })).toBeVisible();
+  // Da chiamare: un tocco barra il nome.
+  const nomi = page.getByRole("list", { name: "Clienti da chiamare" }).getByRole("button", { pressed: false });
+  if (await nomi.count()) {
+    const nome = (await nomi.first().textContent()) ?? "";
+    await nomi.first().click();
+    await expect(page.getByRole("button", { name: nome, exact: true })).toHaveAttribute("aria-pressed", "true");
+  }
+
+  // Post-it: la riga si scrive con Invio, si barra con un tocco, resta dopo il riavvio, si toglie.
+  await page.getByLabel("Nuova riga del post-it").fill("Cassette a Dinamos");
+  await page.keyboard.press("Enter");
+  const riga = page.getByRole("list", { name: "Righe del post-it" }).getByRole("button", { name: "Cassette a Dinamos", exact: true });
+  await expect(riga).toHaveAttribute("aria-pressed", "false");
+  await riga.click();
+  await expect(riga).toHaveAttribute("aria-pressed", "true");
   await page.screenshot({ path: "test-results/vetrina-home-chiaro.png" });
   await page.reload();
-  const nota = page.getByRole("article", { name: "Post-it: Chiamare Dinamos per le cassette" });
-  await expect(nota).toBeVisible();
-  await nota.getByRole("button", { name: "Colore rosa" }).click();
-  await expect(nota).toHaveClass(/ffd3e4/);
-  await nota.getByRole("button", { name: "Elimina post-it" }).click();
-  await expect(nota).toHaveCount(0);
+  await expect(riga).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Togli: Cassette a Dinamos" }).click();
+  await expect(riga).toHaveCount(0);
 
-  // "Nuovo DDT" su un cliente da chiamare: la maschera è già intestata a lui.
-  const primo = daChiamare.getByRole("button", { name: /^Nuovo DDT per / }).first();
-  if (await primo.count()) {
-    await primo.click();
-    await expect(page.getByRole("tab", { name: /Generale/ })).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator("#testata-cliente")).toHaveValue(/^C\d+$/);
-    await expect(page.locator("[data-prova=ragione-sociale]:visible")).not.toBeEmpty();
-    // Ctrl+0 torna alla Home.
-    await page.keyboard.press("Control+0");
-    await expect(daChiamare).toBeVisible();
-  }
+  // "Cosa vuoi fare?" › Documenti › Nuovo Documento, come in Arca.
+  const menu = page.getByRole("navigation", { name: "Cosa vuoi fare?" });
+  await menu.getByRole("button", { name: "Documenti", exact: true }).click();
+  await expect(menu.getByRole("button", { name: "Gestione", exact: true })).toBeVisible();
+  await page.screenshot({ path: "test-results/vetrina-home-menu-chiaro.png" });
+  await menu.getByRole("button", { name: "Nuovo Documento", exact: true }).click();
+  await expect(page.locator("#testata-cliente")).toBeFocused();
+
+  // Cerca comando: "gest" + Invio apre l'elenco.
+  await page.keyboard.press("Control+0");
+  await page.getByLabel("Cerca comando").fill("gest");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("grid", { name: "Documenti" })).toBeVisible();
 });

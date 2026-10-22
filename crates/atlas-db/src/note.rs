@@ -1,5 +1,5 @@
-//! Post-it della Home: note condivise fra le postazioni. Sono solo di ATLAS (non c'è evento di
-//! replica) e la posizione è in frazioni della bacheca.
+//! Post-it della Home: righe di promemoria condivise fra le postazioni, che si barrano quando
+//! sono fatte. Sono solo di ATLAS: non c'è evento di replica.
 
 use chrono::NaiveDateTime;
 use rusqlite::{Connection, OptionalExtension, Row, params};
@@ -7,101 +7,77 @@ use serde::{Deserialize, Serialize};
 
 use crate::ErroreDb;
 
-pub const COLORI: [&str; 5] = ["giallo", "rosa", "verde", "azzurro", "arancio"];
-
-/// Testo massimo di una nota: un post-it, non un documento.
+/// Testo massimo di una riga: un promemoria, non un documento.
 pub const LUNGHEZZA_MASSIMA: usize = 500;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Nota {
     pub id: i64,
     pub testo: String,
-    pub colore: String,
-    pub x: f64,
-    pub y: f64,
+    pub fatta: bool,
     pub autore: String,
     pub creata_il: NaiveDateTime,
     pub aggiornata_il: NaiveDateTime,
 }
 
-/// I campi di una nota che la bacheca scrive; nella modifica quelli assenti restano com'erano.
-#[derive(Debug, Clone, Default, PartialEq, Deserialize)]
+/// I campi che la Home scrive; nella modifica quelli assenti restano com'erano.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CampiNota {
     pub testo: Option<String>,
-    pub colore: Option<String>,
-    pub x: Option<f64>,
-    pub y: Option<f64>,
+    pub fatta: Option<bool>,
 }
 
 fn da_riga(r: &Row<'_>) -> rusqlite::Result<Nota> {
     Ok(Nota {
         id: r.get(0)?,
         testo: r.get(1)?,
-        colore: r.get(2)?,
-        x: r.get(3)?,
-        y: r.get(4)?,
-        autore: r.get(5)?,
-        creata_il: r.get(6)?,
-        aggiornata_il: r.get(7)?,
+        fatta: r.get(2)?,
+        autore: r.get(3)?,
+        creata_il: r.get(4)?,
+        aggiornata_il: r.get(5)?,
     })
 }
 
-const COLONNE: &str = "id, testo, colore, x, y, autore, creata_il, aggiornata_il";
+const COLONNE: &str = "id, testo, fatta, autore, creata_il, aggiornata_il";
 
-fn controlla(campi: &CampiNota) -> Result<(), ErroreDb> {
-    if let Some(testo) = &campi.testo {
-        if testo.chars().count() > LUNGHEZZA_MASSIMA {
-            return Err(ErroreDb::DocumentoNonValido(format!("nota oltre {LUNGHEZZA_MASSIMA} caratteri")));
-        }
+/// Il testo pulito, se c'è; vuoto o troppo lungo è un errore.
+fn testo(campi: &CampiNota) -> Result<Option<String>, ErroreDb> {
+    let Some(testo) = &campi.testo else { return Ok(None) };
+    let testo = testo.trim();
+    if testo.is_empty() {
+        return Err(ErroreDb::DocumentoNonValido("nota vuota".into()));
     }
-    if let Some(colore) = &campi.colore {
-        if !COLORI.contains(&colore.as_str()) {
-            return Err(ErroreDb::DocumentoNonValido(format!("colore {colore} non previsto")));
-        }
+    if testo.chars().count() > LUNGHEZZA_MASSIMA {
+        return Err(ErroreDb::DocumentoNonValido(format!("nota oltre {LUNGHEZZA_MASSIMA} caratteri")));
     }
-    for v in [campi.x, campi.y].into_iter().flatten() {
-        if !(0.0..=1.0).contains(&v) {
-            return Err(ErroreDb::DocumentoNonValido("posizione fuori dalla bacheca".into()));
-        }
-    }
-    Ok(())
+    Ok(Some(testo.to_owned()))
 }
 
-/// Le note dalla più vecchia: le nuove stanno sopra.
+/// Le righe nell'ordine in cui sono state scritte.
 pub fn elenco(conn: &Connection) -> Result<Vec<Nota>, ErroreDb> {
-    let mut q = conn.prepare_cached(&format!("SELECT {COLONNE} FROM note ORDER BY aggiornata_il, id"))?;
+    let mut q = conn.prepare_cached(&format!("SELECT {COLONNE} FROM note ORDER BY id"))?;
     let note = q.query_map([], da_riga)?.collect::<Result<_, _>>()?;
     Ok(note)
 }
 
 pub fn crea(conn: &Connection, campi: &CampiNota, autore: &str, adesso: NaiveDateTime) -> Result<Nota, ErroreDb> {
-    controlla(campi)?;
+    let testo = testo(campi)?.ok_or_else(|| ErroreDb::DocumentoNonValido("nota vuota".into()))?;
     let id = conn
         .prepare_cached(
-            "INSERT INTO note (testo, colore, x, y, autore, creata_il, aggiornata_il) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6) \
-             RETURNING id",
+            "INSERT INTO note (testo, fatta, autore, creata_il, aggiornata_il) VALUES (?1, ?2, ?3, ?4, ?4) RETURNING id",
         )?
-        .query_row(
-            params![
-                campi.testo.as_deref().unwrap_or(""),
-                campi.colore.as_deref().unwrap_or("giallo"),
-                campi.x.unwrap_or(0.05),
-                campi.y.unwrap_or(0.05),
-                autore,
-                adesso
-            ],
-            |r| r.get(0),
-        )?;
+        .query_row(params![testo, campi.fatta.unwrap_or(false), autore, adesso], |r| r.get(0))?;
     leggi(conn, id)
 }
 
 pub fn aggiorna(conn: &Connection, id: i64, campi: &CampiNota, adesso: NaiveDateTime) -> Result<Nota, ErroreDb> {
-    controlla(campi)?;
-    let cambiate = conn.prepare_cached(
-        "UPDATE note SET testo = coalesce(?2, testo), colore = coalesce(?3, colore), x = coalesce(?4, x), \
-         y = coalesce(?5, y), aggiornata_il = ?6 WHERE id = ?1",
-    )?
-    .execute(params![id, campi.testo, campi.colore, campi.x, campi.y, adesso])?;
+    let testo = testo(campi)?;
+    let cambiate = conn
+        .prepare_cached(
+            "UPDATE note SET testo = coalesce(?2, testo), fatta = coalesce(?3, fatta), aggiornata_il = ?4 WHERE id = ?1",
+        )?
+        .execute(params![id, testo, campi.fatta, adesso])?;
     if cambiate == 0 {
         return Err(ErroreDb::NonTrovato(format!("nota {id}")));
     }
@@ -132,17 +108,20 @@ mod tests {
         NaiveDate::from_ymd_opt(2026, 10, 22).unwrap().and_hms_opt(h, 0, 0).unwrap()
     }
 
-    #[test]
-    fn crea_sposta_modifica_ed_elimina() {
-        let conn = apri_in_memoria().unwrap();
-        let campi = CampiNota { testo: Some("Chiamare Dinamos per le cassette".into()), ..CampiNota::default() };
-        let nota = crea(&conn, &campi, "190", alle(8)).unwrap();
-        assert_eq!((nota.colore.as_str(), nota.autore.as_str()), ("giallo", "190"));
+    fn scrivi(testo: &str) -> CampiNota {
+        CampiNota { testo: Some(testo.into()), fatta: None }
+    }
 
-        let spostata = aggiorna(&conn, nota.id, &CampiNota { x: Some(0.5), y: Some(0.25), ..CampiNota::default() }, alle(9)).unwrap();
-        assert_eq!((spostata.testo.as_str(), spostata.x, spostata.y), ("Chiamare Dinamos per le cassette", 0.5, 0.25));
-        assert_eq!((spostata.creata_il, spostata.aggiornata_il), (alle(8), alle(9)));
-        assert_eq!(elenco(&conn).unwrap(), [spostata]);
+    #[test]
+    fn crea_barra_ed_elimina() {
+        let conn = apri_in_memoria().unwrap();
+        let nota = crea(&conn, &scrivi("  Cassette a Dinamos "), "190", alle(8)).unwrap();
+        assert_eq!((nota.testo.as_str(), nota.fatta, nota.autore.as_str()), ("Cassette a Dinamos", false, "190"));
+
+        let barrata = aggiorna(&conn, nota.id, &CampiNota { testo: None, fatta: Some(true) }, alle(9)).unwrap();
+        assert_eq!((barrata.testo.as_str(), barrata.fatta), ("Cassette a Dinamos", true));
+        assert_eq!((barrata.creata_il, barrata.aggiornata_il), (alle(8), alle(9)));
+        assert_eq!(elenco(&conn).unwrap(), [barrata]);
 
         elimina(&conn, nota.id).unwrap();
         assert!(elenco(&conn).unwrap().is_empty());
@@ -150,18 +129,12 @@ mod tests {
     }
 
     #[test]
-    fn rifiuta_colori_posizioni_e_testi_fuori_misura() {
+    fn rifiuta_righe_vuote_o_troppo_lunghe() {
         let conn = apri_in_memoria().unwrap();
-        for campi in [
-            CampiNota { colore: Some("viola".into()), ..CampiNota::default() },
-            CampiNota { x: Some(1.5), ..CampiNota::default() },
-            CampiNota { testo: Some("x".repeat(LUNGHEZZA_MASSIMA + 1)), ..CampiNota::default() },
-        ] {
-            assert!(matches!(crea(&conn, &campi, "190", alle(8)), Err(ErroreDb::DocumentoNonValido(_))));
+        for testo in ["   ", &"x".repeat(LUNGHEZZA_MASSIMA + 1)] {
+            assert!(matches!(crea(&conn, &scrivi(testo), "190", alle(8)), Err(ErroreDb::DocumentoNonValido(_))));
         }
-        assert!(matches!(
-            aggiorna(&conn, 99, &CampiNota::default(), alle(8)),
-            Err(ErroreDb::NonTrovato(_))
-        ));
+        assert!(matches!(crea(&conn, &CampiNota::default(), "190", alle(8)), Err(ErroreDb::DocumentoNonValido(_))));
+        assert!(matches!(aggiorna(&conn, 99, &CampiNota::default(), alle(8)), Err(ErroreDb::NonTrovato(_))));
     }
 }
