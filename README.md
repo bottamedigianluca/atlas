@@ -75,5 +75,5 @@ La finestra ricalca "Gestione Documenti" di Arca (pagine Elenco, Generale, DMS; 
 Info, Evasioni, Stampe; F3 "PREZZO/COSTO ARTICOLO"), con numeri a punto decimale e date GG-MM-AAAA come in Arca.
 Tasti: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto o nuova riga
 sull'articolo, `F3` ricerca cliente/articolo/destinazione, prezzi (sul prezzo), numeri liberi (sul numero), `Ctrl+N`
-nuovo, `F10` salva, `F12` salva e stampa, `Alt+↓/↑` documento precedente/successivo, `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,
+nuovo, `F10` salva, `F12` salva e stampa, `Alt+←/→` documento precedente/successivo (`Alt+Home/Fine` primo/ultimo), `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,
 `Ctrl+1/2/3` pagine Elenco/Generale/DMS, clic destro sulle intestazioni per le colonne, `F1` informazioni.

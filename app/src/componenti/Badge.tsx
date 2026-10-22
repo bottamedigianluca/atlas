@@ -59,3 +59,17 @@ export function BadgeSemaforo({ semaforo }: { semaforo: Semaforo }) {
     </Pillola>
   );
 }
+
+/** Lo stato in Arca in una riga di griglia da 17 px: punto colorato e testo, senza pillola. */
+export function StatoArcaBreve({ stato }: { stato: StatoArca }) {
+  const [colore, testo] = STATI_DOCUMENTO[stato];
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className={`size-1.5 shrink-0 rounded-full ${PUNTI[colore]}`} />
+      {testo}
+    </span>
+  );
+}
+
+export const TESTO_STATO_ARCA = (stato: StatoArca) => STATI_DOCUMENTO[stato][1];
+export const LEGENDA_ARCA = (Object.keys(STATI_DOCUMENTO) as StatoArca[]).map((s) => ({ stato: s, colore: PUNTI[STATI_DOCUMENTO[s][0]], testo: STATI_DOCUMENTO[s][1] }));

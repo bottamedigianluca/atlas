@@ -95,12 +95,21 @@ test("un DDT battuto solo da tastiera, con F3 prezzi, guardrail e F10", async ({
   await page.keyboard.press("Enter");
   await expect(page.locator("[data-prova=ragione-sociale]:visible")).toContainText("Catering Service");
   await expect(page.getByRole("button", { name: "Torna al documento in battitura" })).toBeVisible();
-  // Dal documento in battitura, Alt+↓ (Precedente, le frecce di Arca) apre l'ultimo DDT salvato.
+  // Riga dei filtri dell'elenco: la ragione sociale filtra le righe.
+  await page.keyboard.press("Control+1");
+  await page.getByLabel("Filtro Ragione Sociale").fill("catering");
+  await expect(documenti.locator("[role=row][aria-selected]").first()).toContainText("Catering Service");
+  await expect(page.getByText(/\d+ di \d+ documenti/)).toBeVisible();
+  await page.getByLabel("Filtro Ragione Sociale").fill("");
+
+  // Dal documento in battitura, Alt+→ (▶ di Arca) apre il documento più recente; il contatore dice dove si è.
+  await page.keyboard.press("Control+2");
   await page.getByRole("button", { name: "Torna al documento in battitura" }).click();
   await expect(page.locator("#testata-cliente")).toBeVisible();
-  await page.keyboard.press("Alt+ArrowDown");
+  await page.keyboard.press("Alt+ArrowRight");
   await expect(page.locator("[data-prova=ragione-sociale]:visible")).toContainText("Catering Service");
-  await page.keyboard.press("Alt+ArrowUp");
-  await expect(page.locator("#testata-cliente")).toBeVisible();
+  await expect(page.getByLabel("Posizione nell'elenco")).toHaveText(/^1\/\d+$/);
+  await page.keyboard.press("Alt+ArrowRight");
+  await expect(page.getByLabel("Posizione nell'elenco")).toHaveText(/^2\/\d+$/);
   await page.screenshot({ path: "test-results/maschera-salvata.png" });
 });

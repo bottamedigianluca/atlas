@@ -85,3 +85,56 @@ export function Riquadro({ titolo, children, className }: { titolo: string; chil
     </fieldset>
   );
 }
+
+/**
+ * Campo delle schede Testa e Piede di Arca: etichetta a sinistra a larghezza fissa, il campo e,
+ * accanto, la descrizione decodificata in rosso ("R060 Ric.Banc. 60 gg DF FM", "V Vendita").
+ */
+export function Voce({
+  etichetta,
+  valore,
+  larghezza = 70,
+  colonnaEtichetta = 112,
+  descrizione,
+  numerico = false,
+  dopo,
+  title,
+}: {
+  etichetta: ReactNode;
+  valore: string;
+  larghezza?: number;
+  colonnaEtichetta?: number;
+  descrizione?: ReactNode;
+  numerico?: boolean;
+  /** Campi o pulsanti in più sulla stessa riga (secondo codice, Σ…). */
+  dopo?: ReactNode;
+  title?: string;
+}) {
+  return (
+    <div className="flex h-[22px] items-center gap-1.5 text-[12px]" title={title}>
+      <span className="shrink-0 truncate text-zinc-600 dark:text-zinc-400" style={{ width: colonnaEtichetta }}>
+        {etichetta}
+      </span>
+      <input
+        readOnly
+        tabIndex={-1}
+        value={valore}
+        aria-label={typeof etichetta === "string" ? etichetta : undefined}
+        style={{ width: larghezza }}
+        className={`${BASE} h-[20px] shrink-0 ${numerico ? "cifre text-right" : ""}`}
+      />
+      {dopo}
+      {descrizione && <span className="truncate text-[#c0161e] dark:text-[#ff6b6b]">{descrizione}</span>}
+    </div>
+  );
+}
+
+/** Titolo rosso di sezione delle schede di Arca ("CONDIZIONI DI PAGAMENTO", "DATI PER LA SPEDIZIONE"). */
+export function Sezione({ titolo, children, className }: { titolo: string; children?: ReactNode; className?: string }) {
+  return (
+    <section aria-label={titolo} className={className}>
+      <h3 className="mb-1 text-[12px] font-bold uppercase tracking-wide text-[#c0161e] dark:text-[#ff6b6b]">{titolo}</h3>
+      <div className="flex min-h-0 flex-1 flex-col gap-1">{children}</div>
+    </section>
+  );
+}

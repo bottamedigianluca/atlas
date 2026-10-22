@@ -214,16 +214,20 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
   `app/src-tauri`):
   - **Rifatta sulla finestra di Arca** (richiesta del titolare: "stile iOS ma praticamente come era su Arca, se no un
     operatore non sa più come muoversi"; riferimenti `docs/screenshot_arca/01_…` e `04_…` e la struttura di
-    `fedi_doc`): finestra "Gestione Documenti" con la barra strumenti nell'ordine di quella di Arca (Salva `F10`,
-    Annulla | Salva e stampa `F12` | Nuovo `Ctrl+N`, Elimina per il Task 6 | documento Precedente/Successivo
-    `Alt+↓/↑`, le frecce arancioni di Arca) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Tema chiaro
+    `fedi_doc`, schermate 08-12): finestra "Gestione Documenti" con i comandi della barra di Arca (Salva `F10`,
+    Annulla | Salva e stampa `F12` | Nuovo `Ctrl+N`, Elimina per il Task 6 | primo, precedente, successivo, ultimo
+    `|◀ ◀ ▶ ▶|` con `Alt+Home/←/→/Fine` nell'ordine dell'elenco, contatore "n/N" nella barra di stato) e le pagine Elenco / Generale / DMS (`Ctrl+1/2/3`). Tema chiaro
     predefinito (priorità del titolare: le posizioni come in Arca, colori e forme liberi). Generale: testata in
     una fila (Tipo BO, Cliente, Data GG-MM-AAAA, Numero, Valuta EUR, Cambio 1.000000, Destinazione se il cliente ne
     ha) e sotto le schede, con il riquadro rosso di ragione sociale, indirizzo e codice destinatario alla loro destra;
     le linee delle colonne della griglia arrivano fino in fondo come in Arca; schede Testa, Righe, Piede, Totali,
     Info, Evasioni, Stampe (`Ctrl+PgSu/PgGiù`) con i riquadri dei contenitori di Arca (pagamento, dati contabili,
     varie, stato; dati DDT con trasporto V, spedizione M, porto F, aspetto beni AV e pesi a zero come nei BO di
-    Arca; totali, merce, IVA, provvigioni). Righe: titolo rosso "DETTAGLIO DOCUMENTO", griglia, sotto "Evade" a
+    Arca). Testa, Piede e Totali ricalcano le schermate: titoli rossi di sezione, etichette a sinistra e
+    descrizioni dei codici in rosso; Testa con pagamento, dati contabili e riferimenti a sinistra e altri dati,
+    fatturare a, stato e listini a destra; Piede con spedizione, pesi con Σ (somma delle righe), griglia delle
+    spese, acconto/fisso/abbuono; Totali con "Valori in EUR" netto/lordo e sconti, abbuono, acconto, netto a
+    pagare, più il riepilogo IVA. Le celle numeriche battute, fuori dalla cella attiva, hanno i decimali di Arca. Righe: titolo rosso "DETTAGLIO DOCUMENTO", griglia, sotto "Evade" a
     sinistra e "Importa pesate"/"Riferimento" a destra. Numeri e date nel formato di Arca: punto decimale e decimali
     fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
     Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
@@ -255,10 +259,12 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     (doppio clic = larghezza di fabbrica), riordino a trascinamento delle intestazioni, clic destro sulle
     intestazioni per mostrare/nascondere (l'articolo resta) e "Ripristina layout di fabbrica". Riga attiva blu
     #007AFF con barra a sinistra, righe alterne #F9FAFB (piano architetturale).
-  - Pagina Elenco (`Ctrl+1`) con le 36 colonne della griglia di Arca nel suo ordine (più Destinazione e Luogo
-    destinazione della personalizzazione Bottamedi e il badge dello stato in Arca), larghezze di Arca scalate di 1,2
-    per il carattere più largo, stessa personalizzazione della griglia righe; filtri dal/al (GG-MM-AAAA), tipo (DDT;
-    fatture e NC con il Task 7) e cliente; frecce, PgSu/PgGiù, Home/Fine, `Invio` o doppio clic apre il DDT.
+  - Pagina Elenco (`Ctrl+1`) con le colonne nell'ordine e con le intestazioni della schermata 08 (Identificativo,
+    Esercizio, Tipo Documento, Tipo, Numero, Data, Num Rif, Data Rif, Ragione Sociale, Cli/For, Destinaz., Cod. Con.
+    "D00 Bolle emesse", Tot. Doc. a tre decimali, Stato, agenti, Valuta, Cambio, Pag…), poi le altre di `fedi_doc`
+    e le due della personalizzazione Bottamedi; nella colonna Stato (vuota sui BO di Arca) lo stato in Arca.
+    Riga dei filtri per colonna sotto le intestazioni, legenda in fondo; filtri dal/al (GG-MM-AAAA) e tipo (DDT;
+    fatture e NC con il Task 7); frecce, PgSu/PgGiù, Home/Fine, `Invio` o doppio clic apre il DDT.
     Sincronizzazione (coda, importazione, conflitti con "Rinumera") in una finestra che si apre dal semaforo nella
     barra (verde in Arca, blu in coda, rosso fermo o server irraggiungibile), aggiornato dal WebSocket.
   - Design §3.6-3.7: chiaro e scuro (segue il sistema, cambiabile), finestre satinate, focus ring blu, cifre

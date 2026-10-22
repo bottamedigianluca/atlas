@@ -11,7 +11,7 @@ import { ALTEZZA_RIGA, type CampoRiga, type Colonna, GRIGLIA_RIGHE, PER_ID } fro
 import { Intestazione } from "../griglia/Intestazione";
 import { type Layout, visibili } from "../griglia/layout";
 import { MenuColonne } from "../griglia/MenuColonne";
-import { fattore, prezzo as fPrezzo, quantita as fQuantita, importo } from "../griglia/numeri";
+import { decimale, fattore, mostra, prezzo as fPrezzo, quantita as fQuantita, importo } from "../griglia/numeri";
 import { type Azione, type RigaUI, type StatoRighe, numeriErrati } from "./righe";
 
 interface Props {
@@ -75,6 +75,17 @@ function proposta(campo: CampoRiga, calcolata: RigaCalcolata | undefined): strin
     default:
       return "";
   }
+}
+
+/** Decimali fissi delle celle numeriche battute, come le mostra Arca fuori dalla cella attiva. */
+const DECIMALI: Partial<Record<CampoRiga, number>> = { colli: 2, lordo: 2, tara: 2, quantita: 2, prezzo: 3 };
+
+/** Il valore battuto, nel formato di Arca quando il cursore non è sulla cella ("12.4" → "12.40"). */
+function aVideo(campo: CampoRiga, testo: string, attiva: boolean): string {
+  const decimali = DECIMALI[campo];
+  if (attiva || decimali === undefined) return testo;
+  const d = decimale(testo);
+  return d ? mostra(d, decimali) : testo;
 }
 
 export function Griglia({ stato, calcolate, layout, attiva, solaLettura = false, onLayout, onAzione, onF3 }: Props) {
@@ -266,7 +277,7 @@ function RigaGriglia({ riga, indice, colonne, layout, calcolata, selezionata, cu
               title={campo === "articolo" && conErrori ? titoloErrori : undefined}
               autoComplete="off"
               spellCheck={false}
-              value={riga[campo]}
+              value={aVideo(campo, riga[campo], cursore === campo)}
               placeholder={proposta(campo, calcolata)}
               onFocus={() => {
                 if (cursore !== campo) onAzione({ tipo: "vai", cursore: { riga: indice, campo } });

@@ -31,6 +31,8 @@ export interface VistaDocumento {
   descrizioneListino: string | null;
   iban: string | null;
   bic: string | null;
+  /** Banca di sconto (`Cd_CGConto_Banca`): la decide il backend al salvataggio. */
+  contoBanca: string | null;
   scissione: boolean;
   inizioTrasporto: string | null;
   righe: { totale: string | null; conto: string | null; quantita: string | null; colli: string; lordo: string }[];
@@ -88,6 +90,7 @@ export function vistaNuovo(args: {
     descrizioneListino: scheda?.descrizione_listino ?? null,
     iban: scheda?.iban ?? null,
     bic: scheda?.bic ?? null,
+    contoBanca: null,
     scissione: args.scissione,
     inizioTrasporto: args.data ? `${args.data}T` : null,
     righe: args.righe.map((r, i) => ({
@@ -129,6 +132,7 @@ export function vistaSalvato(ddt: DdtScheda, scheda: ClienteScheda | null): Vist
     descrizioneListino: scheda?.listino === d.listino_cliente ? (scheda?.descrizione_listino ?? null) : null,
     iban: d.iban,
     bic: d.bic,
+    contoBanca: d.conto_banca,
     scissione: d.scissione_pagamenti,
     inizioTrasporto: d.inizio_trasporto,
     righe: ddt.righe.map((r) => ({

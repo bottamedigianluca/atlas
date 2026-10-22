@@ -46,13 +46,13 @@ test("F3 prezzi, chiaro e scuro", async ({ page }) => {
   await page.screenshot({ path: "test-results/vetrina-f3-scuro.png" });
 });
 
-test("elenco documenti e informazioni, scuro", async ({ page }) => {
-  await page.emulateMedia({ colorScheme: "dark" });
+test("elenco documenti e informazioni, chiaro", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   await page.keyboard.press("Control+1");
   await expect(page.getByRole("grid", { name: "Documenti" }).locator("[role=row][aria-selected=true]")).toBeVisible();
-  await page.screenshot({ path: "test-results/vetrina-elenco-scuro.png" });
+  await page.screenshot({ path: "test-results/vetrina-elenco-chiaro.png" });
   await page.keyboard.press("F1");
   await expect(page.getByRole("dialog", { name: "Informazioni di sistema" })).toContainText("ATLAS OPERATING SYSTEM");
-  await page.screenshot({ path: "test-results/vetrina-informazioni-scuro.png" });
+  await page.screenshot({ path: "test-results/vetrina-informazioni-chiaro.png" });
 });

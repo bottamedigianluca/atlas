@@ -6,8 +6,8 @@
 // cliente, sconto cassa, dati del piede…) si vedono al loro posto in sola lettura, con i valori che
 // ATLAS registra.
 
-import { CampoCodice, Campo, Riquadro, Spunta } from "./campi";
-import { data as fData, importo, mostra, quantita as fQuantita } from "../griglia/numeri";
+import { Riquadro, Sezione, Spunta, Voce } from "./campi";
+import { data as fData, importo, mostra } from "../griglia/numeri";
 import { PIEDE_BO, type VistaDocumento, merceAConto, somma } from "./vista";
 
 export const SCHEDE = ["Testa", "Righe", "Piede", "Totali", "Info", "Evasioni", "Stampe"] as const;
@@ -40,85 +40,246 @@ export function BarraSchede({ attiva, onScheda }: { attiva: Scheda; onScheda: (s
 const vuoto = (v: string | null | undefined) => v ?? "";
 
 export function SchedaTesta({ vista }: { vista: VistaDocumento }) {
+  // Come la scheda Testa di Arca: pagamento, dati contabili e riferimenti a sinistra; altri dati,
+  // fatturare a, stato e listini a destra.
   return (
-    <div className="grid content-start gap-3 overflow-auto p-3 lg:grid-cols-2">
-      <Riquadro titolo="Pagamento">
-        <CampoCodice etichetta="Pagamento" readOnly value={vuoto(vista.pagamento)} descrizione={vista.descrizionePagamento} larghezza={330} />
-        <Campo etichetta="Data pag." readOnly value="" larghezza={90} />
-        <CampoCodice etichetta="Agente" readOnly value={vuoto(vista.agente)} descrizione={vista.descrizioneAgente} larghezza={330} />
-        <Campo etichetta="Sconto cassa" readOnly value="" larghezza={90} numerico />
-      </Riquadro>
-      <Riquadro titolo="Listino e fatturazione">
-        <CampoCodice etichetta="Listino" readOnly value={vuoto(vista.listino)} descrizione={vista.descrizioneListino} larghezza={330} />
-        <CampoCodice etichetta="Cliente fatturazione" readOnly value={vista.cliente} descrizione={vista.ragioneSociale} larghezza={330} />
-        <Campo etichetta="Numero / Data rif." readOnly value="" larghezza={200} />
-      </Riquadro>
-      <Riquadro titolo="Dati contabili">
-        <Campo etichetta="IBAN" readOnly value={vuoto(vista.iban)} larghezza={250} className="font-mono" />
-        <Campo etichetta="BIC" readOnly value={vuoto(vista.bic)} larghezza={110} className="font-mono" />
-        <CampoCodice etichetta="Reverse charge" readOnly value="" larghezza={220} larghezzaCodice={50} />
-        <div className="flex gap-4 pb-0.5">
-          <Spunta etichetta="IVA sospesa" attiva={false} />
-          <Spunta etichetta="Split payment" attiva={vista.scissione} />
+    <div className="flex min-h-0 flex-1 justify-between gap-8 overflow-auto px-3 py-2">
+      <div className="flex flex-col gap-3">
+        <Sezione titolo="Condizioni di pagamento">
+          <Voce
+            etichetta="Agenti"
+            valore={vuoto(vista.agente)}
+            larghezza={50}
+            dopo={<Vuoto larghezza={50} />}
+            descrizione={vista.descrizioneAgente ? `/ ${vista.descrizioneAgente}` : "/"}
+          />
+          <Voce etichetta="Pagamento" valore={vuoto(vista.pagamento)} larghezza={50} descrizione={vista.descrizionePagamento} />
+          <Voce etichetta="Sconto Cassa" valore="" />
+        </Sezione>
+        <Sezione titolo="Dati contabili">
+          <Voce etichetta="Tipo Fattura" valore="" larghezza={40} />
+          <Voce
+            etichetta="Banca C/F"
+            valore={vuoto(vista.iban)}
+            larghezza={270}
+            dopo={
+              <>
+                <span className="ml-1 text-zinc-600 dark:text-zinc-400">BIC</span>
+                <Vuoto larghezza={90} valore={vuoto(vista.bic)} />
+              </>
+            }
+          />
+          <Voce etichetta="Banca di Sconto" valore={vuoto(vista.contoBanca)} larghezza={84} title={vista.nuovo ? "La propone il backend al salvataggio" : undefined} />
+          {vista.scissione && <Spunta etichetta="Split payment (scissione dei pagamenti)" attiva />}
+        </Sezione>
+        <Sezione titolo="Riferimenti">
+          <Voce etichetta="Numero / Data" valore="" larghezza={130} dopo={<Vuoto larghezza={64} />} />
+        </Sezione>
+      </div>
+      <div className="flex shrink-0 flex-col gap-3">
+        <Sezione titolo="Altri dati">
+          <Voce etichetta="Zona" valore="" larghezza={36} colonnaEtichetta={84} />
+          <Voce etichetta="Consegna" valore="" larghezza={64} colonnaEtichetta={84} descrizione={<span className="text-zinc-500">dal</span>} />
+          <Voce etichetta="Sottocommessa" valore="" larghezza={100} colonnaEtichetta={84} />
+        </Sezione>
+        <Sezione titolo="Fatturare a">
+          <Voce etichetta="" valore="" larghezza={56} colonnaEtichetta={0} />
+        </Sezione>
+        <div className="flex gap-6">
+          <Sezione titolo="Stato">
+            <Spunta etichetta="Modificabile" attiva />
+            <Spunta etichetta="Esecutivo" attiva />
+            <Spunta etichetta="Prelevabile" attiva />
+          </Sezione>
+          <Sezione titolo="Listini">
+            <Voce etichetta="" valore={vuoto(vista.listino)} larghezza={64} colonnaEtichetta={0} descrizione={vista.descrizioneListino} />
+            {/* `Cd_LS_2` dei BO: il listino 1 su tutti i documenti. */}
+            <Voce etichetta="" valore="0000001" larghezza={64} colonnaEtichetta={0} descrizione="Listino 1" />
+          </Sezione>
         </div>
-      </Riquadro>
-      <Riquadro titolo="Varie">
-        <Campo etichetta="Data consegna" readOnly value="" larghezza={100} />
-        <CampoCodice etichetta="Sottocommessa" readOnly value="" larghezza={250} larghezzaCodice={70} />
-      </Riquadro>
-      <Riquadro titolo="Stato">
-        <Spunta etichetta="Esecutivo" attiva />
-        <Spunta etichetta="Prelevabile" attiva />
-        <Spunta etichetta="Modificabile" attiva />
-      </Riquadro>
+      </div>
     </div>
   );
 }
 
+function Vuoto({ larghezza, valore = "" }: { larghezza: number; valore?: string }) {
+  return (
+    <input
+      readOnly
+      tabIndex={-1}
+      value={valore}
+      aria-hidden
+      style={{ width: larghezza }}
+      className="h-[20px] shrink-0 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 text-[12px] text-zinc-700 outline-none dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-300"
+    />
+  );
+}
+
+/** Descrizioni dei codici del piede come le mostra Arca accanto al campo. */
+const DESCRIZIONI_PIEDE = { V: "Vendita", M: "Mittente", F: "FRANCO", AV: "A vista" } as const;
+
+function Somma({ valore }: { valore: string }) {
+  return (
+    <span className="cursor-help text-[13px] text-zinc-500" title={`Σ righe: ${valore}. Nei BO di Arca il piede resta a zero.`} aria-label={`Somma delle righe ${valore}`}>
+      Σ
+    </span>
+  );
+}
+
+const COLONNE_SPESE = [
+  ["N. Spesa", 86],
+  ["Descrizione Spesa", 106],
+  ["Importo", 84],
+  ["%", 44],
+  ["IVA", 22],
+  ["Conto", 72],
+  ["RC", 32],
+  ["Importo Evadibile", 76],
+  ["Importo Evaso", 76],
+  ["Sottocommessa", 72],
+  ["Riga Evasa", 78],
+] as const;
+
 export function SchedaPiede({ vista }: { vista: VistaDocumento }) {
+  // Come la scheda Piede di Arca: dati per la spedizione (codici a sinistra e al centro, pesi a
+  // destra), poi dati per la fatturazione con la griglia delle spese, in fondo acconto e abbuono.
   const trasporto = vista.inizioTrasporto ? `${fData(vista.inizioTrasporto.slice(0, 10))} ${vista.inizioTrasporto.slice(11, 16)}`.trim() : "";
   const lordo = somma(vista.righe.map((r) => r.lordo || null), 3);
   const netto = somma(vista.righe.map((r) => r.quantita), 3);
   const colli = somma(vista.righe.map((r) => r.colli || null), 0);
   return (
-    <div className="grid content-start gap-3 overflow-auto p-3 lg:grid-cols-2">
-      <Riquadro titolo="Dati DDT">
-        <Campo etichetta="Trasporto" readOnly value={PIEDE_BO.trasporto} larghezza={70} />
-        <Campo etichetta="Vettore 1" readOnly value="" larghezza={110} />
-        <Campo etichetta="Vettore 2" readOnly value="" larghezza={110} />
-        <Campo etichetta="Spedizione" readOnly value={PIEDE_BO.spedizione} larghezza={70} />
-        <Campo etichetta="Porto" readOnly value={PIEDE_BO.porto} larghezza={70} />
-        <Campo etichetta="Aspetto beni" readOnly value={PIEDE_BO.aspettoBeni} larghezza={80} />
-        <Campo etichetta="Data/ora trasporto" readOnly value={trasporto} larghezza={140} className="cifre" />
-        <Campo etichetta="Peso lordo" readOnly value="0.00" larghezza={90} numerico title={`Σ righe: ${fQuantita(lordo)}`} />
-        <Campo etichetta="Peso netto" readOnly value="0.00" larghezza={90} numerico title={`Σ righe: ${fQuantita(netto)}`} />
-        <Campo etichetta="Volume" readOnly value="" larghezza={80} numerico />
-        <Campo etichetta="Colli" readOnly value="0.00" larghezza={70} numerico title={`Σ righe: ${colli}`} />
-        <p className="w-full text-[11px] text-zinc-500">
-          Somma delle righe: lordo {fQuantita(lordo)} · netto {fQuantita(netto)} · colli {colli}. Nei BO di Arca peso e colli
-          del piede restano a zero.
-        </p>
-      </Riquadro>
-      <Riquadro titolo="Spese">
-        <table className="w-full text-[12px]">
-          <thead className="text-[11px] text-zinc-500">
-            <tr>
-              <th className="text-left font-medium">Tipo</th>
-              <th className="text-left font-medium">Descrizione</th>
-              <th className="text-right font-medium">Importo</th>
-              <th className="text-left font-medium">IVA</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={4} className="py-1 text-zinc-400">
-                Nessuna spesa
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <Campo etichetta="Acconto" readOnly value="0.00" larghezza={100} numerico />
-      </Riquadro>
+    <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto px-3 py-2">
+      <Sezione titolo="Dati per la spedizione">
+        <div className="flex justify-between gap-6">
+          <div className="flex gap-6">
+            <div className="flex flex-col gap-1">
+              <Voce
+                etichetta="Trasporto"
+                valore={PIEDE_BO.trasporto}
+                larghezza={30}
+                colonnaEtichetta={118}
+                dopo={<Vuoto larghezza={110} valore={trasporto} />}
+                descrizione={DESCRIZIONI_PIEDE[PIEDE_BO.trasporto]}
+              />
+              <Voce etichetta="Vettore 1" valore="" larghezza={30} colonnaEtichetta={118} dopo={<Vuoto larghezza={110} />} />
+              <Voce etichetta="Vettore 2" valore="" larghezza={30} colonnaEtichetta={118} dopo={<Vuoto larghezza={110} />} />
+              <Voce etichetta="Caricatore/Committ." valore="" larghezza={30} colonnaEtichetta={118} dopo={<Vuoto larghezza={30} />} />
+              <Voce etichetta="Luogo carico/scar." valore="" larghezza={30} colonnaEtichetta={118} dopo={<Vuoto larghezza={30} />} />
+              <Voce etichetta="Proprietario merce" valore="" larghezza={30} colonnaEtichetta={118} descrizione={<span className="text-zinc-500">Altro SdT</span>} />
+            </div>
+            {/* Spedizione, porto e aspetto dei beni accanto alle ultime tre righe, come in Arca. */}
+            <div className="flex flex-col justify-end gap-1">
+              <Voce etichetta="Spedizione" valore={PIEDE_BO.spedizione} larghezza={30} colonnaEtichetta={66} descrizione={DESCRIZIONI_PIEDE[PIEDE_BO.spedizione]} />
+              <Voce etichetta="Porto" valore={PIEDE_BO.porto} larghezza={30} colonnaEtichetta={66} descrizione={DESCRIZIONI_PIEDE[PIEDE_BO.porto]} />
+              <Voce etichetta="Asp. Beni" valore={PIEDE_BO.aspettoBeni} larghezza={30} colonnaEtichetta={66} descrizione={DESCRIZIONI_PIEDE[PIEDE_BO.aspettoBeni]} />
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <Voce etichetta="Peso Lordo (Kg)" valore="0.000" numerico larghezza={76} colonnaEtichetta={96} dopo={<Somma valore={mostra(lordo, 3)} />} />
+            <Voce etichetta="Peso Netto (Kg)" valore="0.000" numerico larghezza={76} colonnaEtichetta={96} dopo={<Somma valore={mostra(netto, 3)} />} />
+            <Voce etichetta="Volume (m³)" valore="0.000" numerico larghezza={76} colonnaEtichetta={96} dopo={<span className="w-[9px]" />} />
+            <Voce etichetta="Colli" valore="0" numerico larghezza={76} colonnaEtichetta={96} dopo={<Somma valore={colli} />} />
+          </div>
+        </div>
+      </Sezione>
+      <Sezione titolo="Dati per la fatturazione" className="flex min-h-[10rem] flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800" role="grid" aria-label="Spese">
+          <div className="flex border-b border-zinc-300 bg-zinc-50 text-[11px] font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400" role="row">
+            {COLONNE_SPESE.map(([t, w]) => (
+              <span key={t} role="columnheader" style={{ width: w }} className="shrink-0 truncate border-r border-zinc-200 px-1 py-0.5 dark:border-zinc-800">
+                {t}
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-1" aria-hidden>
+            {COLONNE_SPESE.map(([t, w]) => (
+              <span key={t} style={{ width: w }} className="shrink-0 border-r border-zinc-100 dark:border-zinc-900" />
+            ))}
+          </div>
+        </div>
+      </Sezione>
+      <div className="flex items-center justify-between">
+        <div className="flex gap-4">
+          <Voce etichetta="Acconto %" valore="0.00" numerico larghezza={50} colonnaEtichetta={64} />
+          <Voce etichetta="Fisso" valore="0.00" numerico larghezza={76} colonnaEtichetta={34} />
+          <Voce etichetta="Abbuono" valore="0.00" numerico larghezza={76} colonnaEtichetta={54} />
+        </div>
+        <Spunta etichetta="Bolli per esenzione" attiva={false} />
+      </div>
+    </div>
+  );
+}
+
+export function SchedaTotali({ vista }: { vista: VistaDocumento }) {
+  // Come la scheda Totali di Arca: "Valori in EUR" netto e lordo a sinistra, sconti, omaggi,
+  // abbuono, acconto e netto a pagare a destra; sotto, in più, il riepilogo IVA.
+  const c = vista.castelletto;
+  const merce = somma(merceAConto(vista).map((m) => m.importo));
+  const esente = somma((c?.righe ?? []).filter((r) => Number(r.percentuale) === 0).map((r) => r.imponibile));
+  const zero = importo("0");
+  const sinistra: [string, string, string][] = [
+    ["Merce", importo(merce), importo(merce)],
+    ["Spese", zero, ""],
+    ["", "", "di cui esente"],
+    ["Imponibile", importo(c?.totale_imponibile ?? "0"), importo(esente)],
+    ["Imposta", importo(c?.totale_imposta ?? "0"), ""],
+    ["", "", ""],
+    ["Totale", importo(c?.totale_documento ?? "0"), ""],
+  ];
+  const destra: [string, string][] = [
+    ["Sconto", zero],
+    ["Omaggio merce", zero],
+    ["Omaggio IVA", zero],
+    ["Abbuono", zero],
+    ["Rit. Cond.", zero],
+    ["Acconto", zero],
+    ["Netto a pagare", importo(vista.nettoAPagare ?? "0")],
+  ];
+  return (
+    <div className="flex min-h-0 flex-1 gap-2 overflow-auto px-3 py-2">
+      <span className="self-center text-[12px] font-bold tracking-widest text-[#c0161e] [writing-mode:vertical-rl] rotate-180 dark:text-[#ff6b6b]">TOTALI</span>
+      <section aria-label="Totali" className="flex-1 rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
+        <div className="flex gap-10 text-[12px]">
+          <table className="cifre">
+            <thead>
+              <tr className="text-[11px] italic text-zinc-500">
+                <th className="pr-6 text-left font-sans font-semibold not-italic text-[#c0161e] dark:text-[#ff6b6b]">Valori in EUR</th>
+                <th className="w-20 text-right font-normal">Netto</th>
+                <th className="w-24 text-right font-normal">Lordo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sinistra.map(([voce, netto, lordo], i) => (
+                <tr key={i} className="h-[18px]">
+                  <td className="pr-6 font-sans italic text-zinc-600 dark:text-zinc-400">{voce}</td>
+                  <td className={`text-right ${voce === "Totale" ? "font-semibold" : ""}`}>{netto}</td>
+                  <td className={`text-right ${lordo === "di cui esente" ? "font-sans text-[11px] italic text-zinc-500" : ""}`}>{lordo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <table className="cifre self-start">
+            <tbody>
+              <tr className="h-[18px]">
+                <td colSpan={2} />
+              </tr>
+              {destra.map(([voce, valore]) => (
+                <tr key={voce} className="h-[18px]">
+                  <td className="pr-6 font-sans italic text-zinc-600 dark:text-zinc-400">{voce}</td>
+                  <td className={`w-20 text-right ${voce === "Netto a pagare" ? "font-semibold" : ""}`}>{valore}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-5 max-w-xl">
+          <Tabella
+            titolo="Riepilogo IVA"
+            intestazioni={["Aliquota", "%", "Imponibile", "Imposta"]}
+            righe={(c?.righe ?? []).map((r) => [r.aliquota, mostra(r.percentuale, 2), importo(r.imponibile), importo(r.imposta)])}
+          />
+        </div>
+      </section>
     </div>
   );
 }
@@ -157,36 +318,6 @@ function Tabella({ titolo, intestazioni, righe }: { titolo: string; intestazioni
         </tbody>
       </table>
     </section>
-  );
-}
-
-export function SchedaTotali({ vista }: { vista: VistaDocumento }) {
-  const c = vista.castelletto;
-  const merce = merceAConto(vista);
-  return (
-    <div className="grid max-w-3xl content-start gap-3 overflow-auto p-3">
-      <Tabella
-        titolo="Totali"
-        intestazioni={["Voce", "Importo"]}
-        righe={[
-          ["Totale merce", importo(somma(merce.map((m) => m.importo)))],
-          ["Spese", importo("0")],
-          ["Imponibile", importo(c?.totale_imponibile ?? "0")],
-          ["Imposta", importo(c?.totale_imposta ?? "0")],
-          ["Totale documento", importo(c?.totale_documento ?? "0")],
-          ["Acconto", importo("0")],
-          ["Abbuono", importo("0")],
-          ["Netto a pagare", importo(vista.nettoAPagare ?? "0")],
-        ]}
-      />
-      <Tabella titolo="Merce" intestazioni={["Conto", "Imponibile"]} righe={merce.map((m) => [m.conto, importo(m.importo)])} />
-      <Tabella
-        titolo="IVA"
-        intestazioni={["Aliquota", "%", "Imponibile", "Imposta"]}
-        righe={(c?.righe ?? []).map((r) => [r.aliquota, mostra(r.percentuale, 2), importo(r.imponibile), importo(r.imposta)])}
-      />
-      <Tabella titolo="Provvigioni" intestazioni={["Agente", "Imponibile", "Provvigione"]} righe={[]} />
-    </div>
   );
 }
 
