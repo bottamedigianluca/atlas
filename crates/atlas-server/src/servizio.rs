@@ -11,9 +11,10 @@ use crate::bozza::{self, Bozza, Calcolo};
 use crate::config::Predefiniti;
 use crate::consultazione::{self, Conflitto, Coda};
 use crate::errore::ErroreApi;
+use crate::home;
 use crate::lettori::Lettori;
 use crate::prezzi::{self, Prezzi, RichiestaPrezzi};
-use crate::worker::{Comando, DdtCreato, Notifica, NumeriLiberi, Rinumerato, StatoSync};
+use crate::worker::{Comando, DdtCreato, Notifica, NumeriLiberi, OperazioneNota, Rinumerato, StatoSync};
 
 /// Stato condiviso dalle richieste.
 #[derive(Debug, Clone)]
@@ -86,6 +87,19 @@ impl Servizio {
 
     pub async fn sincronizza(&self) -> Result<(), ErroreApi> {
         self.al_worker(|risposta| Comando::Sincronizza { risposta }).await
+    }
+
+    pub async fn note(&self) -> Result<Vec<atlas_db::note::Nota>, ErroreApi> {
+        self.lettori.leggi(|conn| Ok(atlas_db::note::elenco(conn)?)).await
+    }
+
+    pub async fn nota(&self, operazione: OperazioneNota) -> Result<Option<atlas_db::note::Nota>, ErroreApi> {
+        self.al_worker(|risposta| Comando::Nota { operazione, risposta }).await?
+    }
+
+    pub async fn clienti_del_giorno(&self, richiesta: home::RichiestaGiorno) -> Result<home::ClientiDelGiorno, ErroreApi> {
+        let data = richiesta.data.unwrap_or_else(|| Local::now().date_naive());
+        self.lettori.leggi(move |conn| home::clienti_del_giorno(conn, data)).await
     }
 
     pub async fn prezzi(&self, richiesta: RichiestaPrezzi) -> Result<Prezzi, ErroreApi> {

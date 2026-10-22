@@ -22,6 +22,7 @@ use std::time::Duration;
 
 use atlas_core::numerazione::{NumeroNonValido, Sezionale, TipoDocumento};
 use atlas_db::ddt::{self, TIPO_DOCUMENTO};
+use atlas_db::note::{self, CampiNota, Nota};
 use atlas_db::{ErroreDb, importazione as stato_importazione, outbox};
 use atlas_sync::importazione::{self, Origine};
 use atlas_sync::numerazione::{self, ATTESA_ARCA};
@@ -147,6 +148,18 @@ pub enum Comando {
     },
     /// Giri di replica e importazione subito.
     Sincronizza { risposta: oneshot::Sender<()> },
+    /// Post-it della Home: crea, modifica o elimina (allora la risposta è `None`).
+    Nota {
+        operazione: OperazioneNota,
+        risposta: oneshot::Sender<Result<Option<Nota>, ErroreApi>>,
+    },
+}
+
+#[derive(Debug)]
+pub enum OperazioneNota {
+    Crea(CampiNota),
+    Aggiorna(i64, CampiNota),
+    Elimina(i64),
 }
 
 impl std::fmt::Debug for Comando {
@@ -156,6 +169,7 @@ impl std::fmt::Debug for Comando {
             Self::Rinumera { id, .. } => f.debug_struct("Rinumera").field("id", id).finish(),
             Self::Liberi { esercizio, .. } => f.debug_struct("Liberi").field("esercizio", esercizio).finish(),
             Self::Sincronizza { .. } => f.write_str("Sincronizza"),
+            Self::Nota { operazione, .. } => f.debug_tuple("Nota").field(operazione).finish(),
         }
     }
 }
@@ -232,6 +246,8 @@ pub enum Notifica {
         cancellati: usize,
     },
     Stato(StatoSync),
+    /// I post-it della Home sono cambiati: i client li rileggono (`GET /api/note`).
+    NoteCambiate,
 }
 
 /// Il worker in esecuzione.
@@ -576,7 +592,26 @@ impl<O: Origine, D: Replica> Worker<O, D> {
                 self.prossima_importazione = Instant::now();
                 let _ = risposta.send(());
             }
+            Comando::Nota { operazione, risposta } => {
+                let esito = self.nota(operazione);
+                if esito.is_ok() {
+                    let _ = self.notifiche.send(Notifica::NoteCambiate);
+                }
+                let _ = risposta.send(esito);
+            }
         }
+    }
+
+    fn nota(&self, operazione: OperazioneNota) -> Result<Option<Nota>, ErroreApi> {
+        let adesso = adesso();
+        Ok(match operazione {
+            OperazioneNota::Crea(campi) => Some(note::crea(&self.db, &campi, &self.predefiniti.operatore, adesso)?),
+            OperazioneNota::Aggiorna(id, campi) => Some(note::aggiorna(&self.db, id, &campi, adesso)?),
+            OperazioneNota::Elimina(id) => {
+                note::elimina(&self.db, id)?;
+                None
+            }
+        })
     }
 
     async fn crea(&mut self, bozza: &Bozza) -> Result<DdtCreato, ErroreApi> {

@@ -1,9 +1,9 @@
 // Fotografie delle schermate principali, chiaro e scuro, da confrontare con `docs/screenshot_arca/`.
 import { type Page, expect, test } from "@playwright/test";
-import { cliente } from "./aiuti";
+import { apri, cliente } from "./aiuti";
 
 async function riempi(page: Page) {
-  await page.goto("/");
+  await apri(page);
   await cliente(page, "C000380");
   for (const [articolo, colli, lordo, tara] of [
     ["GEN", "2", "12.4", "0.3"],
@@ -48,7 +48,7 @@ test("F3 prezzi, chiaro e scuro", async ({ page }) => {
 
 test("elenco documenti e informazioni, chiaro", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
-  await page.goto("/");
+  await apri(page);
   await page.keyboard.press("Control+1");
   await expect(page.getByRole("grid", { name: "Documenti" }).locator("[role=row][aria-selected=true]")).toBeVisible();
   await page.screenshot({ path: "test-results/vetrina-elenco-chiaro.png" });

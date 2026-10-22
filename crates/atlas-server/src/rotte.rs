@@ -8,12 +8,14 @@
 //! - `GET  /ddt?dal=&al=&cliente=&numero=&limite=`, `GET /ddt/{id}`
 //! - `POST /ddt/calcola` (totalizzazione in tempo reale), `POST /ddt` (salvataggio, `F10`),
 //!   `POST /ddt/{id}/rinumera`, `GET /numerazione/{esercizio}/liberi` (`F3` sul numero)
+//! - `GET  /home/clienti?data=` (clienti che di solito ordinano in quel giorno della settimana)
+//! - `GET  /note`, `POST /note`, `PUT /note/{id}`, `DELETE /note/{id}` (post-it della Home)
 //! - `GET  /strumenti`, `POST /strumenti/{nome}`
 //!
 //! WebSocket `GET /api/ws`: richieste `{"id": …, "metodo": "<strumento>", "parametri": {…}}`,
 //! risposte `{"id": …, "risultato": …}` o `{"id": …, "errore": {…}}`; notifiche
 //! `{"evento": "…", "dati": …}` (`stato` alla connessione e a ogni cambiamento, `ddt_creato`,
-//! `ddt_rinumerato`, `replica`, `importazione`; `ritardo` se il client ne ha perse).
+//! `ddt_rinumerato`, `replica`, `importazione`, `note_cambiate`; `ritardo` se il client ne ha perse).
 //!
 //! Le richieste dei browser sono accettate solo dalle origini dell'applicazione desktop (Tauri) e
 //! di sviluppo: una pagina qualsiasi aperta nel browser della postazione non può usare le API,
@@ -38,7 +40,7 @@ use crate::errore::{CorpoErrore, ErroreApi};
 use crate::prezzi::RichiestaPrezzi;
 use crate::servizio::Servizio;
 use crate::strumenti;
-use crate::worker::Notifica;
+use crate::worker::{Notifica, OperazioneNota};
 
 /// Origini ammesse per le richieste dei browser: l'app Tauri v2 (Windows, macOS/Linux) e il
 /// server di sviluppo Vite di Tauri.
@@ -65,6 +67,9 @@ pub fn router(servizio: Servizio) -> Router {
         .route("/ddt/{id}", get(ddt))
         .route("/ddt/{id}/rinumera", post(rinumera))
         .route("/numerazione/{esercizio}/liberi", get(liberi))
+        .route("/home/clienti", get(clienti_del_giorno))
+        .route("/note", get(note).post(crea_nota))
+        .route("/note/{id}", axum::routing::put(aggiorna_nota).delete(elimina_nota))
         .route("/strumenti", get(elenco_strumenti))
         .route("/strumenti/{nome}", post(invoca_strumento))
         .route("/ws", get(ws));
@@ -101,7 +106,7 @@ async fn origine(richiesta: Request, next: Next) -> Response {
         h.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, origine);
         h.insert(header::VARY, HeaderValue::from_static("origin"));
         if preflight {
-            h.insert(header::ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("GET, POST"));
+            h.insert(header::ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("GET, POST, PUT, DELETE"));
             h.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("content-type"));
             h.insert(header::ACCESS_CONTROL_MAX_AGE, HeaderValue::from_static("86400"));
         }
@@ -192,6 +197,35 @@ async fn rinumera(State(s): State<Servizio>, Path(id): Path<i64>) -> Esito<crate
 
 async fn liberi(State(s): State<Servizio>, Path(esercizio): Path<i32>) -> Esito<crate::worker::NumeriLiberi> {
     Ok(Json(s.liberi(esercizio).await?))
+}
+
+async fn clienti_del_giorno(
+    State(s): State<Servizio>,
+    q: Result<Query<crate::home::RichiestaGiorno>, QueryRejection>,
+) -> Esito<crate::home::ClientiDelGiorno> {
+    Ok(Json(s.clienti_del_giorno(query(q)?).await?))
+}
+
+async fn note(State(s): State<Servizio>) -> Esito<Vec<atlas_db::note::Nota>> {
+    Ok(Json(s.note().await?))
+}
+
+async fn crea_nota(State(s): State<Servizio>, c: Result<Json<atlas_db::note::CampiNota>, JsonRejection>) -> Result<Response, ErroreApi> {
+    let nota = s.nota(OperazioneNota::Crea(corpo(c)?)).await?;
+    Ok((StatusCode::CREATED, Json(nota)).into_response())
+}
+
+async fn aggiorna_nota(
+    State(s): State<Servizio>,
+    Path(id): Path<i64>,
+    c: Result<Json<atlas_db::note::CampiNota>, JsonRejection>,
+) -> Esito<Option<atlas_db::note::Nota>> {
+    Ok(Json(s.nota(OperazioneNota::Aggiorna(id, corpo(c)?)).await?))
+}
+
+async fn elimina_nota(State(s): State<Servizio>, Path(id): Path<i64>) -> Result<StatusCode, ErroreApi> {
+    s.nota(OperazioneNota::Elimina(id)).await?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn elenco_strumenti() -> Json<Vec<strumenti::Strumento>> {

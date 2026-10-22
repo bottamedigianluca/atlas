@@ -4,12 +4,15 @@ import type {
   ArticoloBreve,
   Bozza,
   Calcolo,
+  CampiNota,
   ClienteBreve,
   ClienteScheda,
+  ClientiDelGiorno,
   CorpoErrore,
   DdtBreve,
   DdtCreato,
   DdtScheda,
+  Nota,
   Notifica,
   NumeriLiberi,
   Prezzi,
@@ -68,7 +71,7 @@ function query(parametri?: Parametri): string {
   return testo ? `?${testo}` : "";
 }
 
-async function chiama<T>(metodo: "GET" | "POST", percorso: string, corpo?: unknown, segnale?: AbortSignal): Promise<T> {
+async function chiama<T>(metodo: "GET" | "POST" | "PUT" | "DELETE", percorso: string, corpo?: unknown, segnale?: AbortSignal): Promise<T> {
   let risposta: Response;
   try {
     risposta = await fetch(`${indirizzoServer()}/api${percorso}`, {
@@ -112,6 +115,11 @@ export const api = {
     unita_misura?: string;
     quantita?: string;
   }) => chiama<Prezzi>("GET", `/prezzi${query(richiesta)}`),
+  clientiDelGiorno: (data?: string) => chiama<ClientiDelGiorno>("GET", `/home/clienti${query({ data })}`),
+  note: () => chiama<Nota[]>("GET", "/note"),
+  creaNota: (campi: CampiNota) => chiama<Nota>("POST", "/note", campi),
+  aggiornaNota: (id: number, campi: CampiNota) => chiama<Nota>("PUT", `/note/${id}`, campi),
+  eliminaNota: (id: number) => chiama<null>("DELETE", `/note/${id}`),
 };
 
 /**

@@ -5,6 +5,7 @@
 //! - [`ddt`]: salvataggio e lettura dei DDT; ogni scrittura accoda l'evento di replica, tranne
 //!   l'importazione dei documenti di Arca.
 //! - [`importazione`]: fin dove è arrivata l'importazione da Arca e cosa ha escluso.
+//! - [`note`]: post-it della Home, condivisi fra le postazioni.
 //! - [`numerazione`]: numeri occupati per sezionale ed esercizio.
 //! - [`outbox`]: coda degli eventi da replicare in Arca.
 
@@ -12,6 +13,7 @@ pub mod anagrafiche;
 pub mod connessione;
 pub mod ddt;
 pub mod importazione;
+pub mod note;
 pub mod numerazione;
 pub mod outbox;
 #[cfg(any(test, feature = "prova"))]

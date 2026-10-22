@@ -1,4 +1,5 @@
-// La finestra "Gestione Documenti" di Arca per i DDT (BO): barra degli strumenti, pagine Elenco,
+// All'avvio la Home (widget della postazione, `home/Home.tsx`), poi la finestra "Gestione
+// Documenti" di Arca per i DDT (BO): barra degli strumenti, pagine Elenco,
 // Generale e DMS come in Arca, barra di stato con esito, totali, server e firma (direttiva
 // §3.6-3.7). La pagina Generale tiene montato il DDT in battitura: aprendo un documento
 // dall'elenco e tornando indietro, quello che si stava battendo è ancora lì.
@@ -6,7 +7,7 @@
 // La barra strumenti ha i comandi di quella di Arca: Salva, Annulla | Stampa | Nuovo, Elimina |
 // primo, precedente, successivo, ultimo documento (|◀ ◀ ▶ ▶| di Arca, nell'ordine dell'elenco).
 //
-// Tasti: Ctrl+N nuovo, F10 salva, F12 salva e stampa, Alt+←/→ documento precedente/successivo,
+// Tasti: Ctrl+0 Home, Ctrl+N nuovo, F10 salva, F12 salva e stampa, Alt+←/→ documento precedente/successivo,
 // Alt+Home/Fine primo/ultimo, Ctrl+1/2/3 pagine Elenco/Generale/DMS, F1 informazioni.
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ import { Modale } from "./componenti/Modale";
 import { Consultazione } from "./documento/Consultazione";
 import { type ComandiDocumento, type Esito, NuovoDocumento } from "./documento/NuovoDocumento";
 import { Elenco } from "./elenco/Elenco";
+import { Home } from "./home/Home";
 import { importo } from "./griglia/numeri";
 import { PannelloSincronizzazione } from "./sincronizzazione/PannelloSincronizzazione";
 import { ProviderSincronizzazione, useSincronizzazione } from "./sincronizzazione/contesto";
@@ -76,7 +78,12 @@ export function App() {
 }
 
 function Guscio() {
-  const [pagina, setPagina] = useState<Pagina>("Generale");
+  const [area, setArea] = useState<"home" | "documenti">("home");
+  const [pagina, setPaginaDocumenti] = useState<Pagina>("Generale");
+  const setPagina = useCallback((p: Pagina) => {
+    setArea("documenti");
+    setPaginaDocumenti(p);
+  }, []);
   /** Documento salvato aperto dall'elenco; `null`: la pagina Generale mostra il DDT in battitura. */
   const [aperto, setAperto] = useState<number | null>(null);
   const [informazioni, setInformazioni] = useState(false);
@@ -87,14 +94,24 @@ function Guscio() {
   const { semaforo } = useSincronizzazione();
   const documento = useRef<ComandiDocumento>(null);
   const finestra = informazioni || sincronizzazione;
-  const inBattitura = pagina === "Generale" && aperto === null;
+  const inDocumenti = area === "documenti";
+  const inBattitura = inDocumenti && pagina === "Generale" && aperto === null;
 
   const nuovo = useCallback(() => {
     setAperto(null);
     setPagina("Generale");
     setEsito(null);
     documento.current?.nuovo();
-  }, []);
+  }, [setPagina]);
+  const nuovoPer = useCallback(
+    (cliente: string) => {
+      setAperto(null);
+      setPagina("Generale");
+      setEsito(null);
+      documento.current?.nuovoPer(cliente);
+    },
+    [setPagina],
+  );
   // Le frecce scorrono i documenti nell'ordine dell'elenco (filtri compresi, dal più recente), come
   // |◀ ◀ ▶ ▶| in Arca. Nell'Elenco spostano la riga scelta; nella pagina Generale aprono il
   // documento. Dal documento in battitura, ▶ apre il più recente.
@@ -109,19 +126,19 @@ function Guscio() {
         setDocumenti(ids);
       }
       if (!ids.length) return;
-      const corrente = pagina === "Elenco" ? (selezione?.id ?? null) : aperto;
+      const corrente = inDocumenti && pagina === "Elenco" ? (selezione?.id ?? null) : aperto;
       const posizione = corrente === null ? -1 : ids.indexOf(corrente);
       const indice =
         dove === "primo" ? 0 : dove === "ultimo" ? ids.length - 1 : Math.min(Math.max(posizione + (dove === "successivo" ? 1 : -1), 0), ids.length - 1);
       const id = ids[indice];
       if (id === undefined) return;
       setCursore(id);
-      if (pagina !== "Elenco") {
+      if (!inDocumenti || pagina !== "Elenco") {
         setAperto(id);
         setPagina("Generale");
       }
     },
-    [documenti, aperto, pagina, selezione],
+    [documenti, aperto, pagina, selezione, inDocumenti, setPagina],
   );
   const salva = useCallback(
     (stampa: boolean) => {
@@ -136,6 +153,11 @@ function Guscio() {
       // Con una ricerca o la finestra prezzi aperte i tasti sono loro.
       if (document.querySelector("[role=dialog]")) return;
       if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+        if (e.key === "0") {
+          e.preventDefault();
+          setArea("home");
+          return;
+        }
         const scelta = PAGINE.find((p) => p.tasto === e.key);
         if (scelta) {
           e.preventDefault();
@@ -169,14 +191,36 @@ function Guscio() {
     };
     window.addEventListener("keydown", tasto);
     return () => window.removeEventListener("keydown", tasto);
-  }, [finestra, nuovo, salva, vai]);
+  }, [finestra, nuovo, salva, vai, setPagina]);
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex h-9 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white/70 px-3 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/60">
         <span className="font-mono text-[12px] font-bold tracking-[0.3em]">ATLAS</span>
-        <h1 className="text-[13px] font-semibold">Gestione Documenti</h1>
-        <span className="text-[12px] text-zinc-500">DDT — BOLLA VENDITA (BO)</span>
+        <div role="tablist" aria-label="Aree" className="flex gap-0.5 rounded-lg bg-zinc-200/60 p-0.5 dark:bg-zinc-800">
+          {(
+            [
+              ["home", "Home", "⌃0"],
+              ["documenti", "Gestione Documenti", ""],
+            ] as const
+          ).map(([a, nome, tasto]) => (
+            <button
+              key={a}
+              type="button"
+              role="tab"
+              aria-selected={area === a}
+              tabIndex={-1}
+              onClick={() => setArea(a)}
+              className={`rounded-md px-2.5 py-0.5 text-[12.5px] font-semibold ${
+                area === a ? "bg-white shadow-sm dark:bg-zinc-600" : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-300"
+              }`}
+            >
+              {nome}
+              {tasto && <span className="ml-1 font-mono text-[9.5px] font-normal opacity-50">{tasto}</span>}
+            </button>
+          ))}
+        </div>
+        {inDocumenti && <span className="text-[12px] text-zinc-500">DDT — BOLLA VENDITA (BO)</span>}
         <span className="hidden truncate text-[11px] text-zinc-400 2xl:inline">{INTESTAZIONE}</span>
         <div className="ml-auto flex items-center gap-2">
           <button type="button" onClick={() => setSincronizzazione(true)} aria-label="Stato della sincronizzazione" title="Sincronizzazione con Arca">
@@ -192,7 +236,7 @@ function Guscio() {
       </header>
 
       {/* Barra degli strumenti della finestra documenti. */}
-      <nav aria-label="Strumenti" className="flex h-9 shrink-0 items-center gap-1 border-b border-zinc-200 bg-zinc-50/80 px-2 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <nav aria-label="Strumenti" className={`${inDocumenti ? "flex" : "hidden"} h-9 shrink-0 items-center gap-1 border-b border-zinc-200 bg-zinc-50/80 px-2 dark:border-zinc-800 dark:bg-zinc-900/40`}>
         <Strumento icona="salva" nome="Salva" tasto="F10" disabled={!inBattitura} onClick={() => salva(false)} />
         <Strumento icona="annulla" nome="Annulla" disabled={!inBattitura} onClick={() => documento.current?.annulla()} />
         <Separatore />
@@ -214,7 +258,7 @@ function Guscio() {
       </nav>
 
       {/* Pagine della finestra, a sinistra sotto gli strumenti come in Arca. */}
-      <div role="tablist" aria-label="Pagine" className="flex h-7 shrink-0 items-end gap-1 border-b border-zinc-200 px-3 dark:border-zinc-800">
+      <div role="tablist" aria-label="Pagine" className={`${inDocumenti ? "flex" : "hidden"} h-7 shrink-0 items-end gap-1 border-b border-zinc-200 px-3 dark:border-zinc-800`}>
         {PAGINE.map((p) => (
           <button
             key={p.pagina}
@@ -236,9 +280,22 @@ function Guscio() {
       </div>
 
       <main className="min-h-0 flex-1">
-        <div className={pagina === "Elenco" ? "h-full" : "hidden"}>
+        <div className={inDocumenti ? "hidden" : "h-full"}>
+          <Home
+            attivo={!inDocumenti && !finestra}
+            onNuovo={nuovo}
+            onNuovoPer={nuovoPer}
+            onApri={(id) => {
+              setAperto(id);
+              setCursore(id);
+              setPagina("Generale");
+            }}
+            onElenco={() => setPagina("Elenco")}
+          />
+        </div>
+        <div className={inDocumenti && pagina === "Elenco" ? "h-full" : "hidden"}>
           <Elenco
-            attivo={pagina === "Elenco" && !finestra}
+            attivo={inDocumenti && pagina === "Elenco" && !finestra}
             selezionato={cursore}
             onDocumenti={setDocumenti}
             onSelezione={setSelezione}
@@ -256,12 +313,12 @@ function Guscio() {
               if (e?.tipo === "salvato" || e?.tipo === "avviso") setDocumenti([]);
             }} onTotali={setTotali} />
         </div>
-        {pagina === "Generale" && aperto !== null && (
+        {inDocumenti && pagina === "Generale" && aperto !== null && (
           <div className="h-full">
             <Consultazione key={aperto} id={aperto} attivo={!finestra} />
           </div>
         )}
-        {pagina === "DMS" && (
+        {inDocumenti && pagina === "DMS" && (
           <div className="flex h-full items-center justify-center text-sm text-zinc-500">
             Archivio documentale (DMS): i PDF dei DDT arrivano con il modulo stampe (Task 7).
           </div>
@@ -272,9 +329,9 @@ function Guscio() {
         esito={esito}
         totali={inBattitura ? totali : null}
         posizione={
-          pagina === "Elenco" && selezione
+          inDocumenti && pagina === "Elenco" && selezione
             ? `${selezione.indice + 1}/${selezione.totale}`
-            : pagina === "Generale" && aperto !== null && documenti.includes(aperto)
+            : inDocumenti && pagina === "Generale" && aperto !== null && documenti.includes(aperto)
               ? `${documenti.indexOf(aperto) + 1}/${documenti.length}`
               : null
         }

@@ -231,6 +231,18 @@ Documento supremo di riferimento: `docs/DIRETTIVA_ARCHITETTURALE_ATLAS.md` (visi
     sinistra e "Importa pesate"/"Riferimento" a destra. Numeri e date nel formato di Arca: punto decimale e decimali
     fissi (importi 2, prezzi 3, fattore 5), date GG-MM-AAAA. Un DDT aperto dall'elenco si legge nella pagina
     Generale con la stessa testata e le stesse schede; il DDT in battitura resta dov'era.
+  - **Home** (all'avvio, `Ctrl+0`; richiesta del titolare: "la home di Arca è penosa, servono widget utili"):
+    - "Da chiamare oggi": i clienti che nello stesso giorno della settimana hanno avuto un DDT in almeno metà dei
+      giorni lavorati delle ultime 12 settimane (e almeno 3 volte) e oggi non ce l'hanno ancora, in ordine di ora
+      solita (mediana dell'ora di registrazione dei loro DDT registrati in giornata), "in ritardo" in rosso 30
+      minuti dopo; "Nuovo DDT" apre la maschera già intestata (destinazione o righe). I già serviti in fondo con
+      il loro DDT. Backend: `GET /api/home/clienti?data=` (`atlas-server/src/home.rs`), 5 ms sul database reale.
+    - Bacheca di post-it condivisi fra le postazioni: si scrivono sulla nota, si trascinano, cinque colori,
+      autore e ora; nel database ATLAS (migrazione 0005, tabella `note`, solo ATLAS: niente replica in Arca),
+      scritti dal worker, `GET/POST /api/note`, `PUT/DELETE /api/note/{id}`, notifica WebSocket `note_cambiate`.
+    - DDT di oggi (numero, cliente, stato in Arca), numeri liberi da riempire, stato di Arca con "Sincronizza".
+    - Solo conteggi, orari e numeri di documento, nessun importo (§4.3: al banco nessun dato di fatturato).
+    - Manca il telefono dei clienti: non è fra i campi importati da Arca (serve il nome delle colonne in `CF`).
   - Ancora in sola lettura o spenti, perché ATLAS non ha i dati o le API: i campi delle schede Testa e Piede
     (vengono da cliente e costanti BO), Importa pesate (file della bilancia da collegare), Riferimento ed Evade
     (nessun ordine in ATLAS), Elimina (Task 6), DMS e stampa (Task 7).

@@ -398,4 +398,47 @@ export type Notifica =
       evento: "importazione";
       dati: { nuovi: number; aggiornati: number; collegati: number; esclusi: number; cancellati: number };
     }
+  | { evento: "note_cambiate" }
   | { evento: "ritardo"; dati: { perse: number } };
+
+export type ColoreNota = "giallo" | "rosa" | "verde" | "azzurro" | "arancio";
+
+/** Post-it della Home, condiviso fra le postazioni. Posizione in frazioni della bacheca. */
+export interface Nota {
+  id: number;
+  testo: string;
+  colore: ColoreNota;
+  x: number;
+  y: number;
+  autore: string;
+  creata_il: Istante;
+  aggiornata_il: Istante;
+}
+
+export interface CampiNota {
+  testo?: string;
+  colore?: ColoreNota;
+  x?: number;
+  y?: number;
+}
+
+export interface ClienteDelGiorno {
+  cliente: string;
+  ragione_sociale: string;
+  localita: string | null;
+  volte: number;
+  su: number;
+  ultimo: Data;
+  /** "09:10": ora mediana di registrazione dei suoi DDT in quel giorno della settimana. */
+  ora_tipica: string | null;
+  destinazione: string | null;
+  servito: { id: number; numero: number } | null;
+}
+
+export interface ClientiDelGiorno {
+  data: Data;
+  giorno: string;
+  settimane: number;
+  giorni_lavorati: number;
+  clienti: ClienteDelGiorno[];
+}

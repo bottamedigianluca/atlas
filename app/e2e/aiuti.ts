@@ -20,3 +20,10 @@ export async function cliente(page: Page, codice: string) {
   if ((await prossimo.getAttribute("id")) === "testata-destinazione") await batti(page, "Enter");
   await expect(cella(page, 0, "articolo")).toBeFocused();
 }
+
+/** Avvio dell'app e pagina Generale (`Ctrl+2`): all'avvio c'è la Home. */
+export async function apri(page: Page) {
+  await page.goto("/");
+  await expect(page.getByRole("region", { name: "Da chiamare oggi" })).toBeVisible();
+  await page.keyboard.press("Control+2");
+}

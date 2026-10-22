@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { batti, cella, cliente } from "./aiuti";
+import { apri, batti, cella, cliente } from "./aiuti";
 
 const SERVER = "http://127.0.0.1:7979/api";
 
 test("un DDT battuto solo da tastiera, con F3 prezzi, guardrail e F10", async ({ page }) => {
-  await page.goto("/");
+  await apri(page);
   // La finestra si apre sulla pagina Generale con il cursore sul cliente, come in Arca.
   await expect(page.getByRole("tab", { name: /Generale/ })).toHaveAttribute("aria-selected", "true");
   const oggi = new Date();

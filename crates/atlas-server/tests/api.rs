@@ -15,7 +15,7 @@ use atlas_db::anagrafiche::Anagrafiche;
 use atlas_db::outbox::Evento;
 use atlas_server::config::Config;
 use atlas_server::servizio::Servizio;
-use atlas_server::worker::{Maniglia, Replica, Sorgenti};
+use atlas_server::worker::{Maniglia, Notifica, Replica, Sorgenti};
 use atlas_sync::ErroreSync;
 use atlas_sync::importazione::Origine;
 use atlas_sync::replica::{Destinazione, Replicato};
@@ -465,4 +465,37 @@ async fn il_worker_si_ferma_quando_si_chiude_il_servizio() {
         .await
         .unwrap()
         .unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn home_post_it_e_clienti_del_giorno() {
+    let b = banco("home", None);
+    let mut notifiche = b.servizio.notifiche();
+    let (stato, nota) = chiama(&b.router, "POST", "/api/note", Some(json!({"testo": "Cassette a Dinamos", "colore": "rosa"}))).await;
+    assert_eq!(stato, StatusCode::CREATED, "{nota}");
+    assert_eq!((nota["testo"].as_str(), nota["colore"].as_str()), (Some("Cassette a Dinamos"), Some("rosa")));
+    // Prima possono arrivare le notifiche di stato dell'avvio.
+    loop {
+        let notifica = tokio::time::timeout(std::time::Duration::from_secs(5), notifiche.recv()).await.unwrap().unwrap();
+        if matches!(notifica, Notifica::NoteCambiate) {
+            break;
+        }
+    }
+
+    let id = nota["id"].as_i64().unwrap();
+    let (stato, spostata) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"x": 0.4, "y": 0.6}))).await;
+    assert_eq!(stato, StatusCode::OK, "{spostata}");
+    assert_eq!((spostata["x"].as_f64(), spostata["testo"].as_str()), (Some(0.4), Some("Cassette a Dinamos")));
+    let (stato, _) = chiama(&b.router, "PUT", &format!("/api/note/{id}"), Some(json!({"colore": "viola"}))).await;
+    assert_eq!(stato, StatusCode::UNPROCESSABLE_ENTITY);
+    let (_, elenco) = chiama(&b.router, "GET", "/api/note", None).await;
+    assert_eq!(elenco.as_array().map(Vec::len), Some(1));
+    let (stato, _) = chiama(&b.router, "DELETE", &format!("/api/note/{id}"), None).await;
+    assert_eq!(stato, StatusCode::NO_CONTENT);
+    let (stato, _) = chiama(&b.router, "DELETE", &format!("/api/note/{id}"), None).await;
+    assert_eq!(stato, StatusCode::NOT_FOUND);
+
+    let (stato, giorno) = chiama(&b.router, "GET", "/api/home/clienti?data=2026-10-22", None).await;
+    assert_eq!(stato, StatusCode::OK, "{giorno}");
+    assert_eq!((giorno["giorno"].as_str(), giorno["settimane"].as_u64()), (Some("giovedì"), Some(12)));
 }

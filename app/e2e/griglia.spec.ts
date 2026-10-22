@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { cliente } from "./aiuti";
+import { apri, cliente } from "./aiuti";
 
 async function menuColonne(page: Page) {
   await page.getByRole("columnheader", { name: "Articolo" }).click({ button: "right" });
@@ -7,7 +7,7 @@ async function menuColonne(page: Page) {
 }
 
 test("colonne: nascondi dal clic destro, larghezza a trascinamento, persistenza e ripristino di fabbrica", async ({ page }) => {
-  await page.goto("/");
+  await apri(page);
   const intestazioni = page.getByRole("columnheader");
   await expect(intestazioni).toHaveCount(40);
   const descrizione = page.getByRole("columnheader", { name: "Descrizione" });
@@ -31,6 +31,7 @@ test("colonne: nascondi dal clic destro, larghezza a trascinamento, persistenza 
 
   // Dopo il riavvio il layout è quello dell'operatore.
   await page.reload();
+  await page.keyboard.press("Control+2");
   await expect(page.getByRole("columnheader")).toHaveCount(39);
   expect(Math.round((await page.getByRole("columnheader", { name: "Lordo", exact: true }).boundingBox())!.width)).toBe(allargata);
 
@@ -41,7 +42,7 @@ test("colonne: nascondi dal clic destro, larghezza a trascinamento, persistenza 
 });
 
 test("riordino a trascinamento: la sequenza Invio non cambia", async ({ page }) => {
-  await page.goto("/");
+  await apri(page);
   await page.getByRole("columnheader", { name: "Prezzo Un." }).dragTo(page.getByRole("columnheader", { name: "Colli/Qta" }));
   const nomi = await page.getByRole("columnheader").allTextContents();
   expect(nomi.slice(3, 6)).toEqual(["UM", "Prezzo Un.", "Colli/Qta"]);
@@ -55,7 +56,7 @@ test("riordino a trascinamento: la sequenza Invio non cambia", async ({ page }) 
 });
 
 test("F3: ricerca cliente e articolo, numeri liberi, elenco documenti", async ({ page }) => {
-  await page.goto("/");
+  await apri(page);
   await expect(page.locator("#testata-cliente")).toBeFocused();
   await page.keyboard.press("F3");
   const clienti = page.getByRole("dialog", { name: "Clienti" });

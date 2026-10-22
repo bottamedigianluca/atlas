@@ -59,7 +59,8 @@ cargo run --release -p atlas-server --bin misura-latenze -- dati\atlas.sqlite  #
 API del backend (dettagli in `crates/atlas-server/src/rotte.rs`): `POST /api/ddt/calcola` (pesata e totali in tempo
 reale), `POST /api/ddt` (salvataggio con numerazione unica), `GET /api/prezzi` (tasto F3), `GET /api/ddt`,
 `GET /api/ddt/{id}`, `GET /api/stato` (replica, importazione, conflitti), `POST /api/ddt/{id}/rinumera`,
-`GET /api/numerazione/{anno}/liberi`, anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).
+`GET /api/numerazione/{anno}/liberi`, `GET /api/home/clienti` (clienti del giorno), `GET/POST/PUT/DELETE /api/note`
+(post-it della Home), anagrafiche, `GET /api/strumenti` (JSON Schema per assistenti).
 
 ```powershell
 # app desktop (il backend deve essere avviato: indirizzo predefinito http://127.0.0.1:7878, modificabile con F1)
@@ -73,6 +74,7 @@ npm run e2e              # prove end-to-end su una copia di dati\atlas.sqlite (P
 
 La finestra ricalca "Gestione Documenti" di Arca (pagine Elenco, Generale, DMS; schede Testa, Righe, Piede, Totali,
 Info, Evasioni, Stampe; F3 "PREZZO/COSTO ARTICOLO"), con numeri a punto decimale e date GG-MM-AAAA come in Arca.
+All'avvio c'è la Home (`Ctrl+0`): clienti da chiamare oggi, bacheca di post-it condivisi, DDT di oggi, numeri liberi.
 Tasti: `Invio` avanti (Articolo → UM → Colli → Lordo → Tara → Prezzo → nuova riga), `↓` riga sotto o nuova riga
 sull'articolo, `F3` ricerca cliente/articolo/destinazione, prezzi (sul prezzo), numeri liberi (sul numero), `Ctrl+N`
 nuovo, `F10` salva, `F12` salva e stampa, `Alt+←/→` documento precedente/successivo (`Alt+Home/Fine` primo/ultimo), `Esc` annulla la cella, `Ctrl+Canc` elimina riga, `Ctrl+PgSu/PgGiù` schede,
